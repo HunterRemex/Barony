@@ -553,6 +553,12 @@ Entity* uidToEntity(Sint32 uidnum)
 	return nullptr;
 }
 
+void Entity::setUID(Uint32 new_uid)
+{
+    // dummy function
+    return;
+}
+
 bool Entity::bEntityHighlightedForPlayer(const int player) const
 {
 	return false;
