@@ -182,12 +182,6 @@ public:
 	Sint32& effectPolymorph; // skill[50]
 	Sint32& effectShapeshift; // skill[53]
 
-	//--PUBLIC GENERAL ENTITY STUFF--
-	Sint32& interactedByMonster; //skill[47] for use with monsterAllyInteractTarget
-	real_t& highlightForUI; //fskill[29] for highlighting interactibles
-	real_t& highlightForUIGlow; //fskill[28] for highlighting animation
-	real_t& grayscaleGLRender; //fskill[27] for grayscale rendering
-
 	//--PUBLIC PLAYER SKILLS--
 	Sint32& playerLevelEntrySpeech; //skill[18]
 	Sint32& playerAliveTime; //skill[12]

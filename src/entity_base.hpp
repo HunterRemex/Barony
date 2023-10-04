@@ -37,6 +37,10 @@ protected:
     Uint32 uid{}; // entity uid
 public:
     Entity_Base();
+
+    explicit Entity_Base(Sint32 &interactedByMonster, real_t &highlightForUi, real_t &highlightForUiGlow,
+                         real_t &grayscaleGlRender);
+
     virtual ~Entity_Base();
 
     Uint32 getUID() const {return uid;}
@@ -75,6 +79,13 @@ public:
 
     // a pointer to the entity's location in a list (ie the map list of entities)
     node_t* mynode {};
+
+    //--PUBLIC GENERAL ENTITY STUFF--
+    Sint32& interactedByMonster;  //skill[47] for use with monsterAllyInteractTarget
+    real_t& highlightForUI;       //fskill[29] for highlighting interactibles
+    real_t& highlightForUIGlow;   //fskill[28] for highlighting animation
+    real_t& grayscaleGLRender;    //fskill[27] for grayscale rendering
+
 };
 
 

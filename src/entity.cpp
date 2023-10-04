@@ -45,6 +45,7 @@ Construct an Entity
 -------------------------------------------------------------------------------*/
 
 Entity::Entity(Sint32 in_sprite, Uint32 pos, list_t* entlist, list_t* creaturelist) :
+    Entity_Base(skill[47],fskill[29],fskill[28],fskill[27]),
 	lightBonus(0.f),
 	char_gonnavomit(skill[26]),
 	char_heal(skill[22]),
@@ -334,10 +335,6 @@ Entity::Entity(Sint32 in_sprite, Uint32 pos, list_t* entlist, list_t* creatureli
 	goldAmount(skill[0]),
 	goldAmbience(skill[1]),
 	goldSokoban(skill[2]),
-	interactedByMonster(skill[47]),
-	highlightForUI(fskill[29]),
-	highlightForUIGlow(fskill[28]),
-	grayscaleGLRender(fskill[27]),
 	soundSourceFired(skill[0]),
 	soundSourceToPlay(skill[1]),
 	soundSourceVolume(skill[2]),
