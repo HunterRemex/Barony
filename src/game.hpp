@@ -32,6 +32,7 @@ static const char VERSION[] = "v4.0.2";
 #define GAME_CODE
 
 class Entity;
+class Creature;
 
 #define DEBUG 1
 #define ENTITY_PACKET_LENGTH 46

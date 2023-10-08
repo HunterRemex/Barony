@@ -426,6 +426,7 @@ enum LightModifierValues : int
 };
 
 class Entity; //TODO: Bugger?
+class Creature;
 
 // node structure
 typedef struct node_t
@@ -850,6 +851,7 @@ void mapDeconstructor(void* data);
 void stringDeconstructor(void* data);
 void listDeconstructor(void* data);
 Entity* newEntity(Sint32 sprite, Uint32 pos, list_t* entlist, list_t* creaturelist);
+Creature* newCreature(Sint32 sprite, Uint32 pos, list_t* entlist, list_t* creaturelist);
 button_t* newButton(void);
 string_t* newString(list_t* list, Uint32 color, Uint32 time, int player, char const * const content, ...);
 

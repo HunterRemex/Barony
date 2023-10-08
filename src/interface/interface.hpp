@@ -60,6 +60,7 @@ extern real_t uiscale_hotbar;
 extern real_t uiscale_inventory;
 
 #include "../entity.hpp"
+#include "../creature.h"
 
 enum DamageGib {
 	DMG_DEFAULT,
@@ -136,12 +137,9 @@ public:
 		EnemyHPDetails() {};
 		EnemyHPDetails(Uint32 uid, Sint32 HP, Sint32 maxHP, Sint32 oldHP, const char* name, bool isLowPriority)
 		{
-			if ( Entity* entity = uidToEntity(uid) )
+			if ( Creature* entity = uidToCreature(uid); entity == nullptr )
 			{
-				if ( entity->behavior != &actMonster && entity->behavior != actPlayer )
-				{
-					barType = BAR_TYPE_FURNITURE;
-				}
+                barType = BAR_TYPE_FURNITURE;
 			}
 			enemy_uid = uid;
 			enemy_hp = HP;

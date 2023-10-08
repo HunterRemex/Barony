@@ -33,8 +33,6 @@ static const int NUMENTITYFSKILLS = 30;
 
 class Entity_Base {
 
-protected:
-    Uint32 uid{}; // entity uid
 public:
     Entity_Base();
 
@@ -86,6 +84,7 @@ public:
     real_t& highlightForUIGlow;   //fskill[28] for highlighting animation
     real_t& grayscaleGLRender;    //fskill[27] for grayscale rendering
 
+    Uint32 uid{}; // entity uid
 };
 
 

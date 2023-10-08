@@ -14,6 +14,7 @@
 #include "game.hpp"
 #include "stat.hpp"
 #include "entity.hpp"
+#include "creature.h"
 #include "items.hpp"
 #include "magic/magic.hpp"
 #include "net.hpp"
@@ -1271,7 +1272,7 @@ int Stat::getPassiveShieldBonus(bool checkShield) const
 	}
 }
 
-bool Stat::statusEffectRemovedByCureAilment(const int effect, Entity* my)
+bool Stat::statusEffectRemovedByCureAilment(const int effect, Creature *my)
 {
 	switch ( effect )
 	{

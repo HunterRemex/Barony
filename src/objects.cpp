@@ -12,6 +12,7 @@
 #include <new>
 #include "main.hpp"
 #include "entity.hpp"
+#include "creature.h"
 #include "messages.hpp"
 
 /*-------------------------------------------------------------------------------
@@ -252,6 +253,47 @@ Entity* newEntity(Sint32 sprite, Uint32 pos, list_t* entlist, list_t* creatureli
 	}
 #else
 	entity = new Entity(sprite, pos, entlist, creaturelist);
+#endif
+
+	return entity;
+}
+
+
+/*-------------------------------------------------------------------------------
+
+	newCreature
+
+	Creates a new entity with empty settings and places it in the entity list
+
+-------------------------------------------------------------------------------*/
+
+Creature* newCreature(Sint32 sprite, Uint32 pos, list_t* entlist, list_t* creaturelist)
+{
+	Creature* entity = nullptr;
+
+	// allocate memory for entity
+	/*if( (entity = (Entity *) malloc(sizeof(Entity)))==NULL ) {
+		printlog( "failed to allocate memory for new entity!\n" );
+		exit(1);
+	}*/
+#ifndef NINTENDO
+	bool failedToAllocate = false;
+	try
+	{
+		entity = new Creature(sprite, pos, entlist, creaturelist);
+	}
+	catch (std::bad_alloc& ba)
+	{
+		failedToAllocate = true;
+	}
+
+	if ( failedToAllocate || !entity )
+	{
+		printlog("failed to allocate memory for new entity!\n");
+		exit(1);
+	}
+#else
+	entity = new Creature(sprite, pos, entlist, creaturelist);
 #endif
 
 	return entity;

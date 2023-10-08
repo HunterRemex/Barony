@@ -12,6 +12,7 @@
 #include "main.hpp"
 #include "hash.hpp"
 #include "entity.hpp"
+#include "creature.h"
 #include "prng.hpp"
 
 #ifdef WINDOWS

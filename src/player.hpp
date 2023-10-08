@@ -655,7 +655,7 @@ class Player
 	int playernum;
 
 public:
-	Entity* entity;
+	Creature* entity;
 
 	enum SplitScreenTypes : int
 	{
