@@ -14,6 +14,7 @@
 #include "stat.hpp"
 #include "monster.hpp"
 #include "entity.hpp"
+#include "creature.h"
 #include "net.hpp"
 #include "collision.hpp"
 #include "player.hpp"
@@ -348,6 +349,7 @@ Entity* spawnGib(Entity* parentent, int customGibSprite)
 
 Entity* spawnDamageGib(Entity* parentent, Sint32 dmgAmount, int gibDmgType)
 {
+    Creature* parentCrtr = (Creature*)(*&parentent);
 	if ( !parentent )
 	{
 		return nullptr;
@@ -392,7 +394,7 @@ Entity* spawnDamageGib(Entity* parentent, Sint32 dmgAmount, int gibDmgType)
 		entity_uids--;
 	}
 	entity->skill[1] = -1;
-	if ( parentent->behavior == &actPlayer )
+	if ( parentCrtr && parentCrtr->behavior == &actPlayer )
 	{
 		entity->skill[1] = parentent->skill[2];
 	}

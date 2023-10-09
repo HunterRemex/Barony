@@ -13,6 +13,7 @@
 #include "game.hpp"
 #include "stat.hpp"
 #include "entity.hpp"
+#include "creature.h"
 #include "engine/audio/sound.hpp"
 #include "net.hpp"
 #include "collision.hpp"
@@ -321,7 +322,7 @@ void actDoorFrame(Entity* my)
 	}
 }
 
-void Entity::doorHandleDamageMagic(int damage, Entity &magicProjectile, Entity *caster)
+void Entity::doorHandleDamageMagic(int damage, Entity &magicProjectile, Creature *caster)
 {
 	doorHealth -= damage; //Decrease door health.
 	if ( caster )

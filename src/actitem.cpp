@@ -71,7 +71,7 @@ void actItem(Entity* my)
 		my->flags[NOUPDATE] = true;
 		if ( ITEM_LIFE == 0 )
 		{
-			Entity* tempEntity = players[clientnum]->entity;
+			Creature* tempEntity = players[clientnum]->entity;
 			if ( tempEntity )
 			{
 				if ( entityInsideEntity(my, tempEntity) )
@@ -83,12 +83,12 @@ void actItem(Entity* my)
 					node_t* node;
 					for ( node = map.creatures->first; node != nullptr; node = node->next )
 					{
-						Entity* entity = (Entity*)node->element;
-						if ( entity->behavior == &actPlayer || entity->behavior == &actMonster )
+						Creature* crtrEntity = (Creature*)node->element;
+						if ( crtrEntity && crtrEntity->behavior == &actPlayer || crtrEntity->behavior == &actMonster )
 						{
-							if ( entityInsideEntity(my, entity) )
+							if ( entityInsideEntity(my, crtrEntity) )
 							{
-								my->parent = entity->getUID();
+								my->parent = crtrEntity->getUID();
 								break;
 							}
 						}
@@ -100,8 +100,8 @@ void actItem(Entity* my)
 				node_t* node;
 				for ( node = map.creatures->first; node != nullptr; node = node->next )
 				{
-					Entity* entity = (Entity*)node->element;
-					if ( entity->behavior == &actPlayer || entity->behavior == &actMonster )
+					Creature* entity = (Creature*)node->element;
+					if ( entity && (entity->behavior == &actPlayer || entity->behavior == &actMonster ) )
 					{
 						if ( entityInsideEntity(my, entity) )
 						{
@@ -175,7 +175,7 @@ void actItem(Entity* my)
 	{
 		if ( my->isInteractWithMonster() )
 		{
-			Entity* monsterInteracting = uidToEntity(my->interactedByMonster);
+			Creature* monsterInteracting = uidToCreature(my->interactedByMonster);
 			if ( monsterInteracting )
 			{
 				if ( my->skill[10] >= 0 && my->skill[10] < NUMITEMS )
@@ -329,7 +329,7 @@ void actItem(Entity* my)
 									if ( itemCategory(item) == FOOD && my->itemShowOnMap != 0
 										&& stats[i] && stats[i]->type == RAT )
 									{
-										Entity* parent = uidToEntity(my->parent);
+										Creature* parent = uidToCreature(my->parent);
 										if ( !parent || (parent && parent->behavior != &actPlayer) )
 										{
 											steamStatisticUpdateClient(i, STEAM_STAT_5000_SECOND_RULE, STEAM_STAT_INT, 1);
@@ -345,7 +345,7 @@ void actItem(Entity* my)
 											.playerAchievements[i].rat5000secondRule.find(my->getUID());
 										if ( find != achievementObserver.playerAchievements[i].rat5000secondRule.end() )
 										{
-											Entity* parent = uidToEntity(my->parent);
+											Creature* parent = uidToCreature(my->parent);
 											if ( !parent || (parent && parent->behavior != &actPlayer) )
 											{
 												steamStatisticUpdateClient(i, STEAM_STAT_5000_SECOND_RULE, STEAM_STAT_INT, 1);
