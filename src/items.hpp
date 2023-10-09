@@ -554,24 +554,24 @@ public:
 extern ItemGeneric items[NUMITEMS];
 
 //----------Item usage functions----------
-bool item_PotionWater(Item*& item, Entity* entity, Entity* usedBy);
-bool item_PotionBooze(Item*& item, Entity* entity, Entity* usedBy, bool shouldConsumeItem = true);
-bool item_PotionJuice(Item*& item, Entity* entity, Entity* usedBy);
-bool item_PotionSickness(Item*& item, Entity* entity, Entity* usedBy);
-bool item_PotionConfusion(Item*& item, Entity* entity, Entity* usedBy);
-bool item_PotionCureAilment(Item*& item, Entity* entity, Entity* usedBy);
-bool item_PotionBlindness(Item*& item, Entity* entity, Entity* usedBy);
-bool item_PotionHealing(Item*& item, Entity* entity, Entity* usedBy, bool shouldConsumeItem = true);
-bool item_PotionExtraHealing(Item*& item, Entity* entity, Entity* usedBy, bool shouldConsumeItem = true);
-bool item_PotionRestoreMagic(Item*& item, Entity* entity, Entity* usedBy);
-bool item_PotionInvisibility(Item*& item, Entity* entity, Entity* usedBy);
-bool item_PotionLevitation(Item*& item, Entity* entity, Entity* usedBy);
-bool item_PotionSpeed(Item*& item, Entity* entity, Entity* usedBy);
-bool item_PotionStrength(Item*& item, Entity* entity, Entity* usedBy);
-bool item_PotionAcid(Item*& item, Entity* entity, Entity* usedBy);
-bool item_PotionUnstableStorm(Item*& item, Entity* entity, Entity* usedBy, Entity* thrownPotion);
-bool item_PotionParalysis(Item*& item, Entity* entity, Entity* usedBy);
-Entity* item_PotionPolymorph(Item*& item, Entity* entity, Entity* usedBy);
+bool item_PotionWater(Item*& item, Entity* entity, Creature* usedBy);
+bool item_PotionBooze(Item*& item, Entity* entity, Creature* usedBy, bool shouldConsumeItem = true);
+bool item_PotionJuice(Item*& item, Entity* entity, Creature* usedBy);
+bool item_PotionSickness(Item*& item, Entity* entity, Creature* usedBy);
+bool item_PotionConfusion(Item*& item, Entity* entity, Creature* usedBy);
+bool item_PotionCureAilment(Item*& item, Entity* entity, Creature* usedBy);
+bool item_PotionBlindness(Item*& item, Entity* entity, Creature* usedBy);
+bool item_PotionHealing(Item*& item, Entity* entity, Creature* usedBy, bool shouldConsumeItem = true);
+bool item_PotionExtraHealing(Item*& item, Entity* entity, Creature* usedBy, bool shouldConsumeItem = true);
+bool item_PotionRestoreMagic(Item*& item, Entity* entity, Creature* usedBy);
+bool item_PotionInvisibility(Item*& item, Entity* entity, Creature* usedBy);
+bool item_PotionLevitation(Item*& item, Entity* entity, Creature* usedBy);
+bool item_PotionSpeed(Item*& item, Entity* entity, Creature* usedBy);
+bool item_PotionStrength(Item*& item, Entity* entity, Creature* usedBy);
+bool item_PotionAcid(Item*& item, Entity* entity, Creature* usedBy);
+bool item_PotionUnstableStorm(Item*& item, Entity* entity, Creature* usedBy, Entity* thrownPotion);
+bool item_PotionParalysis(Item*& item, Entity* entity, Creature* usedBy);
+Entity* item_PotionPolymorph(Item*& item, Entity* entity, Creature* usedBy);
 void item_ScrollMail(Item* item, int player);
 void item_ScrollIdentify(Item* item, int player);
 void item_ScrollLight(Item* item, int player);
@@ -591,7 +591,7 @@ void item_AmuletSexChange(Item* item, int player);
 void item_ToolTowel(Item*& item, int player);
 void item_ToolTinOpener(Item* item, int player);
 void item_ToolMirror(Item*& item, int player);
-void item_ToolBeartrap(Item*& item, Entity* usedBy);
+void item_ToolBeartrap(Item*& item, Creature* usedBy);
 void item_Food(Item*& item, int player);
 void item_FoodTin(Item*& item, int player);
 void item_FoodAutomaton(Item*& item, int player);
@@ -614,7 +614,7 @@ Sint32 itemModelFirstperson(const Item* item);
 SDL_Surface* itemSprite(Item* item);
 void consumeItem(Item*& item, int player); //NOTE: Items have to be unequipped before calling this function on them. NOTE: THIS CAN FREE THE ITEM POINTER. Sets item to nullptr if it does.
 bool dropItem(Item* item, int player, bool notifyMessage = true); // return true on free'd item
-void useItem(Item* item, int player, Entity* usedBy = nullptr, bool unequipForDropping = false);
+void useItem(Item* item, const int player, Creature* usedBy = nullptr, bool unequipForDropping = false);
 enum EquipItemResult : int
 {
 	EQUIP_ITEM_FAIL_CANT_UNEQUIP,

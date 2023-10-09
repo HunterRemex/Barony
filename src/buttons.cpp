@@ -11,9 +11,9 @@
 
 #include "main.hpp"
 #include "editor.hpp"
-#include "entity.hpp"
 #include "files.hpp"
 #include "player.hpp"
+#include "creature.h"
 
 button_t* butX;
 button_t* but_;
@@ -2291,7 +2291,7 @@ void buttonSpriteProperties(button_t* my)
 				strcpy(subtext, "Gate Properties:");
 				break;
 			case 23: // player spawn
-				snprintf(spriteProperties[0], 4, "%d", static_cast<int>(selectedEntity[0]->playerStartDir));
+				snprintf(spriteProperties[0], 4, "%d", static_cast<int>(dynamic_cast<Creature*>(selectedEntity[0])->playerStartDir));
 				inputstr = spriteProperties[0];
 				cursorflash = ticks;
 				menuVisible = 0;
@@ -3449,7 +3449,7 @@ void buttonSpritePropertiesConfirm(button_t* my)
 				selectedEntity[0]->gateDisableOpening = (Sint32)atoi(spriteProperties[0]);
 				break;
 			case 23: // player spawn
-				selectedEntity[0]->playerStartDir = (Sint32)atoi(spriteProperties[0]);
+				dynamic_cast<Creature*>(selectedEntity[0])->playerStartDir = (Sint32)atoi(spriteProperties[0]);
 				break;
 			case 24: // statue
 				selectedEntity[0]->statueDir = (Sint32)atoi(spriteProperties[0]);

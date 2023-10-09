@@ -1406,6 +1406,7 @@ Entity* dropItemMonster(Item* const item, Entity* const monster, Stat* const mon
 {
 	// WARNING - dropItemMonster is used on playerDeaths, modifying this here neet to edit in actPlayer.cpp and net.cpp
 	Entity* entity = nullptr;
+    const Creature* monsterCrtr = dynamic_cast<Creature*>(monster);
 	bool itemDroppable = true;
 
 	if ( !item || !monster )
@@ -1413,7 +1414,7 @@ Entity* dropItemMonster(Item* const item, Entity* const monster, Stat* const mon
 		return nullptr;
 	}
 
-	if ( monster->behavior == &actPlayer && players[monster->skill[2]]->isLocalPlayer() )
+	if ( monsterCrtr && monsterCrtr->behavior == &actPlayer && players[monster->skill[2]]->isLocalPlayer() )
 	{
 		if ( item == inputs.getUIInteraction(monster->skill[2])->selectedItem )
 		{
@@ -1444,7 +1445,7 @@ Entity* dropItemMonster(Item* const item, Entity* const monster, Stat* const mon
 		{
 			itemDroppable = false;
 		}
-		if ( monsterStats->type == SKELETON && monster->behavior == &actMonster && monster->monsterAllySummonRank != 0 )
+		if ( monsterStats->type == SKELETON && monsterCrtr && monsterCrtr->behavior == &actMonster && monsterCrtr->monsterAllySummonRank != 0 )
 		{
 			itemDroppable = false;
 		}
@@ -1462,7 +1463,7 @@ Entity* dropItemMonster(Item* const item, Entity* const monster, Stat* const mon
 
 		if ( item->appearance == MONSTER_ITEM_UNDROPPABLE_APPEARANCE )
 		{
-			if ( monster->behavior == &actMonster
+			if ( monsterCrtr && monsterCrtr->behavior == &actMonster
 				&& (item->type < ARTIFACT_ORB_BLUE || item->type > ARTIFACT_ORB_GREEN) )
 			{
 				// default no monster drops these if appearance is set
@@ -1523,7 +1524,7 @@ Entity* dropItemMonster(Item* const item, Entity* const monster, Stat* const mon
 				default:
 					break;
 			}
-			if ( monster->behavior == &actPlayer )
+			if ( monsterCrtr && monsterCrtr->behavior == &actPlayer )
 			{
 				if ( item->type >= ARTIFACT_SWORD && item->type <= ARTIFACT_GLOVES )
 				{
@@ -1640,7 +1641,7 @@ Entity* dropItemMonster(Item* const item, Entity* const monster, Stat* const mon
 			*slot = nullptr; // clear the item slot
 		}
 
-		if ( monster->behavior == &actPlayer )
+		if ( monsterCrtr && monsterCrtr->behavior == &actPlayer )
 		{
 			players[monster->skill[2]]->paperDoll.updateSlots();
 		}
@@ -1980,7 +1981,7 @@ EquipItemResult equipItem(Item* const item, Item** const slot, const int player,
 
 -------------------------------------------------------------------------------*/
 
-void useItem(Item* item, const int player, Entity* usedBy, bool unequipForDropping)
+void useItem(Item* item, const int player, Creature* usedBy, bool unequipForDropping)
 {
 	if ( item == nullptr )
 	{
