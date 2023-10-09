@@ -11,7 +11,6 @@
 
 #include "main.hpp"
 #include "draw.hpp"
-#include "entity.hpp"
 #include "files.hpp"
 #include "items.hpp"
 #include "ui/Text.hpp"
@@ -22,6 +21,7 @@
 #include "player.hpp"
 #include "ui/MainMenu.hpp"
 #include "init.hpp"
+#include "creature.h"
 
 static real_t getLightAtModifier = 1.0;
 static real_t getLightAtAdder = 0.0;
@@ -682,6 +682,7 @@ static void uploadLightUniforms(view_t* camera, Shader& shader, Entity* entity, 
             }
             
             mat4x4_t remap(1.f);
+            Creature* entityCrtr = dynamic_cast<Creature*>(entity);
             if (doGrayScale) {
                 remap.x.x = 1.f / 3.f;
                 remap.x.y = 1.f / 3.f;
@@ -694,7 +695,7 @@ static void uploadLightUniforms(view_t* camera, Shader& shader, Entity* entity, 
                 remap.z.z = 1.f / 3.f;
             }
             else if (entity->flags[USERFLAG2]) {
-                if (entity->behavior != &actMonster || monsterChangesColorWhenAlly(nullptr, entity)) {
+                if ( (!entityCrtr || entityCrtr->behavior != &actMonster) || monsterChangesColorWhenAlly(nullptr, entity)) {
                     // certain allies use G/B/R color map
                     remap = mat4x4_t(0.f);
                     remap.x.y = 1.f;
@@ -729,7 +730,8 @@ static void uploadLightUniforms(view_t* camera, Shader& shader, Entity* entity, 
             GL_CHECK_ERR(glUniformMatrix4fv(shader.uniform("uColorRemap"), 1, false, (float*)&remap));
         }
 
-        if (entity->monsterEntityRenderAsTelepath) {
+        if (Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+            entityCrtr && entityCrtr->monsterEntityRenderAsTelepath) {
             const GLfloat factor[4] = { 1.f, 1.f, 1.f, 1.f, };
             GL_CHECK_ERR(glUniform4fv(shader.uniform("uLightFactor"), 1, factor));
 
@@ -1089,7 +1091,7 @@ void glDrawVoxel(view_t* camera, Entity* entity, int mode) {
         GL_CHECK_ERR(glEnable(GL_BLEND));
 	}
     bool changedDepthRange = false;
-	if (entity->flags[OVERDRAW] || (entity->monsterEntityRenderAsTelepath == 1 && !intro) 
+	if (entity->flags[OVERDRAW] || (dynamic_cast<Creature*>(entity)->monsterEntityRenderAsTelepath == 1 && !intro)
 		|| modelindex == FOLLOWER_SELECTED_PARTICLE
 		|| modelindex == FOLLOWER_TARGET_PARTICLE ) {
         changedDepthRange = true;
@@ -1098,7 +1100,7 @@ void glDrawVoxel(view_t* camera, Entity* entity, int mode) {
     
     // bind shader
     auto& dither = entity->dithering[camera];
-    auto& shader = !entity->flags[BRIGHT] && !entity->monsterEntityRenderAsTelepath ?
+    auto& shader = !entity->flags[BRIGHT] && !dynamic_cast<Creature*>(entity)->monsterEntityRenderAsTelepath ?
         (dither.value < Entity::Dither::MAX ? voxelDitheredShader : voxelShader):
         voxelBrightShader;
     shader.bind();

@@ -23,6 +23,7 @@
 #include "files.hpp"
 #include "engine/audio/sound.hpp"
 #include "entity.hpp"
+#include "creature.h"
 #include "book.hpp"
 #include "menu.hpp"
 #include "items.hpp"
@@ -2147,7 +2148,10 @@ int loadMap(const char* filename2, map_t* destmap, list_t* entlist, list_t* crea
 					case 23:
 						if ( editorVersion >= 26 )
 						{
-							fp->read(&entity->playerStartDir, sizeof(Sint32), 1);
+                            if (Creature* creature = dynamic_cast<Creature*>(entity); creature)
+                            {
+                                fp->read(&creature->playerStartDir, sizeof(Sint32), 1);
+                            }
 						}
 						break;
 					case 24:
@@ -2187,7 +2191,8 @@ int loadMap(const char* filename2, map_t* destmap, list_t* entlist, list_t* crea
 			default:
 				break;
 		}
-		if ( entity->behavior == actMonster || entity->behavior == actPlayer )
+        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+		if ( entityCrtr )
 		{
 			entity->addToCreatureList(creatureList);
 		}
@@ -2579,8 +2584,11 @@ int saveMap(const char* filename2)
 					fp->write(&entity->gateDisableOpening, sizeof(Sint32), 1);
 					break;
 				case 23:
-					fp->write(&entity->playerStartDir, sizeof(Sint32), 1);
-					break;
+                    if ( Creature *creature = dynamic_cast<Creature *>(entity); creature )
+                    {
+                        fp->write(&creature->playerStartDir, sizeof(Sint32), 1);
+                    }
+                    break;
 				case 24:
 					fp->write(&entity->statueDir, sizeof(Sint32), 1);
 					fp->write(&entity->statueId, sizeof(Sint32), 1);
