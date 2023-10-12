@@ -21,6 +21,7 @@
 #include "player.hpp"
 #include "magic/magic.hpp"
 #include "prng.hpp"
+#include "creature.h"
 
 static const int LICH_BODY = 0;
 static const int LICH_RIGHTARM = 2;
@@ -28,7 +29,7 @@ static const int LICH_LEFTARM = 3;
 static const int LICH_HEAD = 4;
 static const int LICH_WEAPON = 5;
 
-void initLichFire(Entity* my, Stat* myStats)
+void initLichFire(Creature* my, Stat* myStats)
 {
 	my->flags[BURNABLE] = false;
 
@@ -191,7 +192,7 @@ void initLichFire(Entity* my, Stat* myStats)
 	my->bodyparts.push_back(entity);
 }
 
-void lichFireDie(Entity* my)
+void lichFireDie(Creature* my)
 {
 	if ( !my )
 	{
@@ -247,7 +248,7 @@ void lichFireDie(Entity* my)
 	for ( node = map.creatures->first; my->monsterLichAllyStatus == LICH_ALLY_DEAD && node != NULL; node = nextnode )
 	{
 		nextnode = node->next;
-		Entity* entity = (Entity*)node->element;
+		Creature* entity = (Creature*)node->element;
 		if ( entity )
 		{
 			if ( entity == my || entity->sprite == 650 )
@@ -279,7 +280,7 @@ void actLichFireLimb(Entity* my)
 	my->actMonsterLimb();
 }
 
-void lichFireAnimate(Entity* my, Stat* myStats, double dist)
+void lichFireAnimate(Creature* my, Stat* myStats, double dist)
 {
 	node_t* node;
 	Entity* entity = nullptr, *entity2 = nullptr;
@@ -1015,10 +1016,11 @@ void lichFireAnimate(Entity* my, Stat* myStats, double dist)
 				Entity* playertotrack = NULL;
 				double disttoplayer = 0.0;
 				Entity* target = uidToEntity(my->monsterTarget);
-				if ( target && my->monsterAttack == 0 )
+                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+				if ( entityCrtr && target && my->monsterAttack == 0 )
 				{
-					entity->lookAtEntity(*target);
-					entity->monsterRotate();
+					entityCrtr->lookAtEntity(*target);
+					entityCrtr->monsterRotate();
 				}
 				else
 				{
@@ -1127,7 +1129,7 @@ void lichFireAnimate(Entity* my, Stat* myStats, double dist)
 	}
 }
 
-void Entity::lichFireSetNextAttack(Stat& myStats)
+void Creature::lichFireSetNextAttack(Stat& myStats)
 {
 	monsterLichFireMeleePrev = monsterLichFireMeleeSeq;
 	//messagePlayer(0, "melee: %d, magic %d", monsterLichMeleeSwingCount, monsterLichMagicCastCount);
@@ -1256,7 +1258,7 @@ void Entity::lichFireSetNextAttack(Stat& myStats)
 	}
 }
 
-void Entity::lichFireTeleport()
+void Creature::lichFireTeleport()
 {
 	monsterLichTeleportTimer = 0;
 	Entity* spellTimer = createParticleTimer(this, 40, 593);
@@ -1277,7 +1279,7 @@ void Entity::lichFireTeleport()
 	}
 }
 
-void Entity::lichFireSummonMonster(Monster creature)
+void Creature::lichFireSummonMonster(Monster creature)
 {
 	Entity* target = nullptr;
 	for ( node_t* searchNode = map.entities->first; searchNode != nullptr; searchNode = searchNode->next )

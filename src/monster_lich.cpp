@@ -22,7 +22,7 @@
 #include "scores.hpp"
 #include "prng.hpp"
 
-void initLich(Entity* my, Stat* myStats)
+void initLich(Creature* my, Stat* myStats)
 {
 	int c;
 
@@ -223,7 +223,7 @@ void lichDie(Entity* my)
 	for ( node = map.creatures->first; node != nullptr; node = nextnode ) //Only searching for monsters, so don't search full map.entities.
 	{
 		nextnode = node->next;
-		Entity* entity = (Entity*)node->element;
+		Creature* entity = (Creature*)node->element;
 		if ( entity == my )
 		{
 			continue;
@@ -426,7 +426,7 @@ void lichAnimate(Entity* my, double dist)
 				Entity* playertotrack = nullptr;
 				for ( tempNode = map.creatures->first; tempNode != nullptr; tempNode = tempNode->next ) //Only searching for players, so don't search full map.entities.
 				{
-					Entity* tempEntity = (Entity*)tempNode->element;
+					Creature* tempEntity = (Creature*)tempNode->element;
 					double lowestdist = 5000;
 					if ( tempEntity->behavior == &actPlayer )
 					{

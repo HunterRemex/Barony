@@ -21,7 +21,7 @@
 #include "player.hpp"
 #include "prng.hpp"
 
-void initScorpion(Entity* my, Stat* myStats)
+void initScorpion(Creature* my, Stat* myStats)
 {
 	my->flags[BURNABLE] = true;
 	my->flags[UPDATENEEDED] = true;

@@ -21,8 +21,9 @@
 #include "player.hpp"
 #include "magic/magic.hpp"
 #include "prng.hpp"
+#include "creature.h"
 
-void initAutomaton(Entity* my, Stat* myStats)
+void initAutomaton(Creature* my, Stat* myStats)
 {
 	node_t* node;
 
@@ -554,6 +555,7 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = NULL, *entity2 = NULL;
 	Entity* rightbody = NULL;
 	Entity* weaponarm = NULL;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 	bool wearingring = false;
 
@@ -624,16 +626,16 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 		// sleeping
 		if ( myStats->EFFECTS[EFF_ASLEEP] 
-			&& (my->monsterSpecialState != AUTOMATON_MALFUNCTION_START && my->monsterSpecialState != AUTOMATON_MALFUNCTION_RUN) )
+			&& (!myCrtr || (myCrtr->monsterSpecialState != AUTOMATON_MALFUNCTION_START && myCrtr->monsterSpecialState != AUTOMATON_MALFUNCTION_RUN)) )
 		{
 			my->z = 2;
 			my->pitch = PI / 4;
 		}
 		else
 		{
-			if ( my->monsterSpecialState != AUTOMATON_MALFUNCTION_START 
-				&& my->monsterSpecialState != AUTOMATON_MALFUNCTION_RUN
-				&& !(myStats->amulet && myStats->amulet->type == AMULET_LIFESAVING && myStats->amulet->beatitude >= 0) )
+			if ( !myCrtr || ( myCrtr->monsterSpecialState != AUTOMATON_MALFUNCTION_START
+				&& myCrtr->monsterSpecialState != AUTOMATON_MALFUNCTION_RUN
+				&& !(myStats->amulet && myStats->amulet->type == AMULET_LIFESAVING && myStats->amulet->beatitude >= 0)) )
 			{
 				my->z = -.5;
 				my->pitch = 0;
@@ -642,10 +644,10 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 					)
 				{
 					// threshold for boom boom
-					if ( local_rng.rand() % 4 > 0 ) // 3/4
+					if ( local_rng.rand() % 4 > 0 && myCrtr ) // 3/4
 					{
-						my->monsterSpecialState = AUTOMATON_MALFUNCTION_START;
-						my->monsterSpecialTimer = MONSTER_SPECIAL_COOLDOWN_AUTOMATON_MALFUNCTION;
+						myCrtr->monsterSpecialState = AUTOMATON_MALFUNCTION_START;
+						myCrtr->monsterSpecialTimer = MONSTER_SPECIAL_COOLDOWN_AUTOMATON_MALFUNCTION;
 						serverUpdateEntitySkill(my, 33);
 
 						myStats->EFFECTS[EFF_PARALYZED] = true;
@@ -665,20 +667,20 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 		}
 	}
 
-	if ( my->monsterSpecialState == AUTOMATON_MALFUNCTION_START || my->monsterSpecialState == AUTOMATON_MALFUNCTION_RUN )
+	if ( myCrtr && ( myCrtr->monsterSpecialState == AUTOMATON_MALFUNCTION_START || myCrtr->monsterSpecialState == AUTOMATON_MALFUNCTION_RUN) )
 	{
-		if ( my->monsterSpecialState == AUTOMATON_MALFUNCTION_START )
+		if ( myCrtr->monsterSpecialState == AUTOMATON_MALFUNCTION_START )
 		{
-			my->monsterSpecialState = AUTOMATON_MALFUNCTION_RUN;
-			createParticleExplosionCharge(my, 174, 100, 0.1);
+			myCrtr->monsterSpecialState = AUTOMATON_MALFUNCTION_RUN;
+			createParticleExplosionCharge(myCrtr, 174, 100, 0.1);
 		}
 		if ( multiplayer != CLIENT )
 		{
-			if ( my->monsterSpecialTimer <= 0 )
+			if ( myCrtr->monsterSpecialTimer <= 0 )
 			{
-				my->attack(MONSTER_POSE_AUTOMATON_MALFUNCTION, 0, my);
+				myCrtr->attack(MONSTER_POSE_AUTOMATON_MALFUNCTION, 0, my);
 				spawnExplosion(my->x, my->y, my->z);
-				my->modHP(-1000);
+				myCrtr->modHP(-1000);
 			}
 		}
 	}
@@ -695,18 +697,18 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	{
 		if ( bodypart < LIMB_HUMANOID_TORSO )
 		{
-			if ( multiplayer != CLIENT )
+			if ( multiplayer != CLIENT && myCrtr )
 			{
-				if ( bodypart == 0 && my->monsterSpecialState == AUTOMATON_MALFUNCTION_RUN  )
+				if ( bodypart == 0 && myCrtr->monsterSpecialState == AUTOMATON_MALFUNCTION_RUN  )
 				{
-					--my->monsterSpecialTimer;
-					if ( my->monsterSpecialTimer == 100 )
+					--myCrtr->monsterSpecialTimer;
+					if ( myCrtr->monsterSpecialTimer == 100 )
 					{
 						playSoundEntity(my, 321, 128);
 					}
-					if ( my->monsterSpecialTimer < 80 )
+					if ( myCrtr->monsterSpecialTimer < 80 )
 					{
-						my->z += 0.02;
+						myCrtr->z += 0.02;
 						limbAnimateToLimit(my, ANIMATE_PITCH, 0.1, 0.7, true, 0.1);
 					}
 					else
@@ -720,7 +722,7 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 		entity = (Entity*)node->element;
 		entity->x = my->x;
 		entity->y = my->y;
-		if ( my->monsterSpecialState != AUTOMATON_MALFUNCTION_START && my->monsterSpecialState != AUTOMATON_MALFUNCTION_RUN )
+		if ( !myCrtr || (myCrtr->monsterSpecialState != AUTOMATON_MALFUNCTION_START && myCrtr->monsterSpecialState != AUTOMATON_MALFUNCTION_RUN) )
 		{
 			entity->z = my->z;
 		}
@@ -747,7 +749,7 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 		if ( bodypart == LIMB_HUMANOID_RIGHTLEG || bodypart == LIMB_HUMANOID_LEFTARM )
 		{
-			if ( bodypart == LIMB_HUMANOID_LEFTARM && my->monsterSpecialState == AUTOMATON_MALFUNCTION_RUN )
+			if ( bodypart == LIMB_HUMANOID_LEFTARM && myCrtr && myCrtr->monsterSpecialState == AUTOMATON_MALFUNCTION_RUN )
 			{
 				limbAnimateToLimit(entity, ANIMATE_PITCH, -0.1, 13 * PI / 8, true, 0.1);
 			}
@@ -845,10 +847,10 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 							weaponarm->pitch = rightbody->pitch;
 							my->monsterArmbended = 0;
 							my->monsterAttack = 0;
-							if ( multiplayer != CLIENT )
+							if ( multiplayer != CLIENT && myCrtr )
 							{
 								spawnMagicEffectParticles(my->x, my->y, my->z / 2, 174);
-								my->monsterSpecialState = AUTOMATON_RECYCLE_ANIMATION_COMPLETE;
+								myCrtr->monsterSpecialState = AUTOMATON_RECYCLE_ANIMATION_COMPLETE;
 							}
 						}
 					}
@@ -863,7 +865,7 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				entity->pitch = entity->fskill[0];
 			}
 
-			if ( bodypart == LIMB_HUMANOID_RIGHTARM && my->monsterSpecialState == AUTOMATON_MALFUNCTION_RUN )
+			if ( bodypart == LIMB_HUMANOID_RIGHTARM && myCrtr && myCrtr->monsterSpecialState == AUTOMATON_MALFUNCTION_RUN )
 			{
 				limbAnimateToLimit(entity, ANIMATE_PITCH, -0.1, 13 * PI / 8, true, 0.1);
 			}
@@ -1036,7 +1038,7 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 					}
 				}
 				my->setHumanoidLimbOffset(entity, AUTOMATON, LIMB_HUMANOID_LEFTARM);
-				if ( my->monsterDefend && my->monsterAttack == 0 )
+				if ( myCrtr && myCrtr->monsterDefend && my->monsterAttack == 0 )
 				{
 					MONSTER_SHIELDYAW = PI / 5;
 				}
@@ -1146,7 +1148,10 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						entity->flags[INVISIBLE] = true;
 					}
 				}
-				my->handleHumanoidShieldLimb(entity, shieldarm);
+                if ( myCrtr )
+                {
+                    myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
+                }
 				break;
 			// cloak
 			case LIMB_HUMANOID_CLOAK:
@@ -1354,7 +1359,7 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	}
 }
 
-bool Entity::automatonCanWieldItem(const Item& item) const
+bool Creature::automatonCanWieldItem(const Item& item) const
 {
 	Stat* myStats = getStats();
 	if ( !myStats )
@@ -1398,7 +1403,7 @@ bool Entity::automatonCanWieldItem(const Item& item) const
 }
 
 
-void Entity::automatonRecycleItem()
+void Creature::automatonRecycleItem()
 {
 	Stat* myStats = getStats();
 	if ( !myStats )

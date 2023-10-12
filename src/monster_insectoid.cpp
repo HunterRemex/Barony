@@ -21,8 +21,9 @@
 #include "player.hpp"
 #include "magic/magic.hpp"
 #include "prng.hpp"
+#include "creature.h"
 
-void initInsectoid(Entity* my, Stat* myStats)
+void initInsectoid(Creature* my, Stat* myStats)
 {
 	node_t* node;
 
@@ -720,6 +721,7 @@ void insectoidMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
 	Entity* torso = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 	bool wearingring = false;
 
@@ -835,7 +837,7 @@ void insectoidMoveBodyparts(Entity* my, Stat* myStats, double dist)
 		if ( bodypart == LIMB_HUMANOID_RIGHTLEG || bodypart == LIMB_HUMANOID_LEFTARM )
 		{
 			if ( bodypart == LIMB_HUMANOID_LEFTARM && 
-				(my->monsterSpecialState == INSECTOID_ACID && my->monsterAttack != 0) )
+				(myCrtr && myCrtr->monsterSpecialState == INSECTOID_ACID && my->monsterAttack != 0) )
 			{
 				Entity* weaponarm = nullptr;
 				// leftarm follows the right arm during special acid attack
@@ -893,9 +895,9 @@ void insectoidMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 						if ( my->monsterAttackTime >= 3 * ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 						{
-							if ( multiplayer != CLIENT )
+							if ( multiplayer != CLIENT && myCrtr )
 							{
-								my->attack(MONSTER_POSE_INSECTOID_DOUBLETHROW, 0, nullptr);
+								myCrtr->attack(MONSTER_POSE_INSECTOID_DOUBLETHROW, 0, nullptr);
 							}
 						}
 					}
@@ -926,10 +928,10 @@ void insectoidMoveBodyparts(Entity* my, Stat* myStats, double dist)
 								weaponarm->roll = 0;
 								my->monsterArmbended = 0;
 
-								if ( multiplayer != CLIENT && my->monsterSpecialState == INSECTOID_DOUBLETHROW_FIRST )
+								if ( multiplayer != CLIENT && myCrtr && myCrtr->monsterSpecialState == INSECTOID_DOUBLETHROW_FIRST )
 								{
-									my->monsterSpecialState = INSECTOID_DOUBLETHROW_SECOND;
-									my->attack(MONSTER_POSE_RANGED_WINDUP3, 0, nullptr);
+									myCrtr->monsterSpecialState = INSECTOID_DOUBLETHROW_SECOND;
+									myCrtr->attack(MONSTER_POSE_RANGED_WINDUP3, 0, nullptr);
 								}
 								else
 								{
@@ -971,9 +973,9 @@ void insectoidMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 						if ( my->monsterAttackTime >= 6 * ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 						{
-							if ( multiplayer != CLIENT )
+							if ( multiplayer != CLIENT && myCrtr )
 							{
-								my->attack(MONSTER_POSE_MELEE_WINDUP1, 0, nullptr);
+								myCrtr->attack(MONSTER_POSE_MELEE_WINDUP1, 0, nullptr);
 							}
 						}
 					}
@@ -1108,7 +1110,7 @@ void insectoidMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( weaponNode )
 				{
 					Entity* weapon = (Entity*)weaponNode->element;
-					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && my->monsterState == MONSTER_STATE_WAIT) )
+					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && myCrtr && myCrtr->monsterState == MONSTER_STATE_WAIT) )
 					{
 						// if weapon invisible and I'm not attacking, relax arm.
 						entity->focalx = limbs[INSECTOID][4][0]; // 0
@@ -1137,7 +1139,7 @@ void insectoidMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( shieldNode )
 				{
 					Entity* shield = (Entity*)shieldNode->element;
-					if ( shield->flags[INVISIBLE] && my->monsterState == MONSTER_STATE_WAIT )
+					if ( shield->flags[INVISIBLE] && myCrtr && myCrtr->monsterState == MONSTER_STATE_WAIT )
 					{
 						entity->focalx = limbs[INSECTOID][5][0]; // 0
 						entity->focaly = limbs[INSECTOID][5][1]; // 0
@@ -1153,7 +1155,7 @@ void insectoidMoveBodyparts(Entity* my, Stat* myStats, double dist)
 					}
 				}
 				my->setHumanoidLimbOffset(entity, INSECTOID, LIMB_HUMANOID_LEFTARM);
-				if ( my->monsterDefend && my->monsterAttack == 0 )
+				if ( myCrtr && myCrtr->monsterDefend && my->monsterAttack == 0 )
 				{
 					MONSTER_SHIELDYAW = PI / 5;
 				}
@@ -1263,7 +1265,10 @@ void insectoidMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						entity->flags[INVISIBLE] = true;
 					}
 				}
-				my->handleHumanoidShieldLimb(entity, shieldarm);
+                if ( myCrtr )
+                {
+                    myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
+                }
 				break;
 			// cloak
 			case LIMB_HUMANOID_CLOAK:
@@ -1567,7 +1572,7 @@ void insectoidMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	}
 }
 
-bool Entity::insectoidCanWieldItem(const Item& item) const
+bool Creature::insectoidCanWieldItem(const Item& item) const
 {
 	Stat* myStats = getStats();
 	if ( !myStats )
@@ -1599,8 +1604,9 @@ bool Entity::insectoidCanWieldItem(const Item& item) const
 	return false;
 }
 
-void Entity::insectoidChooseWeapon(const Entity* target, double dist)
+void Creature::insectoidChooseWeapon(const Entity* target, double dist)
 {
+    const Creature* targetCrtr = dynamic_cast<const Creature*>(target);
 	if ( monsterSpecialState != 0 )
 	{
 		//Holding a weapon assigned from the special attack. Don't switch weapons.
@@ -1626,7 +1632,7 @@ void Entity::insectoidChooseWeapon(const Entity* target, double dist)
 	// occurs less often against fellow monsters.
 	if ( monsterSpecialTimer == 0 && (ticks % 10 == 0) && monsterAttack == 0 )
 	{
-		specialRoll = local_rng.rand() % (40 + 40 * (target != nullptr && target->behavior == &actMonster));
+		specialRoll = local_rng.rand() % (40 + 40 * (targetCrtr != nullptr && targetCrtr->behavior == &actMonster));
 		//messagePlayer(0, "rolled: %d", specialRoll);
 		if ( myStats->HP <= myStats->MAXHP * 0.6 )
 		{

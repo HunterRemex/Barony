@@ -22,7 +22,7 @@
 #include "player.hpp"
 #include "prng.hpp"
 
-void initGnome(Entity* my, Stat* myStats)
+void initGnome(Creature* my, Stat* myStats)
 {
 	int c;
 	node_t* node;
@@ -385,6 +385,7 @@ void gnomeMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 	bool wearingring = false;
 
@@ -602,7 +603,7 @@ void gnomeMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( weaponNode )
 				{
 					Entity* weapon = (Entity*)weaponNode->element;
-					if ( my->monsterArmbended || (weapon->flags[INVISIBLE] && my->monsterState == MONSTER_STATE_WAIT) )
+					if ( my->monsterArmbended || (weapon->flags[INVISIBLE] && myCrtr && myCrtr->monsterState == MONSTER_STATE_WAIT) )
 					{
 						entity->focalx = limbs[GNOME][4][0]; // 0
 						entity->focaly = limbs[GNOME][4][1]; // 0
@@ -635,7 +636,7 @@ void gnomeMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( shieldNode )
 				{
 					Entity* shield = (Entity*)shieldNode->element;
-					if ( shield->flags[INVISIBLE] && my->monsterState == MONSTER_STATE_WAIT )
+					if ( shield->flags[INVISIBLE] && myCrtr && myCrtr->monsterState == MONSTER_STATE_WAIT )
 					{
 						entity->focalx = limbs[GNOME][5][0]; // 0
 						entity->focaly = limbs[GNOME][5][1]; // 0
@@ -657,7 +658,7 @@ void gnomeMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				{
 					entity->pitch = 0;
 				}
-				if ( my->monsterDefend && my->monsterAttack == 0 )
+				if ( myCrtr && myCrtr->monsterDefend && my->monsterAttack == 0 )
 				{
 					MONSTER_SHIELDYAW = PI / 5;
 				}

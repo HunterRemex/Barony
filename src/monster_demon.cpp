@@ -21,7 +21,7 @@
 #include "player.hpp"
 #include "prng.hpp"
 
-void initDemon(Entity* my, Stat* myStats)
+void initDemon(Creature* my, Stat* myStats)
 {
 	int c;
 	node_t* node;
@@ -269,6 +269,7 @@ void demonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	node_t* node;
 	Entity* entity = nullptr;
 	Entity* rightbody = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 
 	// set invisibility //TODO: isInvisible()?
@@ -415,9 +416,9 @@ void demonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 					if ( my->monsterAttackTime >= ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 					{
-						if ( multiplayer != CLIENT )
+						if ( multiplayer != CLIENT && myCrtr)
 						{
-							my->attack(1, 0, nullptr);
+							myCrtr->attack(1, 0, nullptr);
 						}
 					}
 				}

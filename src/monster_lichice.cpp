@@ -22,6 +22,7 @@ See LICENSE for details.
 #include "magic/magic.hpp"
 #include "paths.hpp"
 #include "prng.hpp"
+#include "creature.h"
 
 static const int LICH_BODY = 0;
 static const int LICH_RIGHTARM = 2;
@@ -29,7 +30,7 @@ static const int LICH_LEFTARM = 3;
 static const int LICH_HEAD = 4;
 static const int LICH_WEAPON = 5;
 
-void initLichIce(Entity* my, Stat* myStats)
+void initLichIce(Creature* my, Stat* myStats)
 {
 	my->flags[BURNABLE] = false;
 	my->initMonster(650);
@@ -191,7 +192,7 @@ void initLichIce(Entity* my, Stat* myStats)
 	my->bodyparts.push_back(entity);
 }
 
-void lichIceDie(Entity* my)
+void lichIceDie(Creature* my)
 {
 	if ( !my )
 	{
@@ -247,7 +248,7 @@ void lichIceDie(Entity* my)
 	for ( node = map.creatures->first; my->monsterLichAllyStatus == LICH_ALLY_DEAD && node != NULL; node = nextnode )
 	{
 		nextnode = node->next;
-		Entity* entity = (Entity*)node->element;
+		Creature* entity = (Creature*)node->element;
 		if ( entity )
 		{
 			if ( entity == my || entity->sprite == 646 )
@@ -287,6 +288,7 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 	Entity* weaponarm = nullptr;
 	Entity* head = nullptr;
 	Entity* spellarm = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 	bool wearingring = false;
 
@@ -366,11 +368,11 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 		}
 
 		// check tiles around the monster to be freed.
-		if ( my->monsterLichBattleState == LICH_BATTLE_IMMOBILE )
+		if ( myCrtr && myCrtr->monsterLichBattleState == LICH_BATTLE_IMMOBILE )
 		{
 			my->flags[PASSABLE] = true;
 		}
-		if ( my->monsterLichBattleState == LICH_BATTLE_IMMOBILE && my->ticks > TICKS_PER_SECOND )
+		if ( myCrtr && myCrtr->monsterLichBattleState == LICH_BATTLE_IMMOBILE && my->ticks > TICKS_PER_SECOND )
 		{
 			int sides = 0;
 			int my_x = static_cast<int>(my->x) >> 4;
@@ -395,10 +397,10 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 			{
 				++sides;
 			}
-			if ( sides != 4 )
+			if ( sides != 4 && myCrtr )
 			{
-				my->monsterLichBattleState = LICH_BATTLE_READY;
-				my->flags[PASSABLE] = false;
+				myCrtr->monsterLichBattleState = LICH_BATTLE_READY;
+				myCrtr->flags[PASSABLE] = false;
 				generatePathMaps();
 				/*swornenemies[LICH_ICE][AUTOMATON] = false;
 				swornenemies[LICH_FIRE][AUTOMATON] = false;
@@ -411,12 +413,12 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 					{
 						if ( !distToPlayer )
 						{
-							distToPlayer = sqrt(pow(my->x - players[c]->entity->x, 2) + pow(my->y - players[c]->entity->y, 2));
+							distToPlayer = sqrt(pow(myCrtr->x - players[c]->entity->x, 2) + pow(myCrtr->y - players[c]->entity->y, 2));
 							playerToChase = c;
 						}
 						else
 						{
-							double newDistToPlayer = sqrt(pow(my->x - players[c]->entity->x, 2) + pow(my->y - players[c]->entity->y, 2));
+							double newDistToPlayer = sqrt(pow(myCrtr->x - players[c]->entity->x, 2) + pow(myCrtr->y - players[c]->entity->y, 2));
 							if ( newDistToPlayer < distToPlayer )
 							{
 								distToPlayer = newDistToPlayer;
@@ -429,14 +431,14 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 				{
 					if ( players[playerToChase] && players[playerToChase]->entity )
 					{
-						my->monsterAcquireAttackTarget(*players[playerToChase]->entity, MONSTER_STATE_PATH);
+						myCrtr->monsterAcquireAttackTarget(*players[playerToChase]->entity, MONSTER_STATE_PATH);
 					}
 				}
 			}
 		}
 
 		// passive floating effect, server only.
-		if ( my->monsterState == MONSTER_STATE_LICHICE_DIE )
+		if ( myCrtr && myCrtr->monsterState == MONSTER_STATE_LICHICE_DIE )
 		{
 			my->z -= 0.03;
 		}
@@ -489,15 +491,15 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 		|| my->monsterAttack == MONSTER_POSE_MAGIC_CAST1
 		|| my->monsterAttack == MONSTER_POSE_SPECIAL_WINDUP2
 		|| my->monsterAttack == MONSTER_POSE_SPECIAL_WINDUP3
-		|| my->monsterState == MONSTER_STATE_LICH_CASTSPELLS)
-		&& my->monsterState != MONSTER_STATE_LICHICE_DIE )
+		|| (myCrtr && myCrtr->monsterState == MONSTER_STATE_LICH_CASTSPELLS))
+		&& (!myCrtr || myCrtr->monsterState != MONSTER_STATE_LICHICE_DIE) )
 	{
 		//Always turn to face the target.
-		Entity* target = uidToEntity(my->monsterTarget);
+		Entity* target = uidToEntity(myCrtr->monsterTarget);
 		if ( target )
 		{
-			my->lookAtEntity(*target);
-			my->monsterRotate();
+			myCrtr->lookAtEntity(*target);
+			myCrtr->monsterRotate();
 		}
 	}
 
@@ -619,9 +621,9 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 
 					if ( my->monsterAttackTime >= ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 					{
-						if ( multiplayer != CLIENT )
+						if ( multiplayer != CLIENT && myCrtr )
 						{
-							my->attack(1, 0, nullptr);
+							myCrtr->attack(1, 0, nullptr);
 						}
 					}
 				}
@@ -666,9 +668,9 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 
 					if ( my->monsterAttackTime >= ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 					{
-						if ( multiplayer != CLIENT )
+						if ( multiplayer != CLIENT && myCrtr )
 						{
-							my->attack(2, 0, nullptr);
+							myCrtr->attack(2, 0, nullptr);
 						}
 					}
 				}
@@ -730,9 +732,9 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 
 						if ( my->monsterAttackTime >= 50 / (monsterGlobalAnimationMultiplier / 10.0) )
 						{
-							if ( multiplayer != CLIENT )
+							if ( multiplayer != CLIENT && myCrtr )
 							{
-								my->attack(1, 0, nullptr);
+								myCrtr->attack(1, 0, nullptr);
 								real_t dir = 0.f;
 								for ( int i = 0; i < 8; ++i )
 								{
@@ -769,9 +771,9 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 
 						if ( my->monsterAttackTime >= windupDuration / (monsterGlobalAnimationMultiplier / 10.0) )
 						{
-							if ( multiplayer != CLIENT )
+							if ( multiplayer != CLIENT && myCrtr )
 							{
-								my->attack(3, 0, nullptr);
+								myCrtr->attack(3, 0, nullptr);
 							}
 						}
 					}
@@ -808,9 +810,9 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 						weaponarm->roll = 0;
 						weaponarm->skill[1] = 0;
 						createParticleDropRising(my, 592, 0.7);
-						if ( multiplayer != CLIENT )
+						if ( multiplayer != CLIENT && myCrtr )
 						{
-							if ( my->monsterState != MONSTER_STATE_LICHFIRE_DIE )
+							if ( myCrtr->monsterState != MONSTER_STATE_LICHFIRE_DIE )
 							{
 								my->monsterAnimationLimbOvershoot = ANIMATE_OVERSHOOT_TO_SETPOINT;
 								// lich can't be paralyzed, use EFF_STUNNED instead.
@@ -834,18 +836,18 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 						limbAnimateToLimit(weaponarm, ANIMATE_PITCH, -0.3, 5 * PI / 4, false, 0.0);
 						if ( my->monsterAttackTime >= 50 / (monsterGlobalAnimationMultiplier / 10.0) )
 						{
-							if ( multiplayer != CLIENT )
+							if ( multiplayer != CLIENT && myCrtr )
 							{
-								if ( my->monsterState != MONSTER_STATE_LICHICE_DIE )
+								if ( myCrtr->monsterState != MONSTER_STATE_LICHICE_DIE )
 								{
-									my->attack(1, 0, nullptr);
+									myCrtr->attack(1, 0, nullptr);
 								}
 								else
 								{
 									my->monsterAttackTime = 25; //reset this attack time to allow successive strikes
 								}
 
-								if ( my->monsterState == MONSTER_STATE_LICHICE_DIE )
+								if ( myCrtr->monsterState == MONSTER_STATE_LICHICE_DIE )
 								{
 									int spellID = SPELL_DRAIN_SOUL;
 									for ( int i = 0; i < 8; ++i )
@@ -861,7 +863,7 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 								else
 								{
 									int spellID = SPELL_COLD;
-									if ( local_rng.rand() % 5 == 0 || (my->monsterLichAllyStatus == LICH_ALLY_DEAD && local_rng.rand() % 2 == 0) )
+									if ( local_rng.rand() % 5 == 0 || (myCrtr && myCrtr->monsterLichAllyStatus == LICH_ALLY_DEAD && local_rng.rand() % 2 == 0) )
 									{
 										spellID = SPELL_DRAIN_SOUL;
 									}
@@ -906,9 +908,9 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 						limbAnimateToLimit(weaponarm, ANIMATE_PITCH, -0.3, 5 * PI / 4, false, 0.0);
 						if ( my->monsterAttackTime >= 50 / (monsterGlobalAnimationMultiplier / 10.0) )
 						{
-							if ( multiplayer != CLIENT )
+							if ( multiplayer != CLIENT && myCrtr )
 							{
-								my->attack(1, 0, nullptr);
+								myCrtr->attack(1, 0, nullptr);
 								for ( int i = 0; i < 3; ++i )
 								{
 									Entity* spell = castSpell(my->getUID(), getSpellFromID(SPELL_MAGICMISSILE), true, false);
@@ -918,7 +920,7 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 										// do some minor variations in spell angle
 										spell->yaw += ((PI * (-4 + local_rng.rand() % 9)) / 40);
 									}
-									Entity* target = uidToEntity(my->monsterTarget);
+									Entity* target = uidToEntity(myCrtr->monsterTarget);
 									if ( target )
 									{
 										real_t spellDistance = sqrt(pow(spell->x - target->x, 2) + pow(spell->y - target->y, 2));
@@ -966,9 +968,9 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 
 					if ( my->monsterAttackTime >= 50 / (monsterGlobalAnimationMultiplier / 10.0) )
 					{
-						if ( multiplayer != CLIENT )
+						if ( multiplayer != CLIENT && myCrtr )
 						{
-							my->attack(1, 0, nullptr);
+							myCrtr->attack(1, 0, nullptr);
 						}
 					}
 				}
@@ -1031,10 +1033,10 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 
 				if ( my->monsterAttackTime >= 1 * ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 				{
-					if ( multiplayer != CLIENT )
+					if ( multiplayer != CLIENT && myCrtr)
 					{
 						// swing the arm after we prepped the spell
-						my->attack(MONSTER_POSE_MAGIC_WINDUP2, 0, nullptr);
+						myCrtr->attack(MONSTER_POSE_MAGIC_WINDUP2, 0, nullptr);
 					}
 				}
 			}
@@ -1051,9 +1053,9 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 
 				if ( limbAnimateToLimit(spellarm, ANIMATE_PITCH, -0.3, 5 * PI / 4, false, 0.0) )
 				{
-					if ( multiplayer != CLIENT )
+					if ( multiplayer != CLIENT && myCrtr)
 					{
-						my->attack(MONSTER_POSE_MAGIC_CAST1, 0, nullptr);
+						myCrtr->attack(MONSTER_POSE_MAGIC_CAST1, 0, nullptr);
 					}
 				}
 			}
@@ -1124,11 +1126,11 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 				node_t* tempNode;
 				Entity* playertotrack = NULL;
 				double disttoplayer = 0.0;
-				Entity* target = uidToEntity(my->monsterTarget);
-				if ( target && my->monsterAttack == 0 )
+				Entity* target = uidToEntity(myCrtr->monsterTarget);
+				if ( Creature* entityCrtr = dynamic_cast<Creature*>(entity); entityCrtr && target && my->monsterAttack == 0 )
 				{
-					entity->lookAtEntity(*target);
-					entity->monsterRotate();
+					entityCrtr->lookAtEntity(*target);
+					entityCrtr->monsterRotate();
 				}
 				else
 				{
@@ -1237,7 +1239,7 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 	}
 }
 
-void Entity::lichIceSetNextAttack(Stat& myStats)
+void Creature::lichIceSetNextAttack(Stat& myStats)
 {
 	monsterLichIceCastPrev = monsterLichIceCastSeq;
 	//messagePlayer(0, "melee: %d, magic %d", monsterLichMeleeSwingCount, monsterLichMagicCastCount);
@@ -1383,7 +1385,7 @@ void Entity::lichIceSetNextAttack(Stat& myStats)
 	}
 }
 
-void Entity::lichIceTeleport()
+void Creature::lichIceTeleport()
 {
 	monsterLichTeleportTimer = 0;
 	Entity* spellTimer = createParticleTimer(this, 40, 593);
@@ -1404,7 +1406,7 @@ void Entity::lichIceTeleport()
 	}
 }
 
-void Entity::lichIceCreateCannon()
+void Creature::lichIceCreateCannon()
 {
 	//spellTimer->particleTimerCountdownAction = PARTICLE_TIMER_ACTION_SHOOT_PARTICLES;
 	for ( int i = 0; i < 6; ++i )
@@ -1420,7 +1422,7 @@ void Entity::lichIceCreateCannon()
 	}
 }
 
-Entity* Entity::lichThrowProjectile(real_t angle)
+Entity* Creature::lichThrowProjectile(real_t angle)
 {
 	Entity* projectile = newEntity(items[STEEL_CHAKRAM].index, 1, map.entities, nullptr); // thrown item
 	projectile->parent = uid;
@@ -1448,7 +1450,7 @@ Entity* Entity::lichThrowProjectile(real_t angle)
 	return projectile;
 }
 
-void Entity::lichIceSummonMonster(Monster creature)
+void Creature::lichIceSummonMonster(Monster creature)
 {
 	Entity* target = nullptr;
 	for ( node_t* searchNode = map.entities->first; searchNode != nullptr; searchNode = searchNode->next )

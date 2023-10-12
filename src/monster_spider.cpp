@@ -22,7 +22,7 @@
 #include "ui/MainMenu.hpp"
 #include "prng.hpp"
 
-void initSpider(Entity* my, Stat* myStats)
+void initSpider(Creature* my, Stat* myStats)
 {
 	int c;
 
@@ -321,6 +321,7 @@ void spiderMoveBodyparts(Entity* my, Stat* myStats, double dist)
 {
 	node_t* node;
 	Entity* entity;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 
 	// set invisibility //TODO: isInvisible()?
@@ -440,10 +441,10 @@ void spiderMoveBodyparts(Entity* my, Stat* myStats, double dist)
 							}
 							if ( MONSTER_ATTACKTIME >= 3 * ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 							{
-								if ( multiplayer != CLIENT )
+								if ( multiplayer != CLIENT && myCrtr )
 								{
 									// swing the arm after we prepped the spell
-									my->attack(1, 0, nullptr);
+									myCrtr->attack(1, 0, nullptr);
 								}
 							}
 						}
@@ -461,9 +462,9 @@ void spiderMoveBodyparts(Entity* my, Stat* myStats, double dist)
 							limbAnimateToLimit(entity, ANIMATE_PITCH, -0.25 * pitchMult, -(65.0 / 180.0) * PI * pitchMult, false, 0.0);
 							if ( MONSTER_ATTACKTIME >= ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 							{
-								if ( multiplayer != CLIENT )
+								if ( multiplayer != CLIENT && myCrtr )
 								{
-									my->attack(1, 0, nullptr);
+									myCrtr->attack(1, 0, nullptr);
 								}
 							}
 						}
@@ -494,7 +495,7 @@ void spiderMoveBodyparts(Entity* my, Stat* myStats, double dist)
 					{
 						rollRate = 0.1; // walking/chasing click click click
 					}
-					else if ( my->monsterState == MONSTER_STATE_WAIT )
+					else if ( myCrtr && myCrtr->monsterState == MONSTER_STATE_WAIT )
 					{
 						// idle, waiting
 						rollRate = 0.01;
@@ -519,7 +520,7 @@ void spiderMoveBodyparts(Entity* my, Stat* myStats, double dist)
 					}
 				}
 
-				if ( my->monsterState == MONSTER_STATE_WAIT )
+				if ( myCrtr && myCrtr->monsterState == MONSTER_STATE_WAIT )
 				{
 					entity->fskill[0] = std::max(-PI * 10 / 180.0, entity->fskill[0] - 0.05); // lower the butt
 				}

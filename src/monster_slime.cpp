@@ -13,6 +13,7 @@
 #include "game.hpp"
 #include "stat.hpp"
 #include "entity.hpp"
+#include "creature.h"
 #include "items.hpp"
 #include "monster.hpp"
 #include "engine/audio/sound.hpp"
@@ -21,7 +22,7 @@
 #include "prng.hpp"
 #include "interface/consolecommand.hpp"
 
-void initSlime(Entity* my, Stat* myStats)
+void initSlime(Creature* my, Stat* myStats)
 {
     my->flags[BURNABLE] = false;
 	my->flags[UPDATENEEDED] = true;
@@ -92,7 +93,7 @@ void initSlime(Entity* my, Stat* myStats)
 	}
 }
 
-void slimeAnimate(Entity* my, double dist)
+void slimeAnimate(Creature* my, double dist)
 {
     const bool green = my->sprite == 210 || my->sprite >= 1113;
     const int frame = TICKS_PER_SECOND / 10;

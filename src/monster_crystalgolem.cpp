@@ -22,7 +22,7 @@
 #include "magic/magic.hpp"
 #include "prng.hpp"
 
-void initCrystalgolem(Entity* my, Stat* myStats)
+void initCrystalgolem(Creature* my, Stat* myStats)
 {
 	node_t* node;
 
@@ -257,6 +257,7 @@ void crystalgolemMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr;
 	Entity* leftbody = nullptr;
 	Entity* leftarm = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 
 	// set invisibility //TODO: isInvisible()?
@@ -430,9 +431,9 @@ void crystalgolemMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 					if ( MONSTER_ATTACKTIME >= ANIMATE_DURATION_WINDUP )
 					{
-						if ( multiplayer != CLIENT )
+						if ( multiplayer != CLIENT && myCrtr )
 						{
-							my->attack(1, 0, nullptr);
+							myCrtr->attack(1, 0, nullptr);
 						}
 					}
 				}
@@ -471,10 +472,10 @@ void crystalgolemMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 					if ( MONSTER_ATTACKTIME >= ANIMATE_DURATION_WINDUP )
 					{
-						if ( multiplayer != CLIENT )
+						if ( multiplayer != CLIENT && myCrtr )
 						{
 							//serverUpdateEntitySkill(entity, 30); // update overshoot flag
-							my->attack(2, 0, nullptr);
+							myCrtr->attack(2, 0, nullptr);
 						}
 					}
 				}
@@ -522,11 +523,11 @@ void crystalgolemMoveBodyparts(Entity* my, Stat* myStats, double dist)
 					}
 					else if ( MONSTER_ATTACKTIME > 50 )
 					{
-						if ( multiplayer != CLIENT )
+						if ( multiplayer != CLIENT && myCrtr )
 						{
 						// set overshoot for head animation
 							my->monsterAnimationLimbOvershoot = ANIMATE_OVERSHOOT_TO_SETPOINT;
-							my->attack(MONSTER_POSE_GOLEM_SMASH, MAXCHARGE, nullptr);
+							myCrtr->attack(MONSTER_POSE_GOLEM_SMASH, MAXCHARGE, nullptr);
 						}
 					}
 				}

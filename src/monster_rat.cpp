@@ -13,6 +13,7 @@
 #include "game.hpp"
 #include "stat.hpp"
 #include "entity.hpp"
+#include "creature.h"
 #include "monster.hpp"
 #include "engine/audio/sound.hpp"
 #include "items.hpp"
@@ -20,7 +21,7 @@
 #include "collision.hpp"
 #include "prng.hpp"
 
-void initRat(Entity* my, Stat* myStats)
+void initRat(Creature* my, Stat* myStats)
 {
 	my->flags[BURNABLE] = true;
 	my->flags[UPDATENEEDED] = true;
@@ -137,7 +138,7 @@ void initRat(Entity* my, Stat* myStats)
 	}
 }
 
-void ratAnimate(Entity* my, double dist)
+void ratAnimate(Creature* my, double dist)
 {
     if (my->ticks == my->getUID() % TICKS_PER_SECOND) {
         if (multiplayer == SERVER) {

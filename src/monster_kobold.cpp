@@ -23,7 +23,7 @@
 #include "magic/magic.hpp"
 #include "prng.hpp"
 
-void initKobold(Entity* my, Stat* myStats)
+void initKobold(Creature* my, Stat* myStats)
 {
 	node_t* node;
 
@@ -498,6 +498,7 @@ void koboldMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr, *entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 	bool wearingring = false;
 
@@ -715,7 +716,7 @@ void koboldMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( weaponNode )
 				{
 					Entity* weapon = (Entity*)weaponNode->element;
-					if ( my->monsterArmbended || (weapon->flags[INVISIBLE] && my->monsterState == MONSTER_STATE_WAIT) )
+					if ( my->monsterArmbended || (weapon->flags[INVISIBLE] && myCrtr && myCrtr->monsterState == MONSTER_STATE_WAIT) )
 					{
 						// if weapon invisible and I'm not moving, relax arm.
 						entity->focalx = limbs[KOBOLD][4][0]; // 0
@@ -750,7 +751,7 @@ void koboldMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( shieldNode )
 				{
 					Entity* shield = (Entity*)shieldNode->element;
-					if ( shield->flags[INVISIBLE] && my->monsterState == MONSTER_STATE_WAIT )
+					if ( shield->flags[INVISIBLE] && myCrtr && myCrtr->monsterState == MONSTER_STATE_WAIT )
 					{
 						// if shield invisible and I'm not moving, relax arm.
 						entity->focalx = limbs[KOBOLD][5][0]; // 0
@@ -774,7 +775,7 @@ void koboldMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				{
 					entity->pitch = 0;
 				}
-				if ( my->monsterDefend && my->monsterAttack == 0 )
+				if ( myCrtr && myCrtr->monsterDefend && my->monsterAttack == 0 )
 				{
 					MONSTER_SHIELDYAW = PI / 5;
 				}

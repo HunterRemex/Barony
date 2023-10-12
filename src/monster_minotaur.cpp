@@ -23,7 +23,7 @@
 #include "colors.hpp"
 #include "prng.hpp"
 
-void initMinotaur(Entity* my, Stat* myStats)
+void initMinotaur(Creature* my, Stat* myStats)
 {
 	node_t* node;
 
@@ -295,6 +295,7 @@ void minotaurMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* rightbody = NULL;
 	Entity* head = NULL;
 	Entity* chest = NULL;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 
 	// set invisibility //TODO: isInvisible()?
@@ -449,9 +450,9 @@ void minotaurMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 						if ( my->monsterAttackTime >= ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 						{
-							if ( multiplayer != CLIENT )
+							if ( multiplayer != CLIENT && myCrtr )
 							{
-								my->attack(1, 0, nullptr);
+								myCrtr->attack(1, 0, nullptr);
 							}
 						}
 					}
@@ -806,6 +807,7 @@ void actMinotaurTimer(Entity* my)
 void actMinotaurCeilingBuster(Entity* my)
 {
 	double x, y;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 
 	// levitate particles
 	int u = std::min<unsigned int>(std::max<int>(0, my->x / 16), map.width - 1);
@@ -849,9 +851,9 @@ void actMinotaurCeilingBuster(Entity* my)
 				{
 					if ( my->monsterAttack == 0 )
 					{
-						if ( multiplayer != CLIENT )
+						if ( multiplayer != CLIENT && myCrtr )
 						{
-							my->attack(MONSTER_POSE_MELEE_WINDUP2, 0, nullptr);
+							myCrtr->attack(MONSTER_POSE_MELEE_WINDUP2, 0, nullptr);
 						}
 						return;
 					}

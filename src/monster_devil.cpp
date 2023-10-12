@@ -23,7 +23,7 @@
 #include "magic/magic.hpp"
 #include "prng.hpp"
 
-void initDevil(Entity* my, Stat* myStats)
+void initDevil(Creature* my, Stat* myStats)
 {
 	int c;
 	node_t* node;
@@ -460,7 +460,7 @@ void devilMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				Entity* playertotrack = nullptr;
 				for ( tempNode = map.creatures->first; tempNode != nullptr; tempNode = tempNode->next ) //Searching for players only? Don't search full map.entities then.
 				{
-					Entity* tempEntity = (Entity*)tempNode->element;
+					Creature* tempEntity = (Creature*)tempNode->element;
 					double lowestdist = 5000;
 					if ( tempEntity->behavior == &actPlayer )
 					{
@@ -658,9 +658,10 @@ bool Entity::devilSummonMonster(Entity* summonOnEntity, Monster creature, int ra
 			for ( int i = std::max(hellArena_x0, spawn_x - radiusFromCenter); i <= std::min(hellArena_x1, spawn_x + radiusFromCenter); ++i )
 			{
 				int index = (j)* MAPLAYERS + (i)* MAPLAYERS * map.height;
+                Creature* targetCrtr = dynamic_cast<Creature*>(target);
 				if ( !map.tiles[OBSTACLELAYER + index] &&
-					((target->behavior == &actPlayer && !map.tiles[index])
-						|| (target->behavior != &actPlayer 
+					((targetCrtr && targetCrtr->behavior == &actPlayer && !map.tiles[index])
+						|| (!targetCrtr || targetCrtr->behavior != &actPlayer
 								&& (map.tiles[index] || creature != DEMON) && !swimmingtiles[map.tiles[index]] && !lavatiles[map.tiles[index]] )
 					) 
 				)

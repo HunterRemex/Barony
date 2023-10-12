@@ -22,8 +22,9 @@ See LICENSE for details.
 #include "player.hpp"
 #include "magic/magic.hpp"
 #include "prng.hpp"
+#include "creature.h"
 
-void initVampire(Entity* my, Stat* myStats)
+void initVampire(Creature* my, Stat* myStats)
 {
 	int c;
 	node_t* node;
@@ -466,6 +467,7 @@ void vampireMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr, *entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 	bool wearingring = false;
 
@@ -594,7 +596,7 @@ void vampireMoveBodyparts(Entity* my, Stat* myStats, double dist)
 		if ( bodypart == LIMB_HUMANOID_RIGHTLEG || bodypart == LIMB_HUMANOID_LEFTARM )
 		{
 			if ( bodypart == LIMB_HUMANOID_LEFTARM 
-				&& ((my->monsterSpecialState == VAMPIRE_CAST_DRAIN || my->monsterSpecialState == VAMPIRE_CAST_AURA )
+				&& ((!myCrtr || myCrtr->monsterSpecialState == VAMPIRE_CAST_DRAIN || myCrtr->monsterSpecialState == VAMPIRE_CAST_AURA )
 				&& my->monsterAttack != 0) )
 			{
 				// leftarm follows the right arm during special attack
@@ -689,10 +691,10 @@ void vampireMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 						if ( my->monsterAttackTime >= 2 * ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 						{
-							if ( multiplayer != CLIENT )
+							if ( multiplayer != CLIENT && myCrtr )
 							{
 								// throw the spell
-								my->attack(MONSTER_POSE_MELEE_WINDUP1, 0, nullptr);
+								myCrtr->attack(MONSTER_POSE_MELEE_WINDUP1, 0, nullptr);
 							}
 						}
 						++my->monsterAttackTime;
@@ -739,9 +741,9 @@ void vampireMoveBodyparts(Entity* my, Stat* myStats, double dist)
 							my->monsterArmbended = 0;
 							leftarm->roll = 0;
 							leftarm->pitch = 0;
-							if ( multiplayer != CLIENT )
+							if ( multiplayer != CLIENT && myCrtr )
 							{
-								my->attack(MONSTER_POSE_VAMPIRE_AURA_CAST, 0, nullptr);
+								myCrtr->attack(MONSTER_POSE_VAMPIRE_AURA_CAST, 0, nullptr);
 							}
 						}
 						++my->monsterAttackTime;
@@ -901,7 +903,7 @@ void vampireMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( tempNode )
 				{
 					Entity* weapon = (Entity*)tempNode->element;
-					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && my->monsterState != MONSTER_STATE_ATTACK) )
+					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && ( !myCrtr || myCrtr->monsterState != MONSTER_STATE_ATTACK)) )
 					{
 						// if weapon invisible and I'm not attacking, relax arm.
 						entity->focalx = limbs[VAMPIRE][4][0]; // 0
@@ -966,7 +968,7 @@ void vampireMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( tempNode )
 				{
 					Entity* shield = (Entity*)tempNode->element;
-					if ( shield->flags[INVISIBLE] && (my->monsterState != MONSTER_STATE_ATTACK) )
+					if ( shield->flags[INVISIBLE] && (!myCrtr || myCrtr->monsterState != MONSTER_STATE_ATTACK) )
 					{
 						// if shield invisible and I'm not attacking, relax arm.
 						entity->focalx = limbs[VAMPIRE][5][0]; // 0
@@ -980,14 +982,14 @@ void vampireMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						entity->focaly = limbs[VAMPIRE][5][1];
 						entity->focalz = limbs[VAMPIRE][5][2] - 0.75;
 						entity->sprite += 2;
-						if ( my->monsterSpecialState == VAMPIRE_CAST_DRAIN || my->monsterSpecialState == VAMPIRE_CAST_AURA )
+						if ( myCrtr && (myCrtr->monsterSpecialState == VAMPIRE_CAST_DRAIN || myCrtr->monsterSpecialState == VAMPIRE_CAST_AURA) )
 						{
 							entity->yaw -= MONSTER_WEAPONYAW;
 						}
 					}
 				}
 				my->setHumanoidLimbOffset(entity, VAMPIRE, LIMB_HUMANOID_LEFTARM);
-				if ( my->monsterDefend && my->monsterAttack == 0 )
+				if ( myCrtr && myCrtr->monsterDefend && my->monsterAttack == 0 )
 				{
 					MONSTER_SHIELDYAW = PI / 5;
 				}
@@ -1097,7 +1099,10 @@ void vampireMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						entity->flags[INVISIBLE] = true;
 					}
 				}
-				my->handleHumanoidShieldLimb(entity, shieldarm);
+                if ( myCrtr )
+                {
+                    myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
+                }
 				break;
 				// cloak
 			case LIMB_HUMANOID_CLOAK:
@@ -1306,7 +1311,7 @@ void vampireMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	}
 }
 
-void Entity::vampireChooseWeapon(const Entity* target, double dist)
+void Creature::vampireChooseWeapon(const Entity* target, double dist)
 {
 	if ( monsterSpecialState != 0 )
 	{
@@ -1314,6 +1319,7 @@ void Entity::vampireChooseWeapon(const Entity* target, double dist)
 	}
 
 	Stat *myStats = getStats();
+    const Creature* targetCrtr = dynamic_cast<const Creature*>(target);
 	if ( !myStats )
 	{
 		return;
@@ -1331,7 +1337,7 @@ void Entity::vampireChooseWeapon(const Entity* target, double dist)
 		}
 
 		// occurs less often against fellow monsters.
-		specialRoll = local_rng.rand() % (20 + 50 * (target->behavior == &actMonster));
+		specialRoll = local_rng.rand() % (20 + 50 * ( targetCrtr && targetCrtr->behavior == &actMonster));
 		if ( myStats->HP <= myStats->MAXHP * 0.8 )
 		{
 			bonusFromHP += 1; // +5% chance if on low health

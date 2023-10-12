@@ -22,7 +22,7 @@
 #include "magic/magic.hpp"
 #include "prng.hpp"
 
-void initSkeleton(Entity* my, Stat* myStats)
+void initSkeleton(Creature* my, Stat* myStats)
 {
 	int c;
 	node_t* node;
@@ -67,7 +67,7 @@ void initSkeleton(Entity* my, Stat* myStats)
 				myStats->GOLD = 0;
 				my->light = addLight(my->x / 16, my->y / 16, "summoned_skeleton_glow");
 
-				Entity* leader = uidToEntity(myStats->leader_uid);
+				Creature* leader = uidToCreature(myStats->leader_uid);
 				if ( leader )
 				{
 					Stat* leaderStats = leader->getStats();
@@ -605,7 +605,7 @@ void initSkeleton(Entity* my, Stat* myStats)
 
 void actSkeletonLimb(Entity* my)
 {
-	Entity* parent = uidToEntity(my->skill[2]);
+	Creature* parent = uidToCreature(my->skill[2]);
 
 	if ( parent && parent->behavior == &actMonster )
 	{
@@ -640,10 +640,11 @@ void actSkeletonLimb(Entity* my)
 
 void skeletonDie(Entity* my)
 {
-	if ( multiplayer != CLIENT && my->monsterAllySummonRank != 0 )
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
+	if ( multiplayer != CLIENT && (!myCrtr || myCrtr->monsterAllySummonRank != 0) )
 	{
 		Stat* myStats = my->getStats();
-		Entity* leader = uidToEntity(myStats->leader_uid);
+		Creature* leader = uidToCreature(myStats->leader_uid);
 		if ( leader )
 		{
 			Stat* leaderStats = leader->getStats();
@@ -767,6 +768,7 @@ void skeletonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr, *entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 	bool wearingring = false;
 
@@ -1160,7 +1162,7 @@ void skeletonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 					}
 				}
 				my->setHumanoidLimbOffset(entity, SKELETON, LIMB_HUMANOID_LEFTARM);
-				if ( my->monsterDefend && my->monsterAttack == 0 )
+				if ( myCrtr && myCrtr->monsterDefend && my->monsterAttack == 0 )
 				{
 					MONSTER_SHIELDYAW = PI / 5;
 				}
@@ -1270,7 +1272,10 @@ void skeletonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						entity->flags[INVISIBLE] = true;
 					}
 				}
-				my->handleHumanoidShieldLimb(entity, shieldarm);
+                if ( myCrtr )
+                {
+                    myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
+                }
 				break;
 			// cloak
 			case LIMB_HUMANOID_CLOAK:

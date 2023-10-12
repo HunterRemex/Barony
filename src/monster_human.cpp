@@ -21,8 +21,9 @@
 #include "classdescriptions.hpp"
 #include "player.hpp"
 #include "prng.hpp"
+#include "creature.h"
 
-void initHuman(Entity* my, Stat* myStats)
+void initHuman(Creature* my, Stat* myStats)
 {
 	node_t* node;
 
@@ -383,7 +384,7 @@ void initHuman(Entity* my, Stat* myStats)
 				{
 					myStats->LVL++;
 					int increasestat[3] = { 0, 0, 0 };
-					Entity::monsterRollLevelUpStats(increasestat);
+					Creature::monsterRollLevelUpStats(increasestat);
 					for ( int i = 0; i < 3; i++ )
 					{
 						switch ( increasestat[i] )
@@ -887,6 +888,7 @@ void humanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr, *entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 	bool wearingring = false;
 
@@ -986,11 +988,11 @@ void humanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	{
 		if ( bodypart < 2 )
 		{
-			if ( multiplayer == CLIENT )
+			if ( multiplayer == CLIENT && myCrtr )
 			{
 				for ( int i = LIMB_HUMANOID_TORSO; i <= LIMB_HUMANOID_LEFTARM; i++ )
 				{
-					my->humanSetLimbsClient(i);
+					myCrtr->humanSetLimbsClient(i);
 				}
 			}
 			continue;
@@ -1091,10 +1093,10 @@ void humanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 							entity->skill[7] = entity->sprite;
 						}
 					}
-					if ( entity->skill[7] == 0 )
+					if ( entity->skill[7] == 0 && myCrtr )
 					{
 						// we set this ourselves until proper initialisation.
-						my->humanSetLimbsClient(bodypart);
+						myCrtr->humanSetLimbsClient(bodypart);
 					}
 					else
 					{
@@ -1159,10 +1161,10 @@ void humanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 							entity->skill[7] = entity->sprite;
 						}
 					}
-					if ( entity->skill[7] == 0 )
+					if ( entity->skill[7] == 0 && myCrtr )
 					{
 						// we set this ourselves until proper initialisation.
-						my->humanSetLimbsClient(bodypart);
+						myCrtr->humanSetLimbsClient(bodypart);
 					}
 					else
 					{
@@ -1232,10 +1234,10 @@ void humanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 							entity->skill[7] = entity->sprite;
 						}
 					}
-					if ( entity->skill[7] == 0 )
+					if ( entity->skill[7] == 0 && myCrtr )
 					{
 						// we set this ourselves until proper initialisation.
-						my->humanSetLimbsClient(bodypart);
+						myCrtr->humanSetLimbsClient(bodypart);
 					}
 					else
 					{
@@ -1309,10 +1311,10 @@ void humanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 							entity->skill[7] = entity->sprite;
 						}
 					}
-					if ( entity->skill[7] == 0 )
+					if ( entity->skill[7] == 0 && myCrtr )
 					{
 						// we set this ourselves until proper initialisation.
-						my->humanSetLimbsClient(bodypart);
+						myCrtr->humanSetLimbsClient(bodypart);
 					}
 					else
 					{
@@ -1324,7 +1326,7 @@ void humanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( tempNode )
 				{
 					Entity* weapon = (Entity*)tempNode->element;
-					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && my->monsterState != MONSTER_STATE_ATTACK) )
+					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && (!myCrtr || myCrtr->monsterState != MONSTER_STATE_ATTACK)) )
 					{
 						// if weapon invisible and I'm not attacking, relax arm.
 						entity->focalx = limbs[HUMAN][4][0]; // 0
@@ -1409,10 +1411,10 @@ void humanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 							entity->skill[7] = entity->sprite;
 						}
 					}
-					if ( entity->skill[7] == 0 )
+					if ( entity->skill[7] == 0 && myCrtr )
 					{
 						// we set this ourselves until proper initialisation.
-						my->humanSetLimbsClient(bodypart);
+						myCrtr->humanSetLimbsClient(bodypart);
 					}
 					else
 					{
@@ -1424,7 +1426,7 @@ void humanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( tempNode )
 				{
 					Entity* shield = (Entity*)tempNode->element;
-					if ( shield->flags[INVISIBLE] && (my->monsterState != MONSTER_STATE_ATTACK) )
+					if ( shield->flags[INVISIBLE] && (!myCrtr || myCrtr->monsterState != MONSTER_STATE_ATTACK) )
 					{
 						// if shield invisible and I'm not attacking, relax arm.
 						entity->focalx = limbs[HUMAN][5][0]; // 0
@@ -1447,7 +1449,7 @@ void humanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				{
 					entity->pitch = 0;
 				}
-				if ( my->monsterDefend && my->monsterAttack == 0 )
+				if ( myCrtr && myCrtr->monsterDefend && my->monsterAttack == 0 )
 				{
 					MONSTER_SHIELDYAW = PI / 5;
 				}
@@ -1557,7 +1559,10 @@ void humanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						entity->flags[INVISIBLE] = true;
 					}
 				}
-				my->handleHumanoidShieldLimb(entity, shieldarm);
+                if ( myCrtr )
+                {
+                    myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
+                }
 				break;
 			// cloak
 			case LIMB_HUMANOID_CLOAK:
@@ -1766,7 +1771,7 @@ void humanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	}
 }
 
-bool Entity::humanCanWieldItem(const Item& item) const
+bool Creature::humanCanWieldItem(const Item& item) const
 {
 	Stat* myStats = getStats();
 	if ( !myStats )
@@ -1802,7 +1807,7 @@ bool Entity::humanCanWieldItem(const Item& item) const
 	return false;
 }
 
-void Entity::humanSetLimbsClient(int bodypart)
+void Creature::humanSetLimbsClient(int bodypart)
 {
 	int skinColor = 0;
 	int sex = MALE;

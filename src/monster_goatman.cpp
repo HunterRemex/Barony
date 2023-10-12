@@ -20,6 +20,7 @@
 #include "collision.hpp"
 #include "player.hpp"
 #include "prng.hpp"
+#include "creature.h"
 
 const int NUM_GOATMAN_POTIONS = 4;
 const int NUM_GOATMAN_THROWN_WEAPONS = 2;
@@ -27,7 +28,7 @@ const int NUM_GOATMAN_THROWN_WEAPONS = 2;
 const int NUM_GOATMAN_BOSS_GHARBAD_POTIONS = 3;
 const int NUM_GOATMAN_BOSS_GHARBAD_THROWN_WEAPONS = 3;
 
-void initGoatman(Entity* my, Stat* myStats)
+void initGoatman(Creature* my, Stat* myStats)
 {
 	node_t* node;
 	bool spawnedBoss = false;
@@ -746,6 +747,7 @@ void goatmanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr, *entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 	bool wearingring = false;
 
@@ -909,9 +911,9 @@ void goatmanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 						if ( my->monsterAttackTime >= 4 * ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 						{
-							if ( multiplayer != CLIENT )
+							if ( multiplayer != CLIENT && myCrtr )
 							{
-								my->attack(MONSTER_POSE_MELEE_WINDUP1, 0, nullptr);
+								myCrtr->attack(MONSTER_POSE_MELEE_WINDUP1, 0, nullptr);
 							}
 						}
 					}
@@ -1030,7 +1032,7 @@ void goatmanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( weaponNode )
 				{
 					Entity* weapon = (Entity*)weaponNode->element;
-					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && my->monsterState == MONSTER_STATE_WAIT) )
+					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && myCrtr && myCrtr->monsterState == MONSTER_STATE_WAIT) )
 					{
 						// if weapon invisible and I'm not attacking, relax arm.
 						entity->focalx = limbs[GOATMAN][4][0]; // 0
@@ -1059,7 +1061,7 @@ void goatmanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( shieldNode )
 				{
 					Entity* shield = (Entity*)shieldNode->element;
-					if ( shield->flags[INVISIBLE] && my->monsterState == MONSTER_STATE_WAIT )
+					if ( shield->flags[INVISIBLE] && myCrtr && myCrtr->monsterState == MONSTER_STATE_WAIT )
 					{
 						entity->focalx = limbs[GOATMAN][5][0]; // 0
 						entity->focaly = limbs[GOATMAN][5][1]; // 0
@@ -1075,7 +1077,7 @@ void goatmanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 					}
 				}
 				my->setHumanoidLimbOffset(entity, GOATMAN, LIMB_HUMANOID_LEFTARM);
-				if ( my->monsterDefend && my->monsterAttack == 0 )
+				if ( myCrtr && myCrtr->monsterDefend && my->monsterAttack == 0 )
 				{
 					MONSTER_SHIELDYAW = PI / 5;
 				}
@@ -1185,7 +1187,10 @@ void goatmanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						entity->flags[INVISIBLE] = true;
 					}
 				}
-				my->handleHumanoidShieldLimb(entity, shieldarm);
+                if ( myCrtr )
+                {
+                    myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
+                }
 				break;
 			// cloak
 			case LIMB_HUMANOID_CLOAK:
@@ -1393,7 +1398,7 @@ void goatmanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	}
 }
 
-void Entity::goatmanChooseWeapon(const Entity* target, double dist)
+void Creature::goatmanChooseWeapon(const Entity* target, double dist)
 {
 	if ( monsterSpecialState != 0 )
 	{
@@ -1612,7 +1617,7 @@ void Entity::goatmanChooseWeapon(const Entity* target, double dist)
 	return;
 }
 
-bool Entity::goatmanCanWieldItem(const Item& item) const
+bool Creature::goatmanCanWieldItem(const Item& item) const
 {
 	Stat* myStats = getStats();
 	if ( !myStats )

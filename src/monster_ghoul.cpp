@@ -21,7 +21,7 @@
 #include "player.hpp"
 #include "prng.hpp"
 
-void initGhoul(Entity* my, Stat* myStats)
+void initGhoul(Creature* my, Stat* myStats)
 {
 	int c;
 	node_t* node;
@@ -304,6 +304,7 @@ void ghoulMoveBodyparts(Entity* my, Stat* myStats, double dist)
 {
 	node_t* node;
 	Entity* entity = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	Entity* rightbody = nullptr;
 	int bodypart;
 
@@ -385,16 +386,16 @@ void ghoulMoveBodyparts(Entity* my, Stat* myStats, double dist)
 			}
 			if ( bodypart == LIMB_HUMANOID_LEFTARM )
 			{
-				if ( my->monsterAttack > 0 )
+				if ( myCrtr && myCrtr->monsterAttack > 0 )
 				{
 					// vertical chop windup
-					if ( my->monsterAttack == MONSTER_POSE_MELEE_WINDUP1 )
+					if ( myCrtr->monsterAttack == MONSTER_POSE_MELEE_WINDUP1 )
 					{
-						if ( my->monsterAttackTime == 0 )
+						if ( myCrtr->monsterAttackTime == 0 )
 						{
 							// init rotations
 							entity->pitch = 0;
-							my->monsterArmbended = 0;
+							myCrtr->monsterArmbended = 0;
 							//my->monsterWeaponYaw = 0; // keep the arms outstretched.
 							entity->roll = 0;
 							entity->skill[1] = 0;
@@ -402,21 +403,21 @@ void ghoulMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 						limbAnimateToLimit(entity, ANIMATE_PITCH, -0.25, 5 * PI / 4, false, 0.0);
 
-						if ( my->monsterAttackTime >= ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
+						if ( myCrtr->monsterAttackTime >= ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 						{
 							if ( multiplayer != CLIENT )
 							{
-								my->attack(1, 0, nullptr);
+								myCrtr->attack(1, 0, nullptr);
 							}
 						}
 					}
 					// vertical chop attack
-					else if ( my->monsterAttack == 1 )
+					else if ( myCrtr->monsterAttack == 1 )
 					{
-						my->monsterWeaponYaw = 0;
+						myCrtr->monsterWeaponYaw = 0;
 						if ( entity->pitch >= 3 * PI / 2 )
 						{
-							my->monsterArmbended = 1;
+							myCrtr->monsterArmbended = 1;
 						}
 
 						if ( entity->skill[1] == 0 )
@@ -429,15 +430,15 @@ void ghoulMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						}
 						else if ( entity->skill[1] == 1 )
 						{
-							my->monsterWeaponYaw = -PI / 16.0;
+							myCrtr->monsterWeaponYaw = -PI / 16.0;
 							// return to neutral
 							if ( limbAnimateToLimit(entity, ANIMATE_PITCH, -0.25, 25 * PI / 16, false, 0.0) )
 							{
 								entity->skill[0] = rightbody->skill[0];
 								entity->pitch = rightbody->pitch;
 								entity->roll = 0;
-								my->monsterArmbended = 0;
-								my->monsterAttack = 0;
+								myCrtr->monsterArmbended = 0;
+								myCrtr->monsterAttack = 0;
 							}
 						}
 					}

@@ -21,7 +21,7 @@
 #include "player.hpp"
 #include "prng.hpp"
 
-void initScarab(Entity* my, Stat* myStats)
+void initScarab(Creature* my, Stat* myStats)
 {
 	int c;
 	node_t* node;
@@ -236,6 +236,7 @@ void scarabAnimate(Entity* my, Stat* myStats, double dist)
 	node_t* node;
 	int bodypart;
 	Entity* entity = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 
 	// set invisibility //TODO: isInvisible()?
 	if ( multiplayer != CLIENT )
@@ -345,7 +346,7 @@ void scarabAnimate(Entity* my, Stat* myStats, double dist)
 						}
 					}
 				}
-				else if ( my->monsterState == 1 )
+				else if ( myCrtr && myCrtr->monsterState == 1 )
 				{
 					if ( entity->pitch < 0.5 )
 					{
@@ -365,7 +366,7 @@ void scarabAnimate(Entity* my, Stat* myStats, double dist)
 						entity->roll = -0.2;
 					}
 				}
-				else if ( my->monsterState == 0 )
+				else if ( myCrtr && myCrtr->monsterState == 0 )
 				{
 					if ( entity->pitch > 0 )
 					{
@@ -446,7 +447,7 @@ void scarabAnimate(Entity* my, Stat* myStats, double dist)
 						}
 					}
 				}
-				else if ( my->monsterState == 1 )
+				else if ( myCrtr && myCrtr->monsterState == 1 )
 				{
 					if ( entity->pitch < 0.5 )
 					{
@@ -466,7 +467,7 @@ void scarabAnimate(Entity* my, Stat* myStats, double dist)
 						entity->roll = 0.2;
 					}
 				}
-				else if ( my->monsterState == 0 )
+				else if ( myCrtr && myCrtr->monsterState == 0 )
 				{
 					if ( entity->pitch > 0 )
 					{
@@ -527,9 +528,9 @@ void scarabAnimate(Entity* my, Stat* myStats, double dist)
 	    {
 	        if (scarabFly < PI / 2.0) {
 	            scarabFly += (PI / TICKS_PER_SECOND) * 2.0;
-	            if (scarabFly >= PI / 2.0) {
+	            if (scarabFly >= PI / 2.0 && myCrtr) {
 	                scarabFly = PI / 2.0;
-	                my->attack(1, 0, nullptr); // munch
+	                myCrtr->attack(1, 0, nullptr); // munch
 	            }
 	        }
 	        my->sprite = 1075;

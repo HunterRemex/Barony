@@ -20,8 +20,9 @@
 #include "collision.hpp"
 #include "player.hpp"
 #include "prng.hpp"
+#include "creature.h"
 
-void initSuccubus(Entity* my, Stat* myStats)
+void initSuccubus(Creature* my, Stat* myStats)
 {
 	int c;
 	node_t* node;
@@ -364,6 +365,7 @@ void succubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 {
 	node_t* node;
 	Entity* entity = nullptr, *entity2 = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
 	int bodypart;
@@ -480,10 +482,10 @@ void succubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 			if ( bodypart == LIMB_HUMANOID_RIGHTARM )
 			{
 				weaponarm = entity;
-				if ( my->monsterAttack > 0 )
+				if ( myCrtr && myCrtr->monsterAttack > 0 )
 				{
 					my->handleWeaponArmAttack(weaponarm);
-					if ( my->monsterAttack != MONSTER_POSE_MELEE_WINDUP2 && my->monsterAttack != 2 )
+					if ( myCrtr && myCrtr->monsterAttack != MONSTER_POSE_MELEE_WINDUP2 && myCrtr->monsterAttack != 2 )
 					{
 						// flare out the weapon arm to match neutral arm position. 
 						// breaks the horizontal chop attack animation so we skip it.
@@ -574,14 +576,14 @@ void succubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( weaponNode )
 				{
 					Entity* weapon = (Entity*)weaponNode->element;
-					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && my->monsterAttack == 0) )
+					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && (!myCrtr || myCrtr->monsterAttack == 0)) )
 					{
 						// if weapon invisible and I'm not attacking, relax arm.
 						entity->focalx = limbs[SUCCUBUS][4][0] - 0.25; // 0
 						entity->focaly = limbs[SUCCUBUS][4][1] - 0.25; // 0
 						entity->focalz = limbs[SUCCUBUS][4][2]; // 2
 						entity->sprite = my->sprite == 1126 ? 1124 : 193;
-						if ( my->monsterAttack == 0 )
+						if ( !myCrtr || myCrtr->monsterAttack == 0 )
 						{
 							entity->roll = -PI / 16;
 						}
@@ -626,7 +628,7 @@ void succubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 					}
 				}
 				my->setHumanoidLimbOffset(entity, SUCCUBUS, LIMB_HUMANOID_LEFTARM);
-				if ( my->monsterDefend && my->monsterAttack == 0 )
+				if ( myCrtr && myCrtr->monsterDefend && myCrtr->monsterAttack == 0 )
 				{
 					MONSTER_SHIELDYAW = PI / 5;
 				}
@@ -739,7 +741,10 @@ void succubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						entity->flags[INVISIBLE] = true;
 					}
 				}
-				my->handleHumanoidShieldLimb(entity, shieldarm);
+				if ( myCrtr )
+                {
+                    myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
+                }
 				break;
 			// cloak
 			case LIMB_HUMANOID_CLOAK:
@@ -953,7 +958,7 @@ void succubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	}
 }
 
-void Entity::succubusChooseWeapon(const Entity* target, double dist)
+void Creature::succubusChooseWeapon(const Entity* target, double dist)
 {
 
 	Stat *myStats = getStats();

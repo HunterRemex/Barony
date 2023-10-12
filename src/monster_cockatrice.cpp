@@ -22,7 +22,7 @@
 #include "magic/magic.hpp"
 #include "prng.hpp"
 
-void initCockatrice(Entity* my, Stat* myStats)
+void initCockatrice(Creature* my, Stat* myStats)
 {
 	node_t* node;
 
@@ -322,6 +322,7 @@ void cockatriceMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* leftbody = nullptr;
 	Entity* leftarm = nullptr;
 	Entity* rightarm = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart = 0;
 	int limbSpeedMultiplier = 1;
 
@@ -493,9 +494,9 @@ void cockatriceMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 					if ( MONSTER_ATTACKTIME >= ANIMATE_DURATION_WINDUP )
 					{
-						if ( multiplayer != CLIENT )
+						if ( multiplayer != CLIENT && myCrtr )
 						{
-							my->attack(1, 0, nullptr);
+							myCrtr->attack(1, 0, nullptr);
 						}
 					}
 				}
@@ -592,10 +593,10 @@ void cockatriceMoveBodyparts(Entity* my, Stat* myStats, double dist)
 							if ( limbAnimateToLimit(entity, ANIMATE_PITCH, -0.4, 5 * PI / 4, false, 0) == 1 )
 							{
 								//playSoundEntityLocal(my, 79, 128);
-								if ( multiplayer != CLIENT )
+								if ( multiplayer != CLIENT && myCrtr )
 								{
 									my->monsterAnimationLimbOvershoot = ANIMATE_OVERSHOOT_TO_SETPOINT;
-									my->attack(MONSTER_POSE_COCKATRICE_DOUBLEATTACK, 0, nullptr);
+									myCrtr->attack(MONSTER_POSE_COCKATRICE_DOUBLEATTACK, 0, nullptr);
 								}
 							}
 							break;
@@ -622,9 +623,9 @@ void cockatriceMoveBodyparts(Entity* my, Stat* myStats, double dist)
 							if ( limbAnimateToLimit(entity, ANIMATE_PITCH, -0.4, 5 * PI / 4, false, 0) == 1 )
 							{
 								entity->roll = 31 * PI / 16;
-								if ( multiplayer != CLIENT )
+								if ( multiplayer != CLIENT && myCrtr )
 								{
-									my->attack(3, 0, nullptr);
+									myCrtr->attack(3, 0, nullptr);
 								}
 							}
 							break;
@@ -668,11 +669,11 @@ void cockatriceMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						// reset roll
 						entity->roll = 0;
 
-						if ( multiplayer != CLIENT )
+						if ( multiplayer != CLIENT && myCrtr )
 						{
 							// set overshoot for head animation
 							my->monsterAnimationLimbOvershoot = ANIMATE_OVERSHOOT_TO_SETPOINT;
-							my->attack(3, 0, nullptr);
+							myCrtr->attack(3, 0, nullptr);
 						}
 					}
 				}
@@ -745,9 +746,9 @@ void cockatriceMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 						if ( MONSTER_ATTACKTIME >= ANIMATE_DURATION_WINDUP )
 						{
-							if ( multiplayer != CLIENT )
+							if ( multiplayer != CLIENT && myCrtr )
 							{
-								my->attack(2, 0, nullptr);
+								myCrtr->attack(2, 0, nullptr);
 							}
 						}
 					}

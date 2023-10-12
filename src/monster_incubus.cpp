@@ -21,8 +21,9 @@
 #include "player.hpp"
 #include "magic/magic.hpp"
 #include "prng.hpp"
+#include "creature.h"
 
-void initIncubus(Entity* my, Stat* myStats)
+void initIncubus(Creature* my, Stat* myStats)
 {
 	node_t* node;
 
@@ -551,6 +552,7 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr, *entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 	bool wearingring = false;
 
@@ -682,7 +684,7 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 		if ( bodypart == LIMB_HUMANOID_RIGHTLEG || bodypart == LIMB_HUMANOID_LEFTARM )
 		{
 			if ( bodypart == LIMB_HUMANOID_LEFTARM &&
-				((my->monsterSpecialState == INCUBUS_STEAL && my->monsterAttack != 0 ) ||
+				((myCrtr && myCrtr->monsterSpecialState == INCUBUS_STEAL && my->monsterAttack != 0 ) ||
 				my->monsterAttack == MONSTER_POSE_INCUBUS_TELEPORT
 					|| my->monsterAttack == MONSTER_POSE_INCUBUS_TAUNT) )
 			{
@@ -752,9 +754,9 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 						if ( my->monsterAttackTime >= ANIMATE_DURATION_WINDUP * 4 / (monsterGlobalAnimationMultiplier / 10.0) )
 						{
-							if ( multiplayer != CLIENT )
+							if ( multiplayer != CLIENT && myCrtr )
 							{
-								my->attack(1, 0, nullptr);
+								myCrtr->attack(1, 0, nullptr);
 							}
 						}
 						++my->monsterAttackTime;
@@ -786,10 +788,10 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 						if ( my->monsterAttackTime >= 3 * ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 						{
-							if ( multiplayer != CLIENT )
+							if ( multiplayer != CLIENT && myCrtr )
 							{
 								// throw the spell
-								my->attack(MONSTER_POSE_MELEE_WINDUP1, 0, nullptr);
+								myCrtr->attack(MONSTER_POSE_MELEE_WINDUP1, 0, nullptr);
 							}
 						}
 					}
@@ -993,7 +995,7 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( weaponNode )
 				{
 					Entity* weapon = (Entity*)weaponNode->element;
-					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && my->monsterState != MONSTER_STATE_ATTACK) )
+					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && ( !myCrtr || myCrtr->monsterState != MONSTER_STATE_ATTACK)) )
 					{
 						// if weapon invisible and I'm not attacking, relax arm.
 						entity->focalx = limbs[INCUBUS][4][0] - 0.25; // 0
@@ -1026,7 +1028,7 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( shieldNode )
 				{
 					Entity* shield = (Entity*)shieldNode->element;
-					if ( shield->flags[INVISIBLE] && (my->monsterState != MONSTER_STATE_ATTACK) )
+					if ( shield->flags[INVISIBLE] && ( !myCrtr || myCrtr->monsterState != MONSTER_STATE_ATTACK) )
 					{
 						// if weapon invisible and I'm not attacking, relax arm.
 						entity->focalx = limbs[INCUBUS][5][0] - 0.25; // 0
@@ -1045,14 +1047,14 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						entity->focaly = limbs[INCUBUS][5][1];
 						entity->focalz = limbs[INCUBUS][5][2];
 						entity->sprite = 594;
-						if ( my->monsterSpecialState == INCUBUS_STEAL )
+						if ( myCrtr && myCrtr->monsterSpecialState == INCUBUS_STEAL )
 						{
 							entity->yaw -= MONSTER_WEAPONYAW;
 						}
 					}
 				}
 				my->setHumanoidLimbOffset(entity, INCUBUS, LIMB_HUMANOID_LEFTARM);
-				if ( my->monsterDefend && my->monsterAttack == 0 )
+				if ( myCrtr && myCrtr->monsterDefend && my->monsterAttack == 0 )
 				{
 					MONSTER_SHIELDYAW = PI / 5;
 				}
@@ -1165,7 +1167,10 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						entity->flags[INVISIBLE] = true;
 					}
 				}
-				my->handleHumanoidShieldLimb(entity, shieldarm);
+                if ( myCrtr )
+                {
+                    myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
+                }
 				break;
 				// cloak
 			case LIMB_HUMANOID_CLOAK:
@@ -1379,8 +1384,9 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	}
 }
 
-void Entity::incubusChooseWeapon(const Entity* target, double dist)
+void Creature::incubusChooseWeapon(const Entity* target, double dist)
 {
+    const Creature* targetCrtr = dynamic_cast<const Creature*>(target);
 	if ( monsterSpecialState != 0 )
 	{
 		//Holding a weapon assigned from the special attack. Don't switch weapons.
@@ -1477,7 +1483,7 @@ void Entity::incubusChooseWeapon(const Entity* target, double dist)
 			{
 				// try to steal weapon if target is holding.
 				// occurs less often against fellow monsters.
-				specialRoll = local_rng.rand() % (40 + 40 * (target->behavior == &actMonster));
+				specialRoll = local_rng.rand() % (40 + 40 * (targetCrtr && targetCrtr->behavior == &actMonster));
 			}
 			else if ( tryCharm )
 			{
@@ -1519,7 +1525,7 @@ void Entity::incubusChooseWeapon(const Entity* target, double dist)
 		
 		// try new roll for alternate potion throw special.
 		// occurs less often against fellow monsters.
-		specialRoll = local_rng.rand() % (30 + 30 * (target->behavior == &actMonster));
+		specialRoll = local_rng.rand() % (30 + 30 * (targetCrtr && targetCrtr->behavior == &actMonster));
 		if ( specialRoll < (2 + bonusFromHP) ) // +5% base
 		{
 			node_t* node = nullptr;
@@ -1576,7 +1582,7 @@ void Entity::incubusChooseWeapon(const Entity* target, double dist)
 	return;
 }
 
-void Entity::incubusTeleportToTarget(const Entity* target)
+void Creature::incubusTeleportToTarget(const Entity* target)
 {
 	Entity* spellTimer = createParticleTimer(this, 40, 593);
 	spellTimer->particleTimerEndAction = PARTICLE_EFFECT_INCUBUS_TELEPORT_TARGET; // teleport behavior of timer.
@@ -1594,7 +1600,7 @@ void Entity::incubusTeleportToTarget(const Entity* target)
 	}
 }
 
-void Entity::incubusTeleportRandom()
+void Creature::incubusTeleportRandom()
 {
 	Entity* spellTimer = createParticleTimer(this, 80, 593);
 	spellTimer->particleTimerEndAction = PARTICLE_EFFECT_INCUBUS_TELEPORT_STEAL; // teleport behavior of timer.

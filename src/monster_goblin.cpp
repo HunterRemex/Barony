@@ -20,8 +20,9 @@
 #include "collision.hpp"
 #include "player.hpp"
 #include "prng.hpp"
+#include "creature.h"
 
-void initGoblin(Entity* my, Stat* myStats)
+void initGoblin(Creature *my, Stat* myStats)
 {
 	node_t* node;
 
@@ -512,7 +513,7 @@ void goblinDie(Entity* my)
 
 #define GOBLINWALKSPEED .13
 
-void goblinMoveBodyparts(Entity* my, Stat* myStats, double dist)
+void goblinMoveBodyparts(Creature *my, Stat* myStats, double dist)
 {
 	node_t* node;
 	Entity* entity = nullptr, *entity2 = nullptr;
@@ -1123,7 +1124,7 @@ void goblinMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	}
 }
 
-bool Entity::goblinCanWieldItem(const Item& item) const
+bool Creature::goblinCanWieldItem(const Item& item) const
 {
 	Stat* myStats = getStats();
 	if ( !myStats )

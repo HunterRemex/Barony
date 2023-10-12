@@ -26,7 +26,7 @@
 
 std::unordered_map<Uint32, int> gyroBotDetectedUids;
 
-void initSentryBot(Entity* my, Stat* myStats)
+void initSentryBot(Creature* my, Stat* myStats)
 {
 	node_t* node;
 
@@ -266,7 +266,7 @@ void initSentryBot(Entity* my, Stat* myStats)
 	}
 }
 
-void initGyroBot(Entity* my, Stat* myStats)
+void initGyroBot(Creature* my, Stat* myStats)
 {
 	node_t* node;
 	gyroBotDetectedUids.clear();
@@ -387,7 +387,7 @@ void actSentryBotLimb(Entity* my)
 	my->actMonsterLimb(false);
 }
 
-void sentryBotDie(Entity* my)
+void sentryBotDie(Creature* my)
 {
 	bool gibs = true;
 	if ( my->monsterSpecialState == DUMMYBOT_RETURN_FORM )
@@ -501,11 +501,12 @@ void sentryBotAnimate(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr, *entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 
-	if ( multiplayer != CLIENT )
+	if ( multiplayer != CLIENT && myCrtr )
 	{
-		if ( my->monsterSpecialState == DUMMYBOT_RETURN_FORM )
+		if ( myCrtr->monsterSpecialState == DUMMYBOT_RETURN_FORM )
 		{
 			if ( limbAnimateToLimit(my, ANIMATE_PITCH, 0.01, PI / 8, false, 0.0) )
 			{
@@ -568,7 +569,7 @@ void sentryBotAnimate(Entity* my, Stat* myStats, double dist)
 		}
 		if ( bodypart == WEAPON_LOADER || bodypart == WEAPON_LIMB )
 		{
-			if ( my->monsterSpecialState == DUMMYBOT_RETURN_FORM )
+			if ( myCrtr && myCrtr->monsterSpecialState == DUMMYBOT_RETURN_FORM )
 			{
 				entity->pitch = my->pitch;
 			}
@@ -576,7 +577,7 @@ void sentryBotAnimate(Entity* my, Stat* myStats, double dist)
 
 		if ( bodypart == GEAR_MIDDLE && !my->flags[INVISIBLE] )
 		{
-			if ( my->monsterSpecialState == DUMMYBOT_RETURN_FORM )
+			if ( myCrtr && myCrtr->monsterSpecialState == DUMMYBOT_RETURN_FORM )
 			{
 				entity->pitch += 0.02;
 			}
@@ -628,9 +629,9 @@ void sentryBotAnimate(Entity* my, Stat* myStats, double dist)
 
 					if ( my->monsterAttackTime >= ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 					{
-						if ( multiplayer != CLIENT )
+						if ( multiplayer != CLIENT && myCrtr)
 						{
-							my->attack(MONSTER_POSE_RANGED_SHOOT1, 0, nullptr);
+							myCrtr->attack(MONSTER_POSE_RANGED_SHOOT1, 0, nullptr);
 						}
 					}
 				}
@@ -645,9 +646,9 @@ void sentryBotAnimate(Entity* my, Stat* myStats, double dist)
 
 					if ( my->monsterAttackTime >= ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 					{
-						if ( multiplayer != CLIENT )
+						if ( multiplayer != CLIENT && myCrtr )
 						{
-							my->attack(MONSTER_POSE_MAGIC_CAST1, 0, nullptr);
+							myCrtr->attack(MONSTER_POSE_MAGIC_CAST1, 0, nullptr);
 						}
 					}
 				}
@@ -738,7 +739,7 @@ void sentryBotAnimate(Entity* my, Stat* myStats, double dist)
 			}
 
 			// spin the gear as the head turns.
-			if ( bodypart == GEAR_BODY_LEFT && my->monsterSpecialState == DUMMYBOT_RETURN_FORM )
+			if ( bodypart == GEAR_BODY_LEFT && myCrtr && myCrtr->monsterSpecialState == DUMMYBOT_RETURN_FORM )
 			{
 				entity->pitch -= 0.1;
 			}
@@ -984,6 +985,7 @@ void gyroBotAnimate(Entity* my, Stat* myStats, double dist)
 {
 	node_t* node;
 	Entity* entity = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 
 	if ( multiplayer != CLIENT )
@@ -1052,22 +1054,23 @@ void gyroBotAnimate(Entity* my, Stat* myStats, double dist)
 		for ( node_t* searchNode = map.entities->first; searchNode != nullptr; searchNode = searchNode->next )
 		{
 			Entity* ent = (Entity*)searchNode->element;
+			Creature* entCrtr = (Creature*)searchNode->element;
 			if ( !ent || ent == my )
 			{
 				continue;
 			}
-			if ( ent->skill[28] > 0 ) // mechanism
+			if ( ent->skill[28] > 0 && myCrtr) // mechanism
 			{
-				if ( my->monsterAllyPickupItems != ALLY_GYRO_DETECT_TRAPS )
+				if ( myCrtr->monsterAllyPickupItems != ALLY_GYRO_DETECT_TRAPS )
 				{
 					continue;
 				}
 			}
-			if ( playerLeader )
+			if ( playerLeader && myCrtr )
 			{
-				if ( my->monsterAllyPickupItems == ALLY_GYRO_DETECT_MONSTERS )
+				if ( myCrtr->monsterAllyPickupItems == ALLY_GYRO_DETECT_MONSTERS )
 				{
-					if ( ent->behavior == &actMonster && ent->monsterAllyIndex < 0 )
+					if ( entCrtr->behavior == &actMonster && ent->monsterAllyIndex < 0 )
 					{
 						if ( entityDist(my, ent) < TOUCHRANGE * 5 )
 						{
@@ -1082,7 +1085,7 @@ void gyroBotAnimate(Entity* my, Stat* myStats, double dist)
 						}
 					}
 				}
-				else if ( my->monsterAllyPickupItems == ALLY_GYRO_DETECT_TRAPS )
+				else if ( myCrtr->monsterAllyPickupItems == ALLY_GYRO_DETECT_TRAPS )
 				{
 					if ( ent->behavior == &actBoulderTrap || ent->behavior == &actArrowTrap
 						|| ent->behavior == &actMagicTrap || ent->behavior == &actMagicTrapCeiling
@@ -1103,7 +1106,7 @@ void gyroBotAnimate(Entity* my, Stat* myStats, double dist)
 						}
 					}
 				}
-				else if ( my->monsterAllyPickupItems == ALLY_GYRO_DETECT_EXITS )
+				else if ( myCrtr->monsterAllyPickupItems == ALLY_GYRO_DETECT_EXITS )
 				{
 					if ( ent->behavior == &actLadder || ent->behavior == &actPortal )
 					{
@@ -1120,9 +1123,9 @@ void gyroBotAnimate(Entity* my, Stat* myStats, double dist)
 						}
 					}
 				}
-				else if ( my->monsterAllyPickupItems == ALLY_GYRO_DETECT_ITEMS_METAL
-					|| my->monsterAllyPickupItems == ALLY_GYRO_DETECT_ITEMS_MAGIC
-					|| my->monsterAllyPickupItems == ALLY_GYRO_DETECT_ITEMS_VALUABLE )
+				else if ( myCrtr->monsterAllyPickupItems == ALLY_GYRO_DETECT_ITEMS_METAL
+					|| myCrtr->monsterAllyPickupItems == ALLY_GYRO_DETECT_ITEMS_MAGIC
+					|| myCrtr->monsterAllyPickupItems == ALLY_GYRO_DETECT_ITEMS_VALUABLE )
 				{
 					if ( ent->behavior == &actItem )
 					{
@@ -1134,7 +1137,7 @@ void gyroBotAnimate(Entity* my, Stat* myStats, double dist)
 							if ( itemOnGround )
 							{
 								GenericGUIMenu::tinkeringGetItemValue(itemOnGround, &metal, &magic);
-								if ( my->monsterAllyPickupItems == ALLY_GYRO_DETECT_ITEMS_METAL
+								if ( myCrtr->monsterAllyPickupItems == ALLY_GYRO_DETECT_ITEMS_METAL
 									&& metal > 0 )
 								{
 									if ( gyroBotFoundNewEntity(*ent) )
@@ -1146,7 +1149,7 @@ void gyroBotAnimate(Entity* my, Stat* myStats, double dist)
 										ent->entityShowOnMap = detectDuration;
 									}
 								}
-								else if ( my->monsterAllyPickupItems == ALLY_GYRO_DETECT_ITEMS_MAGIC
+								else if ( myCrtr->monsterAllyPickupItems == ALLY_GYRO_DETECT_ITEMS_MAGIC
 									&& magic > 0 )
 								{
 									if ( gyroBotFoundNewEntity(*ent) )
@@ -1158,7 +1161,7 @@ void gyroBotAnimate(Entity* my, Stat* myStats, double dist)
 										ent->entityShowOnMap = detectDuration;
 									}
 								}
-								else if ( my->monsterAllyPickupItems == ALLY_GYRO_DETECT_ITEMS_VALUABLE
+								else if ( myCrtr->monsterAllyPickupItems == ALLY_GYRO_DETECT_ITEMS_VALUABLE
 									&& items[itemOnGround->type].value >= 400 )
 								{
 									if ( gyroBotFoundNewEntity(*ent) )
@@ -1200,9 +1203,9 @@ void gyroBotAnimate(Entity* my, Stat* myStats, double dist)
 	}
 
 	my->removeLightField();
-	if ( my->monsterAllyClass > ALLY_GYRO_LIGHT_NONE )
+	if ( myCrtr && myCrtr->monsterAllyClass > ALLY_GYRO_LIGHT_NONE )
 	{
-		switch ( my->monsterAllyClass )
+		switch ( myCrtr->monsterAllyClass )
 		{
 			case ALLY_GYRO_LIGHT_FAINT:
 				my->light = addLight(my->x / 16, my->y / 16, "gyrobot_faint");
@@ -1222,8 +1225,9 @@ void gyroBotAnimate(Entity* my, Stat* myStats, double dist)
 	{
 		//my->z = limbs[GYROBOT][3][2];
 		if ( my->ticks % (TICKS_PER_SECOND * 15) == 0 
-			&& my->monsterSpecialTimer == 0
-			&& my->monsterSpecialState == 0 )
+			&& myCrtr
+            && myCrtr->monsterSpecialTimer == 0
+			&& myCrtr->monsterSpecialState == 0 ) //TODO: BIRD -- Double-check original intent, myCrtr -> my
 		{
 			bool doACoolFlip = true;
 
@@ -1247,14 +1251,14 @@ void gyroBotAnimate(Entity* my, Stat* myStats, double dist)
 				}
 			}
 
-			if ( doACoolFlip )
+			if ( doACoolFlip && myCrtr )
 			{
-				my->attack(MONSTER_POSE_RANGED_WINDUP1, 0, nullptr);
-				my->monsterSpecialTimer = TICKS_PER_SECOND * 8;
+				myCrtr->attack(MONSTER_POSE_RANGED_WINDUP1, 0, nullptr);
+				myCrtr->monsterSpecialTimer = TICKS_PER_SECOND * 8;
 			}
 		}
 
-		if ( my->monsterSpecialState == GYRO_RETURN_LANDING )
+		if ( myCrtr && myCrtr->monsterSpecialState == GYRO_RETURN_LANDING )
 		{
 			if ( limbAnimateToLimit(my, ANIMATE_Z, 0.05, 0, false, 0.0) )
 			{
@@ -1266,21 +1270,21 @@ void gyroBotAnimate(Entity* my, Stat* myStats, double dist)
 				return;
 			}
 		}
-		else if ( my->monsterSpecialState == GYRO_INTERACT_LANDING )
+		else if ( myCrtr && myCrtr->monsterSpecialState == GYRO_INTERACT_LANDING )
 		{
 			if ( limbAnimateToLimit(my, ANIMATE_Z, 0.1, 0, false, 0.0) )
 			{
-				my->attack(MONSTER_POSE_RANGED_WINDUP1, 0, nullptr);
-				my->monsterSpecialTimer = TICKS_PER_SECOND * 5;
-				if ( my->monsterAllySetInteract() )
+				myCrtr->attack(MONSTER_POSE_RANGED_WINDUP1, 0, nullptr);
+				myCrtr->monsterSpecialTimer = TICKS_PER_SECOND * 5;
+				if ( myCrtr->monsterAllySetInteract() )
 				{
 					// do interact.
-					my->monsterAllyInteractTarget = 0;
-					my->monsterAllyState = ALLY_STATE_DEFAULT;
+					myCrtr->monsterAllyInteractTarget = 0;
+					myCrtr->monsterAllyState = ALLY_STATE_DEFAULT;
 				}
-				my->monsterSpecialState = 0;
+				myCrtr->monsterSpecialState = 0;
 				serverUpdateEntitySkill(my, 33);
-				my->monsterAnimationLimbOvershoot = ANIMATE_OVERSHOOT_TO_ENDPOINT;
+				myCrtr->monsterAnimationLimbOvershoot = ANIMATE_OVERSHOOT_TO_ENDPOINT;
 			}
 		}
 		else
@@ -1291,21 +1295,21 @@ void gyroBotAnimate(Entity* my, Stat* myStats, double dist)
 			}
 			else
 			{
-				if ( my->monsterSpecialState == GYRO_START_FLYING )
+				if ( myCrtr && myCrtr->monsterSpecialState == GYRO_START_FLYING )
 				{
 					if ( limbAnimateToLimit(my, ANIMATE_Z, -0.1, -6, false, 0.0) )
 					{
-						my->monsterAnimationLimbOvershoot = ANIMATE_OVERSHOOT_TO_SETPOINT;
-						my->monsterSpecialState = 0;
+						myCrtr->monsterAnimationLimbOvershoot = ANIMATE_OVERSHOOT_TO_SETPOINT;
+						myCrtr->monsterSpecialState = 0;
 						serverUpdateEntitySkill(my, 33);
 					}
 				}
 				else
 				{
-					if ( my->monsterAnimationLimbOvershoot == ANIMATE_OVERSHOOT_NONE )
+					if ( myCrtr->monsterAnimationLimbOvershoot == ANIMATE_OVERSHOOT_NONE )
 					{
-						my->z = -6;
-						my->monsterAnimationLimbOvershoot = ANIMATE_OVERSHOOT_TO_SETPOINT;
+						myCrtr->z = -6;
+						myCrtr->monsterAnimationLimbOvershoot = ANIMATE_OVERSHOOT_TO_SETPOINT;
 					}
 					if ( dist < 0.1 )
 					{
@@ -1378,7 +1382,7 @@ void gyroBotAnimate(Entity* my, Stat* myStats, double dist)
 			entity->yaw = my->yaw;
 			entity->roll += 0.1;
 
-			if ( (my->z > -4 && my->monsterSpecialState == 0) || my->monsterSpecialState == GYRO_START_FLYING )
+			if ( (my->z > -4 && myCrtr && myCrtr->monsterSpecialState == 0) || (myCrtr && myCrtr->monsterSpecialState == GYRO_START_FLYING) )
 			{
 				entity->roll += 1;
 			}
@@ -1509,7 +1513,7 @@ void actGyroBotLimb(Entity* my)
 	my->actMonsterLimb(false);
 }
 
-void gyroBotDie(Entity* my)
+void gyroBotDie(Creature* my)
 {
 	bool gibs = true;
 	if ( my->monsterSpecialState == GYRO_RETURN_LANDING )
@@ -1560,7 +1564,7 @@ void gyroBotDie(Entity* my)
 	return;
 }
 
-void initDummyBot(Entity* my, Stat* myStats)
+void initDummyBot(Creature* my, Stat* myStats)
 {
 	node_t* node;
 
@@ -1743,7 +1747,7 @@ void actDummyBotLimb(Entity* my)
 	my->actMonsterLimb(false);
 }
 
-void dummyBotDie(Entity* my)
+void dummyBotDie(Creature* my)
 {
 	bool gibs = true;
 	if ( my->monsterSpecialState == DUMMYBOT_RETURN_FORM )
@@ -1844,6 +1848,7 @@ void dummyBotAnimate(Entity* my, Stat* myStats, double dist)
 	node_t* node;
 	Entity* entity = nullptr;
 	Entity* head = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 
 	my->flags[INVISIBLE] = true; // hide the "AI" bodypart
@@ -1872,15 +1877,15 @@ void dummyBotAnimate(Entity* my, Stat* myStats, double dist)
 			head = entity;
 			if ( multiplayer != CLIENT && entity->skill[0] == 2 )
 			{
-				if ( entity->skill[3] > 0 && myStats->HP < entity->skill[3] )
+				if ( entity->skill[3] > 0 && myStats->HP < entity->skill[3] && myCrtr )
 				{
 					// on hit, bounce a bit.
-					my->attack(MONSTER_POSE_RANGED_WINDUP1, 0, nullptr);
+					myCrtr->attack(MONSTER_POSE_RANGED_WINDUP1, 0, nullptr);
 				}
 				entity->skill[3] = myStats->HP;
 			}
 
-			if ( my->monsterSpecialState == DUMMYBOT_RETURN_FORM )
+			if ( myCrtr && myCrtr->monsterSpecialState == DUMMYBOT_RETURN_FORM )
 			{
 				bool pitchZero = false;
 				while ( entity->pitch > 2 * PI )
@@ -2007,7 +2012,7 @@ void dummyBotAnimate(Entity* my, Stat* myStats, double dist)
 		}
 		else if ( bodypart == DUMMY_LID )
 		{
-			if ( my->monsterSpecialState == DUMMYBOT_RETURN_FORM )
+			if ( myCrtr && myCrtr->monsterSpecialState == DUMMYBOT_RETURN_FORM )
 			{
 				if ( head && head->z > 11 )
 				{
@@ -2024,7 +2029,7 @@ void dummyBotAnimate(Entity* my, Stat* myStats, double dist)
 		}
 		else if ( bodypart == DUMMY_CRANK )
 		{
-			if ( my->monsterSpecialState == DUMMYBOT_RETURN_FORM )
+			if ( myCrtr && myCrtr->monsterSpecialState == DUMMYBOT_RETURN_FORM )
 			{
 				entity->pitch -= 0.5;
 				if ( entity->pitch < 0 )

@@ -110,7 +110,7 @@ std::vector<Item*> generateShopkeeperConsumables(Entity& my, Stat& myStats, int 
 	return shuffled;
 }
 
-void initShopkeeper(Entity* my, Stat* myStats)
+void initShopkeeper(Creature* my, Stat* myStats)
 {
 	int c;
 	node_t* node;
@@ -1194,6 +1194,7 @@ void shopkeeperMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr, *entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
+    Creature* myCrtr = dynamic_cast<Creature*>(my);
 	int bodypart;
 	bool wearingring = false;
 
@@ -1446,7 +1447,7 @@ void shopkeeperMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( weaponNode )
 				{
 					Entity* weapon = (Entity*)weaponNode->element;
-					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && my->monsterState != MONSTER_STATE_ATTACK) )
+					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && (!myCrtr || myCrtr->monsterState != MONSTER_STATE_ATTACK)) )
 					{
 						// if weapon invisible and I'm not attacking, relax arm.
 						entity->focalx = limbs[SHOPKEEPER][4][0]; // 0
@@ -1480,7 +1481,7 @@ void shopkeeperMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( shieldNode )
 				{
 					Entity* shield = (Entity*)shieldNode->element;
-					if ( shield->flags[INVISIBLE] && (my->monsterState != MONSTER_STATE_ATTACK) )
+					if ( shield->flags[INVISIBLE] && (!myCrtr || myCrtr->monsterState != MONSTER_STATE_ATTACK) )
 					{
 						// if shield invisible and I'm not attacking, relax arm.
 						entity->focalx = limbs[SHOPKEEPER][5][0]; // 0

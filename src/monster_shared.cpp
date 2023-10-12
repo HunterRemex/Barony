@@ -16,12 +16,13 @@
 #include "entity.hpp"
 #include "prng.hpp"
 #include "monster.hpp"
+#include "creature.h"
 
 #include <cassert>
 
 ConsoleVariable<bool> cvar_summonBosses("/summonbosses", false, "Always summon bosses");
 
-void Entity::initMonster(int mySprite)
+void Creature::initMonster(int mySprite)
 {
     if (multiplayer != CLIENT) {
 	    sprite = mySprite;
@@ -268,6 +269,7 @@ void Entity::actMonsterLimb(bool processLight)
 {
 	//If no longer part of a monster, delete the limb.
 	Entity *parentEnt = nullptr;
+    Creature* parentEntCrtr = dynamic_cast<Creature*>(parentEnt);
 	if ( (parentEnt = uidToEntity(skill[2])) == nullptr )
 	{
 		if ( multiplayer == CLIENT )
@@ -329,7 +331,7 @@ void Entity::actMonsterLimb(bool processLight)
 		}
 	}
 
-	if ( parentEnt && parentEnt->behavior == &actMonster && parentEnt->monsterEntityRenderAsTelepath == 1 )
+	if ( parentEntCrtr && parentEntCrtr->behavior == &actMonster && parentEnt->monsterEntityRenderAsTelepath == 1 )
 	{
 		monsterEntityRenderAsTelepath = 1;
 	}
