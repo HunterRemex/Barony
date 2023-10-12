@@ -614,7 +614,7 @@ Sint32 itemModelFirstperson(const Item* item);
 SDL_Surface* itemSprite(Item* item);
 void consumeItem(Item*& item, int player); //NOTE: Items have to be unequipped before calling this function on them. NOTE: THIS CAN FREE THE ITEM POINTER. Sets item to nullptr if it does.
 bool dropItem(Item* item, int player, bool notifyMessage = true); // return true on free'd item
-void useItem(Item* item, const int player, Creature* usedBy = nullptr, bool unequipForDropping = false);
+void useItem(Item* item, const int player, Entity* usedBy = nullptr, bool unequipForDropping = false);
 enum EquipItemResult : int
 {
 	EQUIP_ITEM_FAIL_CANT_UNEQUIP,

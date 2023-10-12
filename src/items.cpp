@@ -1981,8 +1981,9 @@ EquipItemResult equipItem(Item* const item, Item** const slot, const int player,
 
 -------------------------------------------------------------------------------*/
 
-void useItem(Item* item, const int player, Creature* usedBy, bool unequipForDropping)
+void useItem(Item* item, const int player, Entity* usedBy, bool unequipForDropping)
 {
+    Creature* usedByCrtr = dynamic_cast<Creature*>(usedBy);
 	if ( item == nullptr )
 	{
 		return;
@@ -2262,49 +2263,49 @@ void useItem(Item* item, const int player, Creature* usedBy, bool unequipForDrop
 			equipItemResult = equipItem(item, &stats[player]->amulet, player, checkInventorySpaceForPaperDoll);
 			break;
 		case POTION_WATER:
-			drankPotion = item_PotionWater(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionWater(item, players[player]->entity, usedByCrtr);
 			break;
 		case POTION_BOOZE:
-			drankPotion = item_PotionBooze(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionBooze(item, players[player]->entity, usedByCrtr);
 			break;
 		case POTION_JUICE:
-			drankPotion = item_PotionJuice(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionJuice(item, players[player]->entity, usedByCrtr);
 			break;
 		case POTION_SICKNESS:
-			drankPotion = item_PotionSickness(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionSickness(item, players[player]->entity, usedByCrtr);
 			break;
 		case POTION_CONFUSION:
-			drankPotion = item_PotionConfusion(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionConfusion(item, players[player]->entity, usedByCrtr);
 			break;
 		case POTION_EXTRAHEALING:
-			drankPotion = item_PotionExtraHealing(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionExtraHealing(item, players[player]->entity, usedByCrtr);
 			break;
 		case POTION_HEALING:
-			drankPotion = item_PotionHealing(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionHealing(item, players[player]->entity, usedByCrtr);
 			break;
 		case POTION_CUREAILMENT:
-			drankPotion = item_PotionCureAilment(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionCureAilment(item, players[player]->entity, usedByCrtr);
 			break;
 		case POTION_BLINDNESS:
-			drankPotion = item_PotionBlindness(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionBlindness(item, players[player]->entity, usedByCrtr);
 			break;
 		case POTION_RESTOREMAGIC:
-			drankPotion = item_PotionRestoreMagic(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionRestoreMagic(item, players[player]->entity, usedByCrtr);
 			break;
 		case POTION_INVISIBILITY:
-			drankPotion = item_PotionInvisibility(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionInvisibility(item, players[player]->entity, usedByCrtr);
 			break;
 		case POTION_LEVITATION:
-			drankPotion = item_PotionLevitation(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionLevitation(item, players[player]->entity, usedByCrtr);
 			break;
 		case POTION_SPEED:
-			drankPotion = item_PotionSpeed(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionSpeed(item, players[player]->entity, usedByCrtr);
 			break;
 		case POTION_ACID:
-			drankPotion = item_PotionAcid(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionAcid(item, players[player]->entity, usedByCrtr);
 			break;
 		case POTION_PARALYSIS:
-			drankPotion = item_PotionParalysis(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionParalysis(item, players[player]->entity, usedByCrtr);
 			break;
 		case POTION_EMPTY:
 			messagePlayer(player, MESSAGE_HINT, Language::get(2359));
@@ -2326,10 +2327,10 @@ void useItem(Item* item, const int player, Creature* usedBy, bool unequipForDrop
 		case POTION_FIRESTORM:
 		case POTION_ICESTORM:
 		case POTION_THUNDERSTORM:
-			drankPotion = item_PotionUnstableStorm(item, players[player]->entity, usedBy, nullptr);
+			drankPotion = item_PotionUnstableStorm(item, players[player]->entity, usedByCrtr, nullptr);
 			break;
 		case POTION_STRENGTH:
-			drankPotion = item_PotionStrength(item, players[player]->entity, usedBy);
+			drankPotion = item_PotionStrength(item, players[player]->entity, usedByCrtr);
 			break;
 		case SCROLL_MAIL:
 			item_ScrollMail(item, player);
