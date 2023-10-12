@@ -11,6 +11,7 @@ See LICENSE for details.
 
 
 #include "entity.hpp"
+#include "creature.h"
 
 
 int checkSpriteType(Sint32 sprite)
@@ -1816,15 +1817,12 @@ void setSpriteAttributes(Entity* entityNew, Entity* entityToCopy, Entity* entity
 	}
 	else if ( spriteType == 23 ) // player spawns
 	{
-		if ( entityToCopy != nullptr )
+		if (Creature* creatureToCopy = dynamic_cast<Creature*>(entityToCopy);
+            entityToCopy != nullptr
+            && creatureToCopy != nullptr)
 		{
 			// copy old entity attributes to newly created.
-			entityNew->playerStartDir = entityToCopy->playerStartDir;
-		}
-		else
-		{
-			// set default new entity attributes.
-			entityNew->playerStartDir = 0;
+            ((Creature*)entityNew)->playerStartDir = creatureToCopy->playerStartDir;
 		}
 	}
 	else if ( spriteType == 24 ) // statue
