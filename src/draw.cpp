@@ -14,6 +14,7 @@
 #include "files.hpp"
 #include "hash.hpp"
 #include "entity.hpp"
+#include "creature.h"
 #include "player.hpp"
 #include "ui/Frame.hpp"
 #ifndef NINTENDO
@@ -2083,9 +2084,10 @@ void drawEntities3D(view_t* camera, int mode)
 				if ( intro ) { continue; } // don't draw on main menu
 #ifndef EDITOR
                 auto parent = uidToEntity(entity->parent);
+                Creature* parentCrtr = dynamic_cast<Creature*>(parent);
                 if (parent) {
                     if (multiplayer == CLIENT) {
-                        auto stats = parent->behavior == &actPlayer ?
+                        auto stats = (parentCrtr && parentCrtr->behavior == &actPlayer) ?
                             parent->getStats() : (parent->clientsHaveItsStats ? parent->clientStats : nullptr);
                         if (stats && stats->name[0]) {
                             glDrawSpriteFromImage(camera, entity, stats->name, mode);

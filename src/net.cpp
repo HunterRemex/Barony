@@ -567,6 +567,7 @@ void sendMapTCP(int c)
 void serverUpdateBodypartIDs(Entity* entity)
 {
 	int c;
+    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 	if ( multiplayer != SERVER )
 	{
 		return;
@@ -583,12 +584,12 @@ void serverUpdateBodypartIDs(Entity* entity)
 		int i;
 		for ( i = 0, node = entity->children.first; node != NULL; node = node->next, i++ )
 		{
-			if ( i < 1 || (i < 2 && entity->behavior == &actMonster) )
+			if ( i < 1 || (i < 2 && entityCrtr && entityCrtr->behavior == &actMonster) )
 			{
 				continue;
 			}
 			Entity* tempEntity = (Entity*)node->element;
-			if ( entity->behavior == &actMonster )
+			if ( entityCrtr && entityCrtr->behavior == &actMonster )
 			{
 				SDLNet_Write32(tempEntity->getUID(), &net_packet->data[8 + 4 * (i - 2)]);
 			}
@@ -1616,6 +1617,7 @@ NetworkingLobbyJoinRequestResult lobbyPlayerJoinRequest(int& outResult, bool loc
 Entity* receiveEntity(Entity* entity)
 {
 	bool newentity = false;
+    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 	int c;
 
 	//TODO: Find out if this is needed.
@@ -1654,7 +1656,7 @@ Entity* receiveEntity(Entity* entity)
 	const auto monsterType = entity->getMonsterTypeFromSprite();
 	const bool excludeForAnimation =
 	    !newentity &&
-	    entity->behavior == &actMonster &&
+	    entityCrtr && entityCrtr->behavior == &actMonster &&
 	    (monsterType == RAT || monsterType == SLIME || monsterType == SCARAB) &&
 	    entity->skill[8]; // MONSTER_ATTACK
 
@@ -1760,6 +1762,7 @@ Entity* receiveEntity(Entity* entity)
 void clientActions(Entity* entity)
 {
 	int playernum;
+    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 
 	// this code assigns behaviors based on the sprite (model) number
 	switch ( entity->sprite )
@@ -1870,7 +1873,7 @@ void clientActions(Entity* entity)
 			entity->behavior = &actGoldBag;
 			break;
 		default:
-			if ( entity->isPlayerHeadSprite() )
+			if ( entityCrtr && entityCrtr->isPlayerHeadSprite() )
 			{
 				// these are all player heads
 				playernum = SDLNet_Read32(&net_packet->data[30]);
@@ -1878,10 +1881,10 @@ void clientActions(Entity* entity)
 				{
 					if ( players[playernum] && players[playernum]->entity )
 					{
-						players[playernum]->entity = entity;
+						players[playernum]->entity = entityCrtr;
 					}
-					entity->skill[2] = playernum;
-					entity->behavior = &actPlayer;
+					entityCrtr->skill[2] = playernum;
+					entityCrtr->behavior = &actPlayer;
 				}
 			}
 			break;
@@ -1896,7 +1899,10 @@ void clientActions(Entity* entity)
 			switch ( c )
 			{
 				case -4:
-					entity->behavior = &actMonster;
+                    if ( entityCrtr )
+                    {
+                        entityCrtr->behavior = &actMonster;
+                    }
 					break;
 				case -5:
 					entity->behavior = &actItem;
@@ -2262,13 +2268,14 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 	{'ENTU', [](){
 		client_keepalive[0] = ticks; // don't timeout
 		Entity *entity = uidToEntity((int)SDLNet_Read32(&net_packet->data[4]));
+        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 		if ( entity )
 		{
 			if ( (Uint32)SDLNet_Read32(&net_packet->data[36]) < (Uint32)entity->lastupdateserver )
 			{
 				// old packet, not used
 			}
-			else if ( entity->behavior == &actPlayer && entity->skill[2] == clientnum )
+			else if ( entityCrtr && entityCrtr->behavior == &actPlayer && entityCrtr->skill[2] == clientnum )
 			{
 				// don't update my player
 			}
@@ -2331,10 +2338,11 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 		Uint32 uid = static_cast<int>(SDLNet_Read32(&net_packet->data[4]));
 
 		Entity* entity = uidToEntity(uid);
+        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 
 		if ( entity )
 		{
-			if ( entity->behavior == &actPlayer && entity->skill[2] == clientnum )
+			if ( entityCrtr && entityCrtr->behavior == &actPlayer && entity->skill[2] == clientnum )
 			{
 				//Don't update this client's entity! Use the dedicated function for that.
 				return;
@@ -2402,20 +2410,21 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 	// bodypart ids
 	{'BDYI', [](){
 		Entity *entity = uidToEntity((int)SDLNet_Read32(&net_packet->data[4]));
+        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 		if ( entity )
 		{
 			node_t* childNode;
 			int c;
 			for ( c = 0, childNode = entity->children.first; childNode != nullptr; childNode = childNode->next, c++ )
 			{
-				if ( c < 1 || (c < 2 && entity->behavior == &actMonster) )
+				if ( c < 1 || (c < 2 && entityCrtr && entityCrtr->behavior == &actMonster) )
 				{
 					continue;
 				}
 				Entity* tempEntity = (Entity*)childNode->element;
 				if ( tempEntity )
 				{
-					if ( entity->behavior == &actMonster )
+					if ( entityCrtr && entityCrtr->behavior == &actMonster )
 					{
 						tempEntity->setUID(SDLNet_Read32(&net_packet->data[8 + 4 * (c - 2)]));
 					}
@@ -2434,10 +2443,11 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 		if ( entity )
 		{
 			entity->flags[net_packet->data[8]] = net_packet->data[9];
-			if ( entity->behavior == &actMonster && net_packet->data[8] == USERFLAG2 )
+            Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+			if ( entityCrtr && entityCrtr->behavior == &actMonster && net_packet->data[8] == USERFLAG2 )
 			{
 				// we should update the flags for all bodyparts (except for human and automaton heads, don't update the other bodyparts).
-				if ( !(entity->isPlayerHeadSprite() || entity->sprite == 467 || !monsterChangesColorWhenAlly(nullptr, entity)) )
+				if ( !(entityCrtr->isPlayerHeadSprite() || entity->sprite == 467 || !monsterChangesColorWhenAlly(nullptr, entity)) )
 				{
 					int bodypart = 0;
 					for ( node_t* node = entity->children.first; node != nullptr; node = node->next )
@@ -2583,6 +2593,7 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 	// spawn misc particle effect 
 	{'SPPE', [](){
 		Entity *entity = uidToEntity((int)SDLNet_Read32(&net_packet->data[4]));
+        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 		if ( entity )
 		{
 			int particleType = static_cast<int>(net_packet->data[8]);
@@ -2678,15 +2689,15 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 				break;
 				case PARTICLE_EFFECT_PLAYER_AUTOMATON_DEATH:
 					createParticleExplosionCharge(entity, 174, 100, 0.25);
-					if ( entity && entity->behavior == &actPlayer )
+					if ( entityCrtr && entityCrtr->behavior == &actPlayer )
 					{
-						if ( entity->getMonsterTypeFromSprite() == AUTOMATON )
+						if ( entityCrtr->getMonsterTypeFromSprite() == AUTOMATON )
 						{
-							entity->playerAutomatonDeathCounter = 1;
-							if ( entity->skill[2] == clientnum )
+							entityCrtr->playerAutomatonDeathCounter = 1;
+							if ( entityCrtr->skill[2] == clientnum )
 							{
 								// this is me dying, setup the deathcam.
-								entity->playerCreatedDeathCam = 1;
+								entityCrtr->playerCreatedDeathCam = 1;
 								Entity* entity = newEntity(-1, 1, map.entities, nullptr);
 								entity->x = cameras[clientnum].x * 16;
 								entity->y = cameras[clientnum].y * 16;
@@ -3165,10 +3176,11 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 	// play sound entity local
 	{'SNEL', [](){
 		Entity* tmp = uidToEntity(SDLNet_Read32(&net_packet->data[6]));
+        Creature* tmpCrtr = dynamic_cast<Creature*>(tmp);
 		int sfx = SDLNet_Read16(&net_packet->data[4]);
 		if ( tmp )
 		{
-			if ( tmp->behavior == &actPlayer && mute_player_monster_sounds )
+			if ( tmpCrtr && tmpCrtr->behavior == &actPlayer && mute_player_monster_sounds )
 			{
 				switch ( sfx )
 				{
@@ -3917,7 +3929,7 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 		node->deconstructor = &defaultDeconstructor;
 		node->size = sizeof(Uint32);
 
-		Entity* monster = uidToEntity(*uidnum);
+		Creature* monster = uidToCreature(*uidnum);
 		if ( monster )
 		{
 			if ( !monster->clientsHaveItsStats )
@@ -5362,6 +5374,7 @@ static std::unordered_map<Uint32, void(*)()> serverPacketHandlers = {
 		Uint32 uidnum = (Uint32)SDLNet_Read32(&net_packet->data[4]);
 		const int client = std::min(net_packet->data[29], (Uint8)(MAXPLAYERS - 1));
 		Entity* entity = uidToEntity(uidnum);
+        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 		if ( !entity )
 		{
 			printlog("[Shops]: warning: client %d bought item from non-existent shop! (uid=%d)\n", client, uidnum);
@@ -5408,10 +5421,10 @@ static std::unordered_map<Uint32, void(*)()> serverPacketHandlers = {
 			{
 				continue;
 			}
-			if (!itemCompare(item, item2, false, false))
+			if (!itemCompare(item, item2, false, false) && entityCrtr)
 			{
 				printlog("[Shops]: client %d bought item from shop (uid=%d)\n", client, uidnum);
-				if ( shopIsMysteriousShopkeeper(entity) )
+				if ( shopIsMysteriousShopkeeper(entityCrtr) )
 				{
 					buyItemFromMysteriousShopkeepConsumeOrb(client, *entity, *item2);
 				}
@@ -6206,19 +6219,19 @@ static std::unordered_map<Uint32, void(*)()> serverPacketHandlers = {
 		const int allyCmd = net_packet->data[5];
 		const Uint32 uid = SDLNet_Read32(&net_packet->data[8]);
 		//messagePlayer(0, " received %d, %d, %d, %d, %d", player, allyCmd, net_packet->data[6], net_packet->data[7], uid);
-		Entity* entity = uidToEntity(uid);
-		if ( entity )
+		Creature* creature = uidToCreature(uid);
+		if ( creature )
 		{
 			if ( net_packet->len > 12 )
 			{
 				Uint32 interactUid = SDLNet_Read32(&net_packet->data[12]);
-				entity->monsterAllySendCommand(allyCmd, net_packet->data[6], net_packet->data[7], interactUid);
+				creature->monsterAllySendCommand(allyCmd, net_packet->data[6], net_packet->data[7], interactUid);
 				//messagePlayer(0, "received UID of target: %d, applying...", uid);
-				entity->monsterAllyInteractTarget = interactUid;
+				creature->monsterAllyInteractTarget = interactUid;
 			}
 			else
 			{
-				entity->monsterAllySendCommand(allyCmd, net_packet->data[6], net_packet->data[7]);
+				creature->monsterAllySendCommand(allyCmd, net_packet->data[6], net_packet->data[7]);
 			}
 		}
 	}},

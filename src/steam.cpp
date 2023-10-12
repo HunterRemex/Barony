@@ -913,7 +913,7 @@ void steamAchievementClient(int player, const char* achName)
 	}
 }
 
-void steamAchievementEntity(Entity* my, const char* achName)
+void steamAchievementEntity(Creature* my, const char* achName)
 {
 	if ( !my )
 	{
