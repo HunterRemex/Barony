@@ -70,6 +70,7 @@ void Item::applySkeletonKey(int player, Entity& entity)
 void Item::applyLockpick(int player, Entity& entity)
 {
 	bool capstoneUnlocked = (stats[player]->PROFICIENCIES[PRO_LOCKPICKING] >= CAPSTONE_LOCKPICKING_UNLOCK);
+    Creature& entityCrtr = (Creature&)entity;
 	if ( entity.behavior == &actBomb )
 	{
 		Entity* gyrobotUsing = nullptr;
@@ -379,11 +380,11 @@ void Item::applyLockpick(int player, Entity& entity)
 			messagePlayer(player, MESSAGE_INTERACTION, Language::get(1107));
 		}
 	}
-	else if ( entity.behavior == &actMonster )
+	else if ( entityCrtr.behavior == &actMonster )
 	{
 		Stat* myStats = entity.getStats();
 		if ( myStats && myStats->type == AUTOMATON 
-			&& entity.monsterSpecialState == 0
+			&& entityCrtr.monsterSpecialState == 0
 			&& !myStats->EFFECTS[EFF_CONFUSED] )
 		{
 			if ( players[player] && players[player]->entity )
@@ -397,8 +398,8 @@ void Item::applyLockpick(int player, Entity& entity)
 					if ( stats[player]->PROFICIENCIES[PRO_LOCKPICKING] >= 60 || (local_rng.rand() % chance > 0) )
 					{
 						// 100% >= 60 lockpicking. 40 = 66%, 20 = 50%, 0 = 0%
-						entity.monsterSpecialState = AUTOMATON_MALFUNCTION_START;
-						entity.monsterSpecialTimer = MONSTER_SPECIAL_COOLDOWN_AUTOMATON_MALFUNCTION;
+						entityCrtr.monsterSpecialState = AUTOMATON_MALFUNCTION_START;
+						entityCrtr.monsterSpecialTimer = MONSTER_SPECIAL_COOLDOWN_AUTOMATON_MALFUNCTION;
 						serverUpdateEntitySkill(&entity, 33);
 
 						myStats->EFFECTS[EFF_PARALYZED] = true;
@@ -445,7 +446,7 @@ void Item::applyLockpick(int player, Entity& entity)
 						myStats->EFFECTS_TIMERS[EFF_PARALYZED] = 25;
 						playSoundEntity(&entity, 263, 128);
 						spawnMagicEffectParticles(entity.x, entity.y, entity.z, 170);
-						entity.monsterAcquireAttackTarget(*players[player]->entity, MONSTER_STATE_PATH, true);
+						entityCrtr.monsterAcquireAttackTarget(*players[player]->entity, MONSTER_STATE_PATH, true);
 
 						if ( local_rng.rand() % 5 == 0 )
 						{
@@ -502,6 +503,8 @@ void Item::applyLockpick(int player, Entity& entity)
 
 void Item::applyOrb(int player, ItemType type, Entity& entity)
 {
+    Creature& entityCrtr = (Creature&)entity;
+
 	if ( entity.behavior == &actPedestalBase && entity.pedestalHasOrb == 0 )
 	{
 		if ( multiplayer == CLIENT )
@@ -552,9 +555,9 @@ void Item::applyOrb(int player, ItemType type, Entity& entity)
 			stats[player]->weapon = nullptr;
 		}
 	}
-	else if ( entity.behavior == &actMonster || entity.behavior == &actPlayer )
+	else if ( entityCrtr.behavior == &actMonster || entityCrtr.behavior == &actPlayer )
 	{
-		if ( entity.getMonsterTypeFromSprite() == SHOPKEEPER && shopIsMysteriousShopkeeper(&entity) && this->type != ARTIFACT_ORB_PURPLE )
+		if ( entity.getMonsterTypeFromSprite() == SHOPKEEPER && shopIsMysteriousShopkeeper(&entityCrtr) && this->type != ARTIFACT_ORB_PURPLE )
 		{
 			if ( multiplayer == CLIENT )
 			{
@@ -952,6 +955,7 @@ void Item::applyEmptyPotion(int player, Entity& entity)
 
 void Item::applyBomb(Entity* parent, ItemType type, ItemBombPlacement placement, ItemBombFacingDirection dir, Entity* thrown, Entity* onEntity)
 {
+    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
 	if ( multiplayer == CLIENT )
 	{
 		return;
@@ -979,7 +983,7 @@ void Item::applyBomb(Entity* parent, ItemType type, ItemBombPlacement placement,
 			if ( parent )
 			{
 				entity->parent = parent->getUID();
-				if ( parent->behavior == &actPlayer )
+				if ( parentCrtr && parentCrtr->behavior == &actPlayer )
 				{
 					entity->skill[17] = parent->skill[2];
 				}
@@ -1102,7 +1106,7 @@ void Item::applyBomb(Entity* parent, ItemType type, ItemBombPlacement placement,
 			if ( parent )
 			{
 				entity->parent = parent->getUID();
-				if ( parent->behavior == &actPlayer )
+				if ( parentCrtr && parentCrtr->behavior == &actPlayer )
 				{
 					entity->skill[17] = parent->skill[2];
 				}
@@ -1273,7 +1277,7 @@ void Item::applyBomb(Entity* parent, ItemType type, ItemBombPlacement placement,
 			if ( parent )
 			{
 				entity->parent = parent->getUID();
-				if ( parent->behavior == &actPlayer )
+				if ( parentCrtr && parentCrtr->behavior == &actPlayer )
 				{
 					entity->skill[17] = parent->skill[2];
 				}
@@ -1311,6 +1315,7 @@ void Item::applyBomb(Entity* parent, ItemType type, ItemBombPlacement placement,
 
 void Item::applyTinkeringCreation(Entity* parent, Entity* thrown)
 {
+    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
 	if ( !thrown )
 	{
 		return;
@@ -1356,7 +1361,7 @@ void Item::applyTinkeringCreation(Entity* parent, Entity* thrown)
 		}
 
 		bool exactLocation = true;
-		Entity* summon = summonMonsterNoSmoke(monsterType, thrown->x, thrown->y, true);
+		Creature* summon = summonMonsterNoSmoke(monsterType, thrown->x, thrown->y, true);
 		if ( !summon )
 		{
 			exactLocation = false;
@@ -1365,7 +1370,7 @@ void Item::applyTinkeringCreation(Entity* parent, Entity* thrown)
 		if ( summon )
 		{
 			Stat* summonedStats = summon->getStats();
-			if ( parent && parent->behavior == &actPlayer && summonedStats )
+			if ( parentCrtr && parentCrtr->behavior == &actPlayer && summonedStats )
 			{
 				if ( summonedStats->type == GYROBOT )
 				{
@@ -1400,9 +1405,9 @@ void Item::applyTinkeringCreation(Entity* parent, Entity* thrown)
 				{
 					summon->setHP(monsterTinkeringConvertAppearanceToHP(summonedStats, this->appearance));
 				}
-				if ( forceFollower(*parent, *summon) )
+				if ( parentCrtr && forceFollower(*parentCrtr, *summon) )
 				{
-					if ( parent->behavior == &actPlayer )
+					if ( parentCrtr->behavior == &actPlayer )
 					{
 						summon->monsterAllyIndex = parent->skill[2];
 						if ( multiplayer == SERVER )

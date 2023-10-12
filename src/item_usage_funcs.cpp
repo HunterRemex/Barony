@@ -3856,7 +3856,7 @@ void item_ScrollSummon(Item* item, int player)
 	bool spawnedMonster = false;
 	for (i = 0; i < numCreatures; ++i)
 	{
-		Entity* monster = summonMonster(creature, floor(players[player]->entity->x / 16) * 16 + 8, floor(players[player]->entity->y / 16) * 16 + 8);
+		Creature* monster = summonMonster(creature, floor(players[player]->entity->x / 16) * 16 + 8, floor(players[player]->entity->y / 16) * 16 + 8);
 		if ( monster )
 		{
 			spawnedMonster = true;
