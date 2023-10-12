@@ -345,7 +345,8 @@ std::string EnemyBarSettings_t::getEnemyBarSpriteName(Entity* entity)
 {
 	if ( !entity ) { return "default"; }
 
-	if ( entity->behavior == &actPlayer || entity->behavior == &actMonster )
+    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+	if ( entityCrtr && (entityCrtr->behavior == &actPlayer || entityCrtr->behavior == &actMonster) )
 	{
 		int type = entity->getMonsterTypeFromSprite();
 		if ( type < NUMMONSTERS && type >= 0 )
@@ -2843,7 +2844,7 @@ void updateAllyFollowerFrame(const int player)
 			{
 				if ( index >= followerDisplay.scrollSetpoint && index < kNumEntriesToShow )
 				{
-					if ( Entity* follower = uidToEntity(pair.first) )
+					if ( Creature* follower = uidToCreature(pair.first) )
 					{
 						// check is valid follower in list
 						if ( std::find(sortedUids.begin(), sortedUids.end(), pair.first) != sortedUids.end() )
@@ -2864,7 +2865,7 @@ void updateAllyFollowerFrame(const int player)
 				if ( index >= followerDisplay.scrollSetpoint
 					&& index < (followerDisplay.scrollSetpoint + kNumEntriesToShow) )
 				{
-					if ( Entity* follower = uidToEntity(pair.first) )
+					if ( Creature* follower = uidToCreature(pair.first) )
 					{
 						// check is valid follower in list
 						if ( std::find(sortedUids.begin(), sortedUids.end(), pair.first) != sortedUids.end() )
@@ -2882,7 +2883,7 @@ void updateAllyFollowerFrame(const int player)
 		{
 			for ( auto& pair : hud_t.followerBars )
 			{
-				if ( Entity* follower = uidToEntity(pair.first) )
+				if ( Creature* follower = uidToCreature(pair.first) )
 				{
 					// check is valid follower in list
 					if ( std::find(sortedUids.begin(), sortedUids.end(), pair.first) != sortedUids.end() )
@@ -6188,7 +6189,7 @@ bool StatusEffectQueue_t::doStatusEffectTooltip(StatusEffectQueueEntry_t& entry,
 							variation = 1;
 							std::string formatString = definition.getName(variation).c_str();
 							char buf[256] = "";
-							Entity* tagged = uidToEntity(players[player]->entity->creatureShadowTaggedThisUid);
+							Creature* tagged = uidToCreature(players[player]->entity->creatureShadowTaggedThisUid);
 							if ( tagged->behavior == &actMonster )
 							{
 								int type = tagged->getMonsterTypeFromSprite();
@@ -7183,7 +7184,7 @@ void StatusEffectQueue_t::updateAllQueuedEffects()
 								{
 									std::string formatString = definition.getName(variation).c_str();
 									char buf[256] = "";
-									Entity* tagged = uidToEntity(players[player]->entity->creatureShadowTaggedThisUid);
+									Creature* tagged = uidToCreature(players[player]->entity->creatureShadowTaggedThisUid);
 									if ( tagged->behavior == &actMonster )
 									{
 										int type = tagged->getMonsterTypeFromSprite();
@@ -14463,8 +14464,8 @@ real_t getDisplayedHPRegen(Entity* my, Stat& myStats, Uint32* outColor, char buf
 	}
 	if ( myStats.HP > 0 )
 	{
-		regen = (static_cast<real_t>(Entity::getHealthRegenInterval(my,
-			myStats, true)) / TICKS_PER_SECOND);
+		regen = (static_cast<real_t>(Creature::getHealthRegenInterval(my,
+            myStats, true)) / TICKS_PER_SECOND);
 		if ( myStats.type == SKELETON )
 		{
 			if ( !(svFlags & SV_FLAG_HUNGER) )
@@ -17022,7 +17023,7 @@ void Player::CharacterSheet_t::updateCharacterSheetTooltip(SheetElements element
 				case SHEET_RGN:
 				{
 					snprintf(buf, sizeof(buf), "%s", getHoverTextString("attributes_rgn_plain_display").c_str());
-					real_t regen = (static_cast<real_t>(Entity::getHealthRegenInterval(player.entity, *stats[player.playernum], true)) / TICKS_PER_SECOND);
+					real_t regen = (static_cast<real_t>(Creature::getHealthRegenInterval(player.entity, *stats[player.playernum], true)) / TICKS_PER_SECOND);
 					if ( regen <= 0.0 )
 					{
 						snprintf(valueBuf, sizeof(valueBuf), getHoverTextString("attributes_rgn_hp_per_second_format_zero").c_str(),
@@ -26923,7 +26924,8 @@ SDL_Surface* EnemyHPDamageBarHandler::EnemyHPDetails::blitEnemyBar(const int pla
 SDL_Surface* EnemyHPDamageBarHandler::EnemyHPDetails::blitEnemyBarStatusEffects(const int player)
 {
 	Entity* entity = uidToEntity(enemy_uid);
-	if ( entity && (entity->behavior != &actPlayer && entity->behavior != &actMonster) )
+    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+	if ( entity && (!entityCrtr || (entityCrtr->behavior != &actPlayer && entityCrtr->behavior != &actMonster)) )
 	{
 		return nullptr;
 	}
@@ -26962,7 +26964,7 @@ SDL_Surface* EnemyHPDamageBarHandler::EnemyHPDetails::blitEnemyBarStatusEffects(
 	}
 
 	int playernum = -1;
-	if ( entity && entity->behavior == &actPlayer )
+	if ( entityCrtr && entityCrtr->behavior == &actPlayer )
 	{
 		playernum = entity->skill[2];
 	}
@@ -26983,7 +26985,7 @@ SDL_Surface* EnemyHPDamageBarHandler::EnemyHPDetails::blitEnemyBarStatusEffects(
 					SDL_Surface* srcSurf = nullptr;
 					if ( i == EFF_SHAPESHIFT )
 					{
-						if ( entity && entity->behavior == &actPlayer )
+						if ( entityCrtr && entityCrtr->behavior == &actPlayer )
 						{
 							switch ( entity->effectShapeshift )
 							{
@@ -27045,7 +27047,7 @@ SDL_Surface* EnemyHPDamageBarHandler::EnemyHPDetails::blitEnemyBarStatusEffects(
 					SDL_Surface* srcSurf = nullptr;
 					if ( i == EFF_SHAPESHIFT )
 					{
-						if ( entity && entity->behavior == &actPlayer )
+						if ( entityCrtr && entityCrtr->behavior == &actPlayer )
 						{
 							switch ( entity->effectShapeshift )
 							{

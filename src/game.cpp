@@ -1522,10 +1522,10 @@ void gameLogic(void)
 					}
 					for ( node = stats[c]->FOLLOWERS.first; node != nullptr; node = node->next )
 					{
-						Entity* follower = nullptr;
+						Creature* follower = nullptr;
 						if ( (Uint32*)node->element )
 						{
-							follower = uidToEntity(*((Uint32*)node->element));
+							follower = uidToCreature(*((Uint32*)node->element));
 						}
 						if ( follower )
 						{
@@ -1677,6 +1677,8 @@ void gameLogic(void)
 			{
 				nextnode = node->next;
 				entity = (Entity*)node->element;
+                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+
 				if ( entity && !entity->ranbehavior )
 				{
 					if ( !gamePaused || (multiplayer && !client_disconnected[0]) )
@@ -1686,7 +1688,7 @@ void gameLogic(void)
 					if ( entity->behavior != nullptr )
 					{
 						if ( gameloopFreezeEntities 
-							&& entity->behavior != &actPlayer
+							&& (!entityCrtr || entityCrtr->behavior != &actPlayer)
 							&& entity->behavior != &actPlayerLimb
 							&& entity->behavior != &actHudWeapon
 							&& entity->behavior != &actHudShield
@@ -1767,10 +1769,11 @@ void gameLogic(void)
 
 							entity->ranbehavior = true;
 							nextnode = node->next;
-							if ( debugMonsterTimer && entity->behavior == &actMonster )
+                            Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+							if ( debugMonsterTimer && entityCrtr && entityCrtr->behavior == &actMonster )
 							{
 								auto t2 = std::chrono::high_resolution_clock::now();
-								printlog("%d: %d %f", entity->sprite, entity->monsterState,
+								printlog("%d: %d %f", entity->sprite, entityCrtr->monsterState,
 									1000 * std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t).count());
 								accum += 1000 * std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t).count();
 							}
@@ -1792,7 +1795,7 @@ void gameLogic(void)
 						if ( (entity->behavior == &actThrown || entity->behavior == &actParticleSapCenter) && entity->sprite == 977 )
 						{
 							// boomerang particle, make sure to return on level change.
-							Entity* parent = uidToEntity(entity->parent);
+							Creature* parent = uidToCreature(entity->parent);
 							if ( parent && parent->behavior == &actPlayer && stats[parent->skill[2]] )
 							{
 								Item* item = newItemFromEntity(entity);
@@ -1922,10 +1925,10 @@ void gameLogic(void)
 						node_t* node;
 						for ( node = stats[c]->FOLLOWERS.first; bCopyFollowers && node != nullptr; node = node->next )
 						{
-							Entity* follower = nullptr;
+							Creature* follower = nullptr;
 							if ( (Uint32*)node->element )
 							{
-								follower = uidToEntity(*((Uint32*)node->element));
+								follower = uidToCreature(*((Uint32*)node->element));
 							}
 							if ( follower )
 							{
@@ -2298,7 +2301,7 @@ void gameLogic(void)
 									}
 									continue;
 								}
-								Entity* monster = summonMonster(tempStats->type, players[c]->entity->x, players[c]->entity->y);
+								Creature* monster = summonMonster(tempStats->type, players[c]->entity->x, players[c]->entity->y);
 								if (monster)
 								{
 									if ( node == gyrobotNode )
@@ -2986,6 +2989,7 @@ void gameLogic(void)
 			{
 				nextnode = node->next;
 				entity = (Entity*)node->element;
+                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 				if ( entity && !entity->ranbehavior )
 				{
 					if ( !gamePaused || (multiplayer && !client_disconnected[0]) )
@@ -2995,7 +2999,7 @@ void gameLogic(void)
 					if ( entity->behavior != nullptr )
 					{
 						if ( gameloopFreezeEntities
-							&& entity->behavior != &actPlayer
+							&& (!entityCrtr || entityCrtr->behavior != &actPlayer)
 							&& entity->behavior != &actPlayerLimb
 							&& entity->behavior != &actHudWeapon
 							&& entity->behavior != &actHudShield
@@ -3045,7 +3049,7 @@ void gameLogic(void)
 											double ox = 0, oy = 0, onewx = 0, onewy = 0;
 
 											// move the bodyparts of these otherwise the limbs will get left behind in this adjustment.
-											if ( entity->behavior == &actPlayer || entity->behavior == &actMonster )
+											if ( entityCrtr )
 											{
 												ox = entity->x;
 												oy = entity->y;
@@ -3061,7 +3065,7 @@ void gameLogic(void)
 											}
 
 											// move the bodyparts of these otherwise the limbs will get left behind in this adjustment.
-											if ( entity->behavior == &actPlayer || entity->behavior == &actMonster )
+											if ( entityCrtr )
 											{
 												for ( Entity *bodypart : entity->bodyparts )
 												{
@@ -3077,7 +3081,7 @@ void gameLogic(void)
 									if ( fabs(entity->vel_x) > 0.0001 || fabs(entity->vel_y) > 0.0001 )
 									{
 										double ox = 0, oy = 0, onewx = 0, onewy = 0;
-										if ( entity->behavior == &actPlayer || entity->behavior == &actMonster )
+										if ( entityCrtr )
 										{
 											ox = entity->x;
 											oy = entity->y;
@@ -3086,7 +3090,7 @@ void gameLogic(void)
 										}
 										real_t dist = clipMove(&entity->x, &entity->y, entity->vel_x, entity->vel_y, entity);
 										real_t new_dist = clipMove(&entity->new_x, &entity->new_y, entity->vel_x, entity->vel_y, entity);
-										if ( entity->behavior == &actPlayer || entity->behavior == &actMonster )
+										if ( entityCrtr )
 										{
 											for (Entity *bodypart : entity->bodyparts)
 											{
@@ -3167,7 +3171,7 @@ void gameLogic(void)
 										entity->roll -= 2 * PI;
 									}
 
-									if ( entity->behavior == &actPlayer && entity->skill[2] != clientnum )
+									if ( entityCrtr && entityCrtr->behavior == &actPlayer && entity->skill[2] != clientnum )
 									{
 										node_t* tmpNode = nullptr;
 										int bodypartNum = 0;
