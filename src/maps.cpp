@@ -13,6 +13,7 @@
 #include "game.hpp"
 #include "stat.hpp"
 #include "entity.hpp"
+#include "creature.h"
 #include "files.hpp"
 #include "items.hpp"
 #include "prng.hpp"
@@ -2130,13 +2131,14 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 			for ( node = tempMap->entities->first; node != nullptr; node = node->next )
 			{
 				entity = (Entity*)node->element;
+                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 				childEntity = newEntity(entity->sprite, 1, map.entities, nullptr);
 
 				// entity will return nullptr on getStats called in setSpriteAttributes as behaviour &actmonster is not set.
 				// check if the monster sprite is correct and set the behaviour manually for getStats.
-				if ( checkSpriteType(entity->sprite) == 1 && multiplayer != CLIENT )
+				if ( checkSpriteType(entity->sprite) == 1 && multiplayer != CLIENT && entityCrtr )
 				{
-					entity->behavior = &actMonster;
+					entityCrtr->behavior = &actMonster;
 				}
 
 				setSpriteAttributes(childEntity, entity, entity);
@@ -2146,9 +2148,9 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 				childEntity->mapGenerationRoomY = y;
 				//printlog("1 Generated entity. Sprite: %d Uid: %d X: %.2f Y: %.2f\n",childEntity->sprite,childEntity->getUID(),childEntity->x,childEntity->y);
 
-				if ( entity->behavior == &actMonster || entity->behavior == &actPlayer )
+				if ( entityCrtr )
 				{
-					entity->addToCreatureList(map.creatures);
+					entityCrtr->addToCreatureList(map.creatures);
 				}
 			}
 
@@ -2158,13 +2160,14 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 				for ( subRoomNode = subRoomMap->entities->first; subRoomNode != nullptr; subRoomNode = subRoomNode->next )
 				{
 					entity = (Entity*)subRoomNode->element;
+                    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 					childEntity = newEntity(entity->sprite, 1, map.entities, nullptr);
 
 					// entity will return nullptr on getStats called in setSpriteAttributes as behaviour &actmonster is not set.
 					// check if the monster sprite is correct and set the behaviour manually for getStats.
-					if ( checkSpriteType(entity->sprite) == 1 && multiplayer != CLIENT )
+					if ( checkSpriteType(entity->sprite) == 1 && multiplayer != CLIENT && entityCrtr )
 					{
-						entity->behavior = &actMonster;
+						entityCrtr->behavior = &actMonster;
 					}
 
 					setSpriteAttributes(childEntity, entity, entity);
@@ -2172,7 +2175,7 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 					childEntity->y = entity->y + subRoom_tileStarty * 16;
 					childEntity->mapGenerationRoomX = subRoom_tileStartx;
 					childEntity->mapGenerationRoomY = subRoom_tileStarty;
-					if ( entity->behavior == &actMonster || entity->behavior == &actPlayer )
+					if ( entityCrtr )
 					{
 						entity->addToCreatureList(map.creatures);
 					}
@@ -3412,7 +3415,11 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 		else if ( c == 1 && secretlevel && currentlevel == 7 && !strncmp(map.name, "Underworld", 10) )
 		{
 			entity = newEntity(89, 1, map.entities, nullptr);
-			entity->monsterStoreType = 1;
+            Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+            if ( entityCrtr )
+            {
+                entityCrtr->monsterStoreType = 1;
+            }
 			entity->skill[5] = nummonsters;
 			++nummonsters;
 			//entity = newEntity(68, 1, map.entities, nullptr); // magic (artifact) bow
@@ -3648,22 +3655,22 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 							doNPC = true;
 						}
 
-						if ( doNPC )
+						if (Creature* crtrEntity = dynamic_cast<Creature*>(entity); crtrEntity && doNPC )
 						{
 							if ( currentlevel > 15 && map_rng.rand() % 4 > 0 )
 							{
-								entity = newEntity(93, 1, map.entities, map.creatures);  // automaton
+								crtrEntity = newCreature(93, 1, map.entities, map.creatures);  // automaton
 								if ( currentlevel < 25 )
 								{
-									entity->monsterStoreType = 1; // weaker version
+									crtrEntity->monsterStoreType = 1; // weaker version
 								}
 							}
 							else
 							{
-								entity = newEntity(27, 1, map.entities, map.creatures);  // human
+								crtrEntity = newCreature(27, 1, map.entities, map.creatures);  // human
 								if ( multiplayer != CLIENT && currentlevel > 5 )
 								{
-									entity->monsterStoreType = (currentlevel / 5) * 3 + (local_rng.rand() % 4); // scale humans with depth.  3 LVL each 5 floors, + 0-3.
+									crtrEntity->monsterStoreType = (currentlevel / 5) * 3 + (local_rng.rand() % 4); // scale humans with depth.  3 LVL each 5 floors, + 0-3.
 								}
 							}
 						}
@@ -3844,18 +3851,18 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 								{
 									if ( currentlevel > 15 && map_rng.rand() % 4 > 0 )
 									{
-										entity = newEntity(93, 1, map.entities, map.creatures);  // automaton
+										entity = newCreature(93, 1, map.entities, map.creatures);  // automaton
 										if ( currentlevel < 25 )
 										{
-											entity->monsterStoreType = 1; // weaker version
+                                            ((Creature*)entity)->monsterStoreType = 1; // weaker version
 										}
 									}
 									else
 									{
-										entity = newEntity(27, 1, map.entities, map.creatures);  // human
+										entity = newCreature(27, 1, map.entities, map.creatures);  // human
 										if ( multiplayer != CLIENT && currentlevel > 5 )
 										{
-											entity->monsterStoreType = (currentlevel / 5) * 3 + (local_rng.rand() % 4); // scale humans with depth. 3 LVL each 5 floors, + 0-3.
+                                            ((Creature*)entity)->monsterStoreType = (currentlevel / 5) * 3 + (local_rng.rand() % 4); // scale humans with depth. 3 LVL each 5 floors, + 0-3.
 										}
 									}
 								}
@@ -4057,6 +4064,7 @@ void assignActions(map_t* map)
 	for ( auto node = map->entities->first; node != nullptr; node = nextnode )
 	{
 		auto entity = (Entity*)node->element;
+		auto entityCrtr = (Creature*)node->element;
 		nextnode = node->next;
 		if ( !entity )
 		{
@@ -4140,43 +4148,43 @@ void assignActions(map_t* map)
 							}
 						}
 					}
-					entity->behavior = &actPlayer;
-					entity->addToCreatureList(map->creatures);
-					entity->x += 8;
-					entity->y += 8;
-					entity->z = -1;
-					entity->focalx = limbs[HUMAN][0][0]; // 0
-					entity->focaly = limbs[HUMAN][0][1]; // 0
-					entity->focalz = limbs[HUMAN][0][2]; // -1.5
-					entity->sprite = 113; // head model
-					entity->sizex = 4;
-					entity->sizey = 4;
-					entity->flags[GENIUS] = true;
-					if ( numplayers == clientnum && multiplayer == CLIENT )
+                    entityCrtr->behavior = &actPlayer;
+					entityCrtr->addToCreatureList(map->creatures);
+					entityCrtr->x += 8;
+					entityCrtr->y += 8;
+					entityCrtr->z = -1;
+					entityCrtr->focalx = limbs[HUMAN][0][0]; // 0
+					entityCrtr->focaly = limbs[HUMAN][0][1]; // 0
+					entityCrtr->focalz = limbs[HUMAN][0][2]; // -1.5
+					entityCrtr->sprite = 113; // head model
+					entityCrtr->sizex = 4;
+                    entityCrtr->sizey = 4;
+                    entityCrtr->flags[GENIUS] = true;
+                    if ( numplayers == clientnum && multiplayer == CLIENT )
 					{
-						entity->flags[UPDATENEEDED] = false;
+						entityCrtr->flags[UPDATENEEDED] = false;
 					}
 					else
 					{
-						entity->flags[UPDATENEEDED] = true;
+						entityCrtr->flags[UPDATENEEDED] = true;
 					}
-					entity->flags[BLOCKSIGHT] = true;
-					entity->skill[2] = numplayers; // skill[2] == PLAYER_NUM
-					players[numplayers]->entity = entity;
-					if ( entity->playerStartDir == -1 )
+					entityCrtr->flags[BLOCKSIGHT] = true;
+					entityCrtr->skill[2] = numplayers; // skill[2] == PLAYER_NUM
+					players[numplayers]->entity = entityCrtr;
+					if ( ((Creature*)entity)->playerStartDir == -1 )
 					{
-						entity->yaw = (map_rng.rand() % 8) * 45 * (PI / 180.f);
+						entityCrtr->yaw = (map_rng.rand() % 8) * 45 * (PI / 180.f);
 					}
 					else
 					{
-						entity->yaw = entity->playerStartDir * 45 * (PI / 180.f);
+						entityCrtr->yaw = entityCrtr->playerStartDir * 45 * (PI / 180.f);
 					}
-					entity->playerStartDir = 0;
+					entityCrtr->playerStartDir = 0;
 					if ( multiplayer != CLIENT )
 					{
 						if ( numplayers == 0 && minotaurlevel )
 						{
-							createMinotaurTimer(entity, map);
+							createMinotaurTimer(entityCrtr, map);
 						}
 					}
 					++numplayers;
@@ -4735,23 +4743,23 @@ void assignActions(map_t* map)
 			case 165:
 			case 166:
 			{
-				entity->sizex = 4;
-				entity->sizey = 4;
-				entity->x += 8;
-				entity->y += 8;
-				entity->z = 6;
-				entity->yaw = (map_rng.rand() % 360) * PI / 180.0;
-				entity->behavior = &actMonster;
-				entity->flags[UPDATENEEDED] = true;
-				entity->flags[INVISIBLE] = true;
-				entity->skill[5] = -1;
+				entityCrtr->sizex = 4;
+				entityCrtr->sizey = 4;
+				entityCrtr->x += 8;
+				entityCrtr->y += 8;
+				entityCrtr->z = 6;
+				entityCrtr->yaw = (map_rng.rand() % 360) * PI / 180.0;
+				entityCrtr->behavior = &actMonster;
+				entityCrtr->flags[UPDATENEEDED] = true;
+				entityCrtr->flags[INVISIBLE] = true;
+				entityCrtr->skill[5] = -1;
 				Stat* myStats = NULL;
 				if ( multiplayer != CLIENT )
 				{
-					myStats = entity->getStats();
+					myStats = entityCrtr->getStats();
 				}
 				//Assign entity creature list pointer.
-				entity->addToCreatureList(map->creatures);
+				entityCrtr->addToCreatureList(map->creatures);
 
 				Monster monsterType = SKELETON;
 				bool monsterIsFixedSprite = true;
@@ -4818,24 +4826,24 @@ void assignActions(map_t* map)
 						node2->element = nullptr;
 						node2->deconstructor = &emptyDeconstructor;
 
-						if ( entity->sprite == 10 )
+						if ( entityCrtr && entityCrtr->sprite == 10 )
 						{
 							// if the sprite is 10, then choose from monsterCurve.
 							// Create the stat struct again for the new monster
 							myStats = new Stat(monsterType + 1000);
 						}
-						else
+						else if ( entityCrtr )
 						{
 							// if monster not random, then create the stat struct here
 							// should not occur (unless we hack it)
-							myStats = new Stat(entity->sprite);
+							myStats = new Stat(entityCrtr->sprite);
 						}
 						node2 = list_AddNodeLast(&entity->children);
 						node2->element = myStats;
 						node2->deconstructor = &statDeconstructor;
 						node2->size = sizeof(myStats);
 					}
-					else if ( entity->sprite == 10 )
+					else if ( entityCrtr && entityCrtr->sprite == 10 )
 					{
 						// monster is random, but generated from editor
 						// stat struct is already created, need to set stats
@@ -6964,9 +6972,10 @@ void assignActions(map_t* map)
 				for ( node_t* tmpnode = entitiesOnTile->first; tmpnode != nullptr; tmpnode = tmpnode->next )
 				{
 					Entity* tmpentity = (Entity*)tmpnode->element;
+					Creature* tmpentityCrtr = (Creature*)tmpnode->element;
 					if ( tmpentity && tmpentity != postProcessEntity )
 					{
-						if ( tmpentity->behavior != &actMonster
+						if ( (!tmpentityCrtr || ( tmpentityCrtr && tmpentityCrtr->behavior != &actMonster))
 							&& !tmpentity->flags[PASSABLE]
 							&& tmpentity->behavior != &actFurniture )
 						{
