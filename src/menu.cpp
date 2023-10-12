@@ -9816,7 +9816,7 @@ void doNewGame(bool makeHighscore) {
 									}
 									continue;
 								}
-								Entity* monster = summonMonster(tempStats->type, players[c]->entity->x, players[c]->entity->y);
+								Creature* monster = summonMonster(tempStats->type, players[c]->entity->x, players[c]->entity->y);
 								if ( monster )
 								{
 									if ( node == gyrobotNode )

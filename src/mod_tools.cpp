@@ -5582,7 +5582,7 @@ void MonsterData_t::loadMonsterDataJSON()
 				{
 					printlog("[JSON]: Error: Could not find monster %s model index: %d", monstertypename[i], sprite);
 				}
-				if ( Entity::isPlayerHeadSprite(sprite) )
+				if ( Creature::isPlayerHeadSprite(sprite) )
 				{
 					if ( monsterData.monsterDataEntries[i].playerModelIndexes.find(sprite) == monsterDataEntries[i].playerModelIndexes.end() )
 					{
