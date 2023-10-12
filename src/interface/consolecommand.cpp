@@ -1315,7 +1315,7 @@ namespace ConsoleCommands {
 		{
 			if (node->element)
 			{
-				Entity* ent = static_cast<Entity*>(node->element);
+				Creature* ent = static_cast<Creature*>(node->element);
 				if (ent->behavior == actMonster || ent->behavior == actPlayer)
 				{
 					++entcount;
@@ -1358,8 +1358,8 @@ namespace ConsoleCommands {
 			for (node = map.entities->first; node != NULL; node = nextnode)
 			{
 				nextnode = node->next;
-				Entity* entity = (Entity*)node->element;
-				if (entity->behavior == &actMonster)
+				Creature* entity = (Creature*)node->element;
+				if (entity && entity->behavior == &actMonster)
 				{
 					entity->setHP(0);
 					c++;
@@ -2614,7 +2614,7 @@ namespace ConsoleCommands {
 		}
 		for (node_t* node = map.creatures->first; node != nullptr; node = node->next)
 		{
-			Entity* entity = (Entity*)node->element;
+			Creature* entity = (Creature*)node->element;
 			if (entity && entity->behavior == &actMonster && entity->monsterAllySummonRank != 0)
 			{
 				Stat* entityStats = entity->getStats();
@@ -3202,10 +3202,10 @@ namespace ConsoleCommands {
 		});
 
 	static ConsoleCommand ccmd_jsonexportfromcursor("/jsonexportfromcursor", "", []CCMD{
-		Entity * target = entityClicked(nullptr, true, clientnum, EntityClickType::ENTITY_CLICK_USE);
+		Creature* target = (Creature*)entityClicked(nullptr, true, clientnum, EntityClickType::ENTITY_CLICK_USE);
 		if (target)
 		{
-			Entity* parent = uidToEntity(target->skill[2]);
+			Creature* parent = uidToCreature(target->skill[2]);
 			if (target->behavior == &actMonster || (parent && parent->behavior == &actMonster))
 			{
 				// see if we selected a limb
@@ -4004,7 +4004,7 @@ namespace ConsoleCommands {
 
 		if (players[clientnum]->entity)
 		{
-			if (Entity* monster = summonMonster(HUMAN, players[clientnum]->entity->x, players[clientnum]->entity->y))
+			if (Creature* monster = summonMonster(HUMAN, players[clientnum]->entity->x, players[clientnum]->entity->y))
 			{
 				if (forceFollower(*players[clientnum]->entity, *monster))
 				{
@@ -4084,7 +4084,7 @@ namespace ConsoleCommands {
 			}
 			for (auto type : *set)
 			{
-				if (Entity* monster = summonMonster(type, players[clientnum]->entity->x, players[clientnum]->entity->y))
+				if (Creature* monster = summonMonster(type, players[clientnum]->entity->x, players[clientnum]->entity->y))
 				{
 					if (forceFollower(*players[clientnum]->entity, *monster))
 					{

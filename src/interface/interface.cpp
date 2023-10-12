@@ -1994,9 +1994,9 @@ bool commandCanBeSentToAll(int optionSelected)
 	return true;
 }
 
-std::vector<Entity*> getAllOtherFollowersForSendAllCommand(const int gui_player, Entity* followerToCommand, Monster followerType, int optionSelected)
+std::vector<Creature*> getAllOtherFollowersForSendAllCommand(const int gui_player, Creature* followerToCommand, Monster followerType, int optionSelected)
 {
-	std::vector<Entity*> vec;
+	std::vector<Creature*> vec;
 	if ( !followerToCommand )
 	{
 		return vec;
@@ -2010,9 +2010,10 @@ std::vector<Entity*> getAllOtherFollowersForSendAllCommand(const int gui_player,
 	{
 		// only send commands if we're trying to attack
 		Entity* target = uidToEntity(followerToCommand->monsterAllyInteractTarget);
+        Creature* targetCrtr = dynamic_cast<Creature*>(target);
 		if ( target )
 		{
-			if ( target->behavior != &actMonster && target->behavior != &actPlayer )
+			if ( !targetCrtr || (targetCrtr->behavior != &actMonster && targetCrtr->behavior != &actPlayer) )
 			{
 				return vec;
 			}
@@ -2025,10 +2026,10 @@ std::vector<Entity*> getAllOtherFollowersForSendAllCommand(const int gui_player,
 
 	for ( node_t* node = stats[gui_player]->FOLLOWERS.first; node != nullptr; node = node->next )
 	{
-		Entity* follower2 = nullptr;
+		Creature* follower2 = nullptr;
 		if ( (Uint32*)node->element )
 		{
-			if ( follower2 = uidToEntity(*((Uint32*)node->element)) )
+			if ( follower2 = uidToCreature(*((Uint32*)node->element)) )
 			{
 				if ( follower2 == followerToCommand || !follower2->getStats() )
 				{
@@ -3959,7 +3960,7 @@ void FollowerRadialMenu::selectNextFollower()
 		node_t* node = stats[gui_player]->FOLLOWERS.first;
 		if ( node )
 		{
-			Entity* follower = uidToEntity(*((Uint32*)node->element));
+			Creature* follower = uidToCreature(*((Uint32*)node->element));
 			if ( follower )
 			{
 				recentEntity = follower;
@@ -3981,16 +3982,16 @@ void FollowerRadialMenu::selectNextFollower()
 	int i = 0;
 	for ( node_t* node = stats[gui_player]->FOLLOWERS.first; node != nullptr; node = node->next, ++i)
 	{
-		Entity* follower = nullptr;
+		Creature* follower = nullptr;
 		if ( (Uint32*)node->element )
 		{
-			follower = uidToEntity(*((Uint32*)node->element));
+			follower = uidToCreature(*((Uint32*)node->element));
 		}
 		if ( follower && follower == recentEntity )
 		{
 			if ( node->next != nullptr )
 			{
-				follower = uidToEntity(*((Uint32*)(node->next)->element));
+				follower = uidToCreature(*((Uint32*)(node->next)->element));
 				if ( follower )
 				{
 					recentEntity = follower;
@@ -4020,7 +4021,7 @@ void FollowerRadialMenu::selectNextFollower()
 				follower = nullptr;
 				if ( (Uint32*)node2->element )
 				{
-					follower = uidToEntity(*((Uint32*)node2->element));
+					follower = uidToCreature(*((Uint32*)node2->element));
 				}
 				if ( follower )
 				{
@@ -4105,6 +4106,7 @@ bool FollowerRadialMenu::isTinkeringFollower(int type)
 
 bool FollowerRadialMenu::allowedInteractEntity(Entity& selectedEntity, bool updateInteractText)
 {
+    Creature& selectedEntityCrtr = (Creature&)selectedEntity;
 	if ( optionSelected != ALLY_CMD_ATTACK_SELECT )
 	{
 		return false;
@@ -4239,7 +4241,7 @@ bool FollowerRadialMenu::allowedInteractEntity(Entity& selectedEntity, bool upda
 			}
 		}
 	}
-	else if ( selectedEntity.behavior == &actMonster && enableAttack && selectedEntity.getMonsterTypeFromSprite() != GYROBOT )
+	else if ( selectedEntityCrtr.behavior == &actMonster && enableAttack && selectedEntity.getMonsterTypeFromSprite() != GYROBOT )
 	{
 		if ( updateInteractText )
 		{
@@ -4267,7 +4269,7 @@ bool FollowerRadialMenu::allowedInteractEntity(Entity& selectedEntity, bool upda
 	return true;
 }
 
-int FollowerRadialMenu::optionDisabledForCreature(int playerSkillLVL, int monsterType, int option, Entity* follower)
+int FollowerRadialMenu::optionDisabledForCreature(int playerSkillLVL, int monsterType, int option, Creature* follower)
 {
 	int creatureTier = 0;
 
@@ -10984,6 +10986,7 @@ void EnemyHPDamageBarHandler::addEnemyToList(Sint32 HP, Sint32 maxHP, Sint32 old
 	details->animator.damageTaken = std::max(-details->enemy_maxhp, oldHP - HP); // IDK if this needs a lower limit for healing
 
 	Entity* entity = uidToEntity(uid);
+    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 	spawnDamageGib(entity, details->animator.damageTaken, gibDmgType);
 	lastEnemyUid = uid;
 
@@ -10991,7 +10994,7 @@ void EnemyHPDamageBarHandler::addEnemyToList(Sint32 HP, Sint32 maxHP, Sint32 old
 	{
 		details->updateWorldCoordinates();
 	}
-	if ( entity && (entity->behavior == &actPlayer || entity->behavior == &actMonster) )
+	if ( entityCrtr && (entityCrtr->behavior == &actPlayer || entityCrtr->behavior == &actMonster) )
 	{
 		if ( Stat* stat = entity->getStats() )
 		{

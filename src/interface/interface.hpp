@@ -1207,8 +1207,8 @@ extern std::vector<std::pair<SDL_Surface**, std::string>> systemResourceImages;
 class FollowerRadialMenu
 {
 public:
-	Entity* followerToCommand;
-	Entity* recentEntity;
+	Creature* followerToCommand;
+	Creature* recentEntity;
 	Entity* entityToInteractWith;
 	int menuX; // starting mouse coordinates that are the center of the circle.
 	int menuY; // starting mouse coordinates that are the center of the circle.
@@ -1313,7 +1313,7 @@ public:
 	int numMonstersToDrawInParty();
 	void updateScrollPartySheet();
 	bool allowedInteractEntity(Entity& selectedEntity, bool updateInteractText = true);
-	int optionDisabledForCreature(int playerSkillLVL, int monsterType, int option, Entity* follower);
+	int optionDisabledForCreature(int playerSkillLVL, int monsterType, int option, Creature* follower);
 	bool allowedClassToggle(int monsterType);
 	bool allowedItemPickupToggle(int monsterType);
 	static bool allowedInteractFood(int monsterType);

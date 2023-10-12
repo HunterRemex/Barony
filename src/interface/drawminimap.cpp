@@ -144,6 +144,7 @@ void drawMinimap(const int player, SDL_Rect rect, bool drawingSharedMap)
 	for ( node_t* node = map.entities->first; node != NULL; node = node->next )
 	{
 		Entity* entity = (Entity*)node->element;
+        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 		if ( entity->sprite == 161 || (entity->sprite >= 254 && entity->sprite < 258)
 			|| entity->behavior == &actCustomPortal )   // ladder or portal models
 		{
@@ -169,7 +170,7 @@ void drawMinimap(const int player, SDL_Rect rect, bool drawingSharedMap)
 					continue;
 				}
 			}
-			if ( entity->behavior == &actMonster && entity->monsterAllyIndex < 0 )
+			if ( entityCrtr && entityCrtr->behavior == &actMonster && entity->monsterAllyIndex < 0 )
 			{
 				entityPointsOfInterest.push_back(entity);
 			}
@@ -373,6 +374,7 @@ void drawMinimap(const int player, SDL_Rect rect, bool drawingSharedMap)
 	// draw special points of interest (exits, items, revealed monsters, etc)
 	for ( auto entity : entityPointsOfInterest )
 	{
+        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 		if ( entity->sprite == 161 || (entity->sprite >= 254 && entity->sprite < 258)
 			|| entity->behavior == &actCustomPortal )   // ladder or portal models
 		{
@@ -392,7 +394,7 @@ void drawMinimap(const int player, SDL_Rect rect, bool drawingSharedMap)
 		}
 		else
 		{
-			if ( entity->behavior == &actMonster && entity->monsterAllyIndex < 0 )
+			if ( entityCrtr && entityCrtr->behavior == &actMonster && entity->monsterAllyIndex < 0 )
 			{
 				bool warningEffect = false;
 				{
@@ -733,7 +735,7 @@ void drawMinimap(const int player, SDL_Rect rect, bool drawingSharedMap)
 	{
 		for ( node_t* node = map.creatures->first; node != nullptr; node = node->next )
 		{
-			Entity* entity = (Entity*)node->element;
+			Creature* entity = (Creature*)node->element;
 			int drawMonsterAlly = -1;
 			int foundplayer = -1;
 			if ( c == 1 && entity->behavior != &actPlayer )

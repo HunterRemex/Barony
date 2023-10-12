@@ -41,6 +41,8 @@ void updateEnemyBar(Entity* source, Entity* target, const char* name, Sint32 hp,
 	int player = -1;
 	int c;
 
+    Creature* sourceCrtr = dynamic_cast<Creature*>(source);
+    Creature* targetCrtr = dynamic_cast<Creature*>(target);
 	if (!source || !target)
 	{
 		return;
@@ -57,8 +59,8 @@ void updateEnemyBar(Entity* source, Entity* target, const char* name, Sint32 hp,
 
 	if ( player == -1 )
 	{
-		if ( source->behavior == &actMonster && source->monsterAllySummonRank != 0
-			&& (target->behavior == &actMonster || target->behavior == &actPlayer) )
+		if ( sourceCrtr && sourceCrtr->behavior == &actMonster && sourceCrtr->monsterAllySummonRank != 0
+			&& (targetCrtr) )
 		{
 			player = source->monsterAllyIndex;
 			if ( source->monsterAllyGetPlayerLeader() && source->monsterAllyGetPlayerLeader() == target )
@@ -66,16 +68,16 @@ void updateEnemyBar(Entity* source, Entity* target, const char* name, Sint32 hp,
 				player = -1; // don't update enemy bar if attacking leader.
 			}
 		}
-		else if ( source->behavior == &actMonster && source->monsterIllusionTauntingThisUid != 0 )
+		else if ( sourceCrtr && sourceCrtr->behavior == &actMonster && sourceCrtr->monsterIllusionTauntingThisUid != 0 )
 		{
-			Entity* parent = uidToEntity(source->parent);
+			Creature* parent = uidToCreature(source->parent);
 			if ( parent && parent->behavior == &actPlayer && parent != target )
 			{
 				player = parent->skill[2]; // don't update enemy bar if attacking leader.
 			}
 		}
-		else if ( source->behavior == &actMonster && source->monsterAllyIndex >= 0/*monsterIsImmobileTurret(source, nullptr)*/
-			&& (target->behavior == &actMonster || target->behavior == &actPlayer || target->behavior == &actDoor) )
+		else if ( sourceCrtr && sourceCrtr->behavior == &actMonster && source->monsterAllyIndex >= 0/*monsterIsImmobileTurret(source, nullptr)*/
+			&& (targetCrtr || target->behavior == &actDoor) )
 		{
 			player = source->monsterAllyIndex;
 			if ( source->monsterAllyGetPlayerLeader() && source->monsterAllyGetPlayerLeader() == target )
