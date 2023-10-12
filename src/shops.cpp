@@ -92,7 +92,7 @@ void closeShop(const int player)
 
 -------------------------------------------------------------------------------*/
 
-void startTradingServer(Entity* entity, int player)
+void startTradingServer(Creature* entity, int player)
 {
 	if (!entity || player < 0)
 	{
@@ -343,7 +343,7 @@ bool buyItemFromShop(const int player, Item* item, bool& bOutConsumedEntireStack
 			net_packet->len = 30;
 			sendPacketSafe(net_sock, -1, net_packet, 0);
 		}
-		if ( shopIsMysteriousShopkeeper(uidToEntity(shopkeeper[player])) )
+		if ( shopIsMysteriousShopkeeper(uidToCreature(shopkeeper[player])) )
 		{
 			buyItemFromMysteriousShopkeepConsumeOrb(player, *(uidToEntity(shopkeeper[player])), *item);
 		}
@@ -691,7 +691,7 @@ bool sellItemToShop(const int player, Item* item)
 	return true;
 }
 
-bool shopIsMysteriousShopkeeper(Entity* entity)
+bool shopIsMysteriousShopkeeper(Creature* entity)
 {
 	if ( !entity )
 	{

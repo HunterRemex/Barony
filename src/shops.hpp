@@ -25,12 +25,12 @@ extern int shopkeepertype[MAXPLAYERS];
 extern std::string shopkeepername[MAXPLAYERS];
 extern char shopkeepername_client[MAXPLAYERS][64];
 
-void startTradingServer(Entity* entity, int player);
+void startTradingServer(Creature* entity, int player);
 bool isItemSellableToShop(const int player, Item* item);
 bool hideItemFromShopView(Item& item);
 bool buyItemFromShop(const int player, Item* item, bool& bOutConsumedEntireStack);
 bool sellItemToShop(const int player, Item* item);
-bool shopIsMysteriousShopkeeper(Entity* entity);
+bool shopIsMysteriousShopkeeper(Creature* entity);
 extern std::unordered_map<int, std::unordered_set<int>> shopkeeperMysteriousItems;
 void buyItemFromMysteriousShopkeepConsumeOrb(const int player, Entity& entity, Item& boughtItem);
 void closeShop(const int player);
