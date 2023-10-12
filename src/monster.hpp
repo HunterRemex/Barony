@@ -654,44 +654,44 @@ enum MonsterDefendType : int
 static const int MONSTER_ALLY_DEXTERITY_SPEED_CAP = 15;
 
 void summonMonsterClient(Monster creature, long x, long y, Uint32 uid);
-Entity* summonMonster(Monster creature, long x, long y, bool forceLocation = false);
-Entity* summonMonsterNoSmoke(Monster creature, long x, long y, bool forceLocation = false);
+Creature* summonMonster(Monster creature, long x, long y, bool forceLocation = false);
+Creature* summonMonsterNoSmoke(Monster creature, long x, long y, bool forceLocation = false);
 void summonManyMonster(Monster creature);
 bool monsterMoveAside(Entity* my, Entity* entity, bool ignoreMonsterState = false);
 
 //--init* functions--
-void initHuman(Entity* my, Stat* myStats);
-void initRat(Entity* my, Stat* myStats);
-void initGoblin(Entity* my, Stat* myStats);
-void initSlime(Entity* my, Stat* myStats);
-void initScorpion(Entity* my, Stat* myStats);
-void initSuccubus(Entity* my, Stat* myStats);
-void initTroll(Entity* my, Stat* myStats);
-void initShopkeeper(Entity* my, Stat* myStats);
-void initSkeleton(Entity* my, Stat* myStats);
-void initMinotaur(Entity* my, Stat* myStats);
-void initGhoul(Entity* my, Stat* myStats);
-void initDemon(Entity* my, Stat* myStats);
-void initSpider(Entity* my, Stat* myStats);
-void initLich(Entity* my, Stat* myStats);
-void initImp(Entity* my, Stat* myStats);
-void initGnome(Entity* my, Stat* myStats);
-void initDevil(Entity* my, Stat* myStats);
-void initAutomaton(Entity* my, Stat* myStats);
-void initCockatrice(Entity* my, Stat* myStats);
-void initCrystalgolem(Entity* my, Stat* myStats);
-void initScarab(Entity* my, Stat* myStats);
-void initKobold(Entity* my, Stat* myStats);
-void initShadow(Entity* my, Stat* myStats);
-void initVampire(Entity* my, Stat* myStats);
-void initIncubus(Entity* my, Stat* myStats);
-void initInsectoid(Entity* my, Stat* myStats);
-void initGoatman(Entity* my, Stat* myStats);
-void initLichFire(Entity* my, Stat* myStats);
-void initLichIce(Entity* my, Stat* myStats);
-void initSentryBot(Entity* my, Stat* myStats);
-void initGyroBot(Entity* my, Stat* myStats);
-void initDummyBot(Entity* my, Stat* myStats);
+void initHuman(Creature* my, Stat* myStats);
+void initRat(Creature* my, Stat* myStats);
+void initGoblin(Creature* my, Stat* myStats);
+void initSlime(Creature* my, Stat* myStats);
+void initScorpion(Creature* my, Stat* myStats);
+void initSuccubus(Creature* my, Stat* myStats);
+void initTroll(Creature* my, Stat* myStats);
+void initShopkeeper(Creature* my, Stat* myStats);
+void initSkeleton(Creature* my, Stat* myStats);
+void initMinotaur(Creature* my, Stat* myStats);
+void initGhoul(Creature* my, Stat* myStats);
+void initDemon(Creature* my, Stat* myStats);
+void initSpider(Creature* my, Stat* myStats);
+void initLich(Creature* my, Stat* myStats);
+void initImp(Creature* my, Stat* myStats);
+void initGnome(Creature* my, Stat* myStats);
+void initDevil(Creature* my, Stat* myStats);
+void initAutomaton(Creature* my, Stat* myStats);
+void initCockatrice(Creature* my, Stat* myStats);
+void initCrystalgolem(Creature* my, Stat* myStats);
+void initScarab(Creature* my, Stat* myStats);
+void initKobold(Creature* my, Stat* myStats);
+void initShadow(Creature* my, Stat* myStats);
+void initVampire(Creature* my, Stat* myStats);
+void initIncubus(Creature* my, Stat* myStats);
+void initInsectoid(Creature* my, Stat* myStats);
+void initGoatman(Creature* my, Stat* myStats);
+void initLichFire(Creature* my, Stat* myStats);
+void initLichIce(Creature* my, Stat* myStats);
+void initSentryBot(Creature* my, Stat* myStats);
+void initGyroBot(Creature* my, Stat* myStats);
+void initDummyBot(Creature* my, Stat* myStats);
 
 //--act*Limb functions--
 void actHumanLimb(Entity* my);
@@ -753,17 +753,17 @@ void vampireDie(Entity* my);
 void incubusDie(Entity* my);
 void insectoidDie(Entity* my);
 void goatmanDie(Entity* my);
-void lichFireDie(Entity* my);
-void lichIceDie(Entity* my);
-void sentryBotDie(Entity* my);
-void gyroBotDie(Entity* my);
-void dummyBotDie(Entity* my);
+void lichFireDie(Creature* my);
+void lichIceDie(Creature* my);
+void sentryBotDie(Creature* my);
+void gyroBotDie(Creature* my);
+void dummyBotDie(Creature* my);
 
 //--*MoveBodyparts functions--
 void humanMoveBodyparts(Entity* my, Stat* myStats, double dist);
-void ratAnimate(Entity* my, double dist);
-void goblinMoveBodyparts(Entity* my, Stat* myStats, double dist);
-void slimeAnimate(Entity* my, double dist);
+void ratAnimate(Creature* my, double dist);
+void goblinMoveBodyparts(Creature* my, Stat* myStats, double dist);
+void slimeAnimate(Creature* my, double dist);
 void scorpionAnimate(Entity* my, double dist);
 void succubusMoveBodyparts(Entity* my, Stat* myStats, double dist);
 void trollMoveBodyparts(Entity* my, Stat* myStats, double dist);
@@ -787,7 +787,7 @@ void vampireMoveBodyparts(Entity* my, Stat* myStats, double dist);
 void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist);
 void insectoidMoveBodyparts(Entity* my, Stat* myStats, double dist);
 void goatmanMoveBodyparts(Entity* my, Stat* myStats, double dist);
-void lichFireAnimate(Entity* my, Stat* myStats, double dist);
+void lichFireAnimate(Creature* my, Stat* myStats, double dist);
 void lichIceAnimate(Entity* my, Stat* myStats, double dist);
 void sentryBotAnimate(Entity* my, Stat* myStats, double dist);
 void gyroBotAnimate(Entity* my, Stat* myStats, double dist);
@@ -806,7 +806,7 @@ void createMinotaurTimer(Entity* entity, map_t* map);
 void actSummonTrap(Entity* my);
 int monsterCurve(int level);
 
-bool forceFollower(Entity& leader, Entity& follower);
+bool forceFollower(Creature& leader, Creature& follower);
 
 //--monsterState constants
 static const Sint32 MONSTER_STATE_WAIT = 0;
@@ -949,8 +949,8 @@ int limbAnimateToLimit(Entity* limb, int axis, double rate, double setpoint, boo
 int limbAnimateWithOvershoot(Entity* limb, int axis, double setpointRate, double setpoint, double endpointRate, double endpoint, int dir);
 int limbAngleWithinRange(real_t angle, double rate, double setpoint);
 real_t normaliseAngle2PI(real_t angle);
-void getTargetsAroundEntity(Entity* my, Entity* originalTarget, double distToFind, real_t angleToSearch, int searchType, list_t** list);
-int numTargetsAroundEntity(Entity* my, double distToFind, real_t angleToSearch, int searchType);
+void getTargetsAroundEntity(Creature* my, Entity* originalTarget, double distToFind, real_t angleToSearch, int searchType, list_t** list);
+int numTargetsAroundEntity(Creature* my, double distToFind, real_t angleToSearch, int searchType);
 // change animation speeds for debugging, default value 10.
 extern int monsterGlobalAnimationMultiplier;
 // change attacktime for debugging, default value 1.
@@ -1136,9 +1136,9 @@ public:
 	bool isPlayerEnemy(const int player);
 	void setWantedLevel(PlayerRaceHostility_t& h, WantedLevel wantedLevel, Entity* shopkeeper, bool primaryPlayerCheck);
 	WantedLevel getWantedLevel(const int player);
-	void onShopkeeperDeath(Entity* my, Stat* myStats, Entity* attacker);
-	void onShopkeeperHit(Entity* my, Stat* myStats, Entity* attacker);
-	void updateShopkeeperActMonster(Entity& my, Stat& myStats, bool ringconflict);
+	void onShopkeeperDeath(Creature* my, Stat* myStats, Creature* attacker);
+	void onShopkeeperHit(Creature* my, Stat* myStats, Entity* attacker);
+	void updateShopkeeperActMonster(Creature& my, Stat& myStats, bool ringconflict);
 	std::map<Monster, PlayerRaceHostility_t> playerHostility[MAXPLAYERS];
 };
 extern ShopkeeperPlayerHostility_t ShopkeeperPlayerHostility;
