@@ -87,7 +87,8 @@ void actWallBuilder(Entity* my)
 			for ( node_t* node = currentList->first; node != nullptr; node = node->next )
 			{
 				Entity* entity = (Entity*)node->element;
-				if ( entity == my || entity->flags[PASSABLE] || entity->behavior == &actDoorFrame || (entity->behavior != &actMonster && entity->behavior != &actPlayer) )
+                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+				if ( entity == my || entity->flags[PASSABLE] || entity->behavior == &actDoorFrame || !entityCrtr )
 				{
 					continue;
 				}
@@ -100,7 +101,7 @@ void actWallBuilder(Entity* my)
 							if ( my->y - 8 < entity->y + entity->sizey )
 							{
 								somebodyinside = true;
-								if ( entity->behavior == &actMonster )
+								if ( entityCrtr && entityCrtr->behavior == &actMonster )
 								{
 									if ( !strncmp(map.name, "Sanctum", 7)
 										|| !strncmp(map.name, "Boss", 4) )

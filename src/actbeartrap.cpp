@@ -105,16 +105,17 @@ void actBeartrap(Entity* my)
 	for ( node = map.creatures->first; node != nullptr; node = node->next )
 	{
 		Entity* entity = (Entity*)node->element;
+		Creature* entityCrtr = (Creature*)entity;
 		if ( my->parent == entity->getUID() )
 		{
 			continue;
 		}
-		if ( entity->behavior == &actMonster || entity->behavior == &actPlayer )
+		if ( entityCrtr )
 		{
 			Stat* stat = entity->getStats();
 			if ( stat )
 			{
-				Entity* parent = uidToEntity(my->parent);
+				Creature* parent = uidToCreature(my->parent);
 				if ( (parent && parent->checkFriend(entity)) )
 				{
 					continue;
@@ -125,7 +126,7 @@ void actBeartrap(Entity* my)
 				}
 				if ( !parent && BEARTRAP_OWNER >= 0 )
 				{
-					if ( entity->behavior == &actPlayer )
+					if ( entityCrtr->behavior == &actPlayer )
 					{
 						continue; // players won't trigger if owner dead.
 					}
@@ -168,7 +169,7 @@ void actBeartrap(Entity* my)
 							parent->awardXP( entity, true, true );
 						}
 					}
-					if ( entity->behavior == &actPlayer )
+					if ( entityCrtr->behavior == &actPlayer )
 					{
 						int player = entity->skill[2];
 						Uint32 color = makeColorRGB(255, 0, 0);
@@ -302,6 +303,8 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 		return;
 	}
 	Entity* parent = uidToEntity(my->parent);
+    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+    Creature* triggeredCrtr = dynamic_cast<Creature*>(triggered);
 	Stat* stat = triggered->getStats();
 	Stat* parentStats = nullptr;
 	if ( parent )
@@ -348,7 +351,7 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 
 	// stumbled into the trap!
 	Uint32 color = makeColorRGB(0, 255, 0);
-	if ( parent && parent->behavior == &actPlayer && triggered != parent )
+	if ( parentCrtr && parentCrtr->behavior == &actPlayer && triggered != parent )
 	{
 		if ( !hitByAOE )
 		{
@@ -359,7 +362,7 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 			messagePlayerMonsterEvent(parent->skill[2], color, *triggered->getStats(), Language::get(3613), Language::get(3614), MSG_TOOL_BOMB, my);
 		}
 	}
-	if ( triggered->behavior == &actPlayer )
+	if ( triggeredCrtr && triggeredCrtr->behavior == &actPlayer )
 	{
 		int player = triggered->skill[2];
 		Uint32 color = makeColorRGB(255, 0, 0);
@@ -379,7 +382,7 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 		if ( triggered->isBossMonster() )
 		{
 			// no effect.
-			if ( parent && parent->behavior == &actPlayer )
+			if ( parentCrtr && parentCrtr->behavior == &actPlayer )
 			{
 				Uint32 color = makeColorRGB(255, 0, 0);
 				messagePlayerMonsterEvent(parent->skill[2], color, *triggered->getStats(), Language::get(3603), Language::get(3604), MSG_COMBAT);
@@ -411,26 +414,26 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 			}
 		}
 
-		if ( !parentgoodspots.empty() )
+		if ( !parentgoodspots.empty() && triggeredCrtr )
 		{
 			Entity* targetLocation = parentgoodspots[local_rng.rand() % parentgoodspots.size()];
-			teleported = triggered->teleportAroundEntity(targetLocation, 2);
+			teleported = triggeredCrtr->teleportAroundEntity(targetLocation, 2);
 		}
-		else if ( !goodspots.empty() )
+		else if ( !goodspots.empty() && triggeredCrtr )
 		{
 			Entity* targetLocation = goodspots[local_rng.rand() % goodspots.size()];
-			teleported = triggered->teleportAroundEntity(targetLocation, 2);
+			teleported = triggeredCrtr->teleportAroundEntity(targetLocation, 2);
 		}
-		else
+		else if ( triggeredCrtr )
 		{
-			teleported = triggered->teleportRandom(); // woosh!
+			teleported = triggeredCrtr->teleportRandom(); // woosh!
 		}
 
 		if ( teleported )
 		{
 			createParticleErupt(my, 593);
 			serverSpawnMiscParticles(my, PARTICLE_EFFECT_ERUPT, 593);
-			if ( parent && parent->behavior == &actPlayer )
+			if ( parentCrtr && parentCrtr->behavior == &actPlayer )
 			{
 				// whisked away!
 				if ( triggered != parent )
@@ -439,16 +442,16 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 					messagePlayerMonsterEvent(parent->skill[2], color, *triggered->getStats(), Language::get(3601), Language::get(3602), MSG_COMBAT);
 				}
 			}
-			if ( triggered->behavior == &actPlayer )
+			if ( triggeredCrtr && triggeredCrtr->behavior == &actPlayer )
 			{
 				Uint32 color = makeColorRGB(255, 255, 255);
 				messagePlayerColor(triggered->skill[2], MESSAGE_STATUS, color, Language::get(3611));
 				achievementObserver.playerAchievements[triggered->skill[2]].checkPathBetweenObjects(triggered, my, AchievementObserver::BARONY_ACH_WONDERFUL_TOYS);
 			}
 
-			if ( triggered->behavior == &actMonster )
+			if ( triggeredCrtr && triggeredCrtr->behavior == &actMonster )
 			{
-				triggered->monsterReleaseAttackTarget();
+				triggeredCrtr->monsterReleaseAttackTarget();
 			}
 
 			createParticleErupt(triggered, 593);
@@ -456,7 +459,7 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 		}
 		else
 		{
-			if ( parent && parent->behavior == &actPlayer && triggered != parent )
+			if ( parentCrtr && parentCrtr->behavior == &actPlayer && triggered != parent )
 			{
 				Uint32 color = makeColorRGB(255, 0, 0);
 				messagePlayerMonsterEvent(parent->skill[2], color, *triggered->getStats(), Language::get(3615), Language::get(3616), MSG_COMBAT);
@@ -532,7 +535,7 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 			parent->awardXP(triggered, true, true);
 			if ( stat->type == MINOTAUR )
 			{
-				if ( parent->behavior == &actPlayer )
+				if ( parentCrtr && parentCrtr->behavior == &actPlayer )
 				{
 					steamAchievementClient(parent->skill[2], "BARONY_ACH_TIME_TO_PLAN");
 				}
@@ -547,7 +550,7 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 		}
 	}
 
-	if ( triggered->behavior == &actPlayer )
+	if ( triggeredCrtr && triggeredCrtr->behavior == &actPlayer )
 	{
 		int player = triggered->skill[2];
 		
@@ -567,7 +570,7 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 			sendPacketSafe(net_sock, -1, net_packet, player - 1);
 		}
 	}
-	if ( parent && parent != triggered && parent->behavior == &actPlayer )
+	if ( parentCrtr && parentCrtr != triggered && parentCrtr->behavior == &actPlayer )
 	{
 		int player = parent->skill[2];
 		if ( player >= 0 )
@@ -585,7 +588,7 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 					messagePlayer(player, MESSAGE_HINT, Language::get(3495));
 				}
 			}
-			if ( triggered->behavior == &actMonster )
+			if ( triggeredCrtr && triggeredCrtr->behavior == &actMonster )
 			{
 				if ( oldHP > 0 && stat->HP == 0 ) // got a kill
 				{
@@ -806,7 +809,7 @@ void actBomb(Entity* my)
 				{
 					if ( onEntity->doorHealth > 0 )
 					{
-						onEntity->doorHandleDamageMagic(50, *my, uidToEntity(my->parent));
+						onEntity->doorHandleDamageMagic(50, *my, uidToCreature(my->parent));
 					}
 					shouldExplode = true;
 				}
@@ -839,11 +842,11 @@ void actBomb(Entity* my)
 					{
 						if ( BOMB_ITEMTYPE == TOOL_BOMB ) // fire bomb do more.
 						{
-							onEntity->colliderHandleDamageMagic(50, *my, uidToEntity(my->parent));
+							onEntity->colliderHandleDamageMagic(50, *my, uidToCreature(my->parent));
 						}
 						else
 						{
-							onEntity->colliderHandleDamageMagic(20, *my, uidToEntity(my->parent));
+							onEntity->colliderHandleDamageMagic(20, *my, uidToCreature(my->parent));
 						}
 					}
 					shouldExplode = true;
@@ -877,6 +880,7 @@ void actBomb(Entity* my)
 		for ( node = currentList->first; node != nullptr && !triggered; node = node->next )
 		{
 			Entity* entity = (Entity*)node->element;
+            Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 			if ( !entity )
 			{
 				continue;
@@ -885,13 +889,14 @@ void actBomb(Entity* my)
 			{
 				continue;
 			}
-			if ( entity->behavior == &actMonster || entity->behavior == &actPlayer )
+			if ( entityCrtr )
 			{
 				Stat* stat = entity->getStats();
 				if ( stat )
 				{
 					Entity* parent = uidToEntity(my->parent);
-					if ( parent && parent->checkFriend(entity) && !(BOMB_TRIGGER_TYPE == Item::ItemBombTriggerType::BOMB_TRIGGER_ALL) )
+                    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+					if ( parentCrtr && parentCrtr->checkFriend(entity) && !(BOMB_TRIGGER_TYPE == Item::ItemBombTriggerType::BOMB_TRIGGER_ALL) )
 					{
 						continue;
 					}
@@ -901,7 +906,7 @@ void actBomb(Entity* my)
 					}
 					if ( !parent && BOMB_PLAYER_OWNER >= 0 && !(BOMB_TRIGGER_TYPE == Item::ItemBombTriggerType::BOMB_TRIGGER_ALL) )
 					{
-						if ( entity->behavior == &actPlayer )
+						if ( entityCrtr && entityCrtr->behavior == &actPlayer )
 						{
 							continue; // players won't trigger if owner dead.
 						}
@@ -1133,6 +1138,7 @@ void actDecoyBox(Entity* my)
 	if ( my->ticks % TICKS_PER_SECOND == 0 )
 	{
 		Entity* parent = uidToEntity(my->parent);
+        Creature* parentCrtr = dynamic_cast<Creature*>(parent);
 		std::vector<list_t*> entLists = TileEntityList.getEntitiesWithinRadiusAroundEntity(my, decoyBoxRange * 2 + 1);
 		std::vector<Entity*> listOfOtherDecoys;
 		// find other decoys (so monsters don't wiggle back and forth.)
@@ -1161,11 +1167,12 @@ void actDecoyBox(Entity* my)
 			for ( node = currentList->first; node != nullptr; node = node->next )
 			{
 				Entity* entity = (Entity*)node->element;
-				if ( parent && entity && entity->behavior == &actMonster
-					&& parent->checkEnemy(entity) && entity->isMobile() )
+                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+				if ( parent && entityCrtr && entityCrtr->behavior == &actMonster
+					&& parent->checkEnemy(entityCrtr) && entityCrtr->isMobile() )
 				{
-					if ( (entity->monsterState == MONSTER_STATE_WAIT || entity->monsterTarget == 0) 
-						|| (entityDist(entity,my) < 2 * TOUCHRANGE && (Uint32)(entity->monsterLastDistractedByNoisemaker) != my->getUID()) )
+					if ( (entityCrtr->monsterState == MONSTER_STATE_WAIT || entityCrtr->monsterTarget == 0)
+						|| (entityDist(entity,my) < 2 * TOUCHRANGE && (Uint32)(entityCrtr->monsterLastDistractedByNoisemaker) != my->getUID()) )
 					{
 						Stat* myStats = entity->getStats();
 						if ( !entity->isBossMonster() && !entity->monsterIsTinkeringCreation()
@@ -1192,7 +1199,7 @@ void actDecoyBox(Entity* my)
 									}
 								}
 							}
-							if ( (Uint32)(entity->monsterLastDistractedByNoisemaker) == my->getUID() )
+							if ( (Uint32)(entityCrtr->monsterLastDistractedByNoisemaker) == my->getUID() )
 							{
 								// ignore pathing to this noisemaker as we're already distracted by it.
 								if ( entityDist(entity, my) < TOUCHRANGE 
@@ -1208,7 +1215,7 @@ void actDecoyBox(Entity* my)
 									if ( hit.entity == entity )
 									{
 										// set disoriented and start a cooldown on being distracted.
-										if ( entity->monsterState == MONSTER_STATE_WAIT || entity->monsterTarget == 0 )
+										if ( entityCrtr->monsterState == MONSTER_STATE_WAIT || entityCrtr->monsterTarget == 0 )
 										{
 											// not attacking, duration longer.
 											entity->setEffect(EFF_DISORIENTED, true, TICKS_PER_SECOND * 3, false);
@@ -1230,13 +1237,13 @@ void actDecoyBox(Entity* my)
 								break;
 							}
 							if ( !myStats->EFFECTS[EFF_DISTRACTED_COOLDOWN] 
-								&& entity->monsterSetPathToLocation(my->x / 16, my->y / 16, 2,
+								&& entityCrtr->monsterSetPathToLocation(my->x / 16, my->y / 16, 2,
 									GeneratePathTypes::GENERATE_PATH_DEFAULT) && entity->children.first )
 							{
 								// path only if we're not on cooldown
-								entity->monsterLastDistractedByNoisemaker = my->getUID();
-								entity->monsterTarget = my->getUID();
-								entity->monsterState = MONSTER_STATE_HUNT; // hunt state
+								entityCrtr->monsterLastDistractedByNoisemaker = my->getUID();
+								entityCrtr->monsterTarget = my->getUID();
+								entityCrtr->monsterState = MONSTER_STATE_HUNT; // hunt state
 								serverUpdateEntitySkill(entity, 0);
 								detected = true;
 
@@ -1252,7 +1259,7 @@ void actDecoyBox(Entity* my)
 									if ( hit.entity == entity )
 									{
 										// set disoriented and start a cooldown on being distracted.
-										if ( entity->monsterState == MONSTER_STATE_WAIT || entity->monsterTarget == 0 )
+										if ( entityCrtr->monsterState == MONSTER_STATE_WAIT || entityCrtr->monsterTarget == 0 )
 										{
 											// not attacking, duration longer.
 											entity->setEffect(EFF_DISORIENTED, true, TICKS_PER_SECOND * 3, false);
@@ -1268,7 +1275,7 @@ void actDecoyBox(Entity* my)
 									}
 								}
 
-								if ( parent->behavior == &actPlayer && stats[parent->skill[2]] )
+								if ( parentCrtr && parentCrtr->behavior == &actPlayer && stats[parent->skill[2]] )
 								{
 									// see if we have a gyrobot follower to tell us what's goin on
 									for ( node_t* tmpNode = stats[parent->skill[2]]->FOLLOWERS.first; tmpNode != nullptr; tmpNode = tmpNode->next )
@@ -1302,7 +1309,7 @@ void actDecoyBox(Entity* my)
 		}
 		if ( !message && detected )
 		{
-			if ( parent && parent->behavior == &actPlayer )
+			if ( parentCrtr && parentCrtr->behavior == &actPlayer )
 			{
 				messagePlayer(parent->skill[2], MESSAGE_HINT, Language::get(3882));
 			}
@@ -1314,6 +1321,7 @@ void actDecoyBox(Entity* my)
 		// stop working.
 		bool decoyBreak = (local_rng.rand() % 5 == 0);
 		Entity* parent = uidToEntity(my->parent);
+        Creature* parentCrtr = dynamic_cast<Creature*>(parent);
 		playSoundEntity(my, 485 + local_rng.rand() % 3, 192);
 		if ( !decoyBreak )
 		{
@@ -1356,7 +1364,7 @@ void actDecoyBox(Entity* my)
 					serverSpawnGibForClient(entity);
 				}
 			}
-			if ( parent && parent->behavior == &actPlayer )
+			if ( parentCrtr && parentCrtr->behavior == &actPlayer )
 			{
 				messagePlayer(parent->skill[2], MESSAGE_EQUIPMENT, Language::get(3770));
 			}

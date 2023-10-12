@@ -216,12 +216,14 @@ void actPortal(Entity* my)
 	{
 		node_t* node = nullptr;
 		Entity* entity = nullptr;
+        Creature* creature = nullptr;
 		bool bossAlive = false;
 		for ( node = map.entities->first; node != nullptr; )
 		{
 			entity = (Entity*)node->element;
+            creature = (Creature*)entity;
 			node = node->next;
-			if ( entity && entity->behavior == &actMonster 
+			if ( creature && creature->behavior == &actMonster
 				&& entity->getMonsterTypeFromSprite() == COCKATRICE
 				&& !entity->monsterAllyGetPlayerLeader() )
 			{
@@ -247,14 +249,16 @@ void actPortal(Entity* my)
 	{
 		node_t* node = nullptr;
 		Entity* entity = nullptr;
+        Creature* creature = nullptr;
 		bool bossAlive = false;
 		for ( node = map.entities->first; node != nullptr; )
 		{
 			entity = (Entity*)node->element;
+            creature = (Creature*)entity;
 			node = node->next;
-			if ( entity && entity->behavior == &actMonster
-				&& entity->getMonsterTypeFromSprite() == VAMPIRE
-				&& !entity->monsterAllyGetPlayerLeader() )
+			if ( creature && creature->behavior == &actMonster
+				&& creature->getMonsterTypeFromSprite() == VAMPIRE
+				&& !creature->monsterAllyGetPlayerLeader() )
 			{
 				Stat* stats = entity->getStats();
 				if ( stats && MonsterData_t::nameMatchesSpecialNPCName(*stats, "bram kindly") )
@@ -420,7 +424,7 @@ void actWinningPortal(Entity* my)
 			node_t* node;
 			for ( node = map.creatures->first; node != nullptr; node = node->next )
 			{
-				Entity* entity = (Entity*)node->element;
+				Creature* entity = (Creature*)node->element;
 				if ( entity->behavior == &actMonster )
 				{
 					Stat* stats = entity->getStats();
@@ -666,12 +670,12 @@ void Entity::actExpansionEndGamePortal()
 			node_t* node;
 			for ( node = map.creatures->first; node != nullptr; node = node->next )
 			{
-				Entity* entity = (Entity*)node->element;
-				if ( entity )
+				Creature* creature = (Creature*)node->element;
+				if ( creature )
 				{
-					if ( entity->behavior == &actMonster )
+					if ( creature->behavior == &actMonster )
 					{
-						Stat* stats = entity->getStats();
+						Stat* stats = creature->getStats();
 						if ( stats )
 						{
 							if ( stats->type == LICH_FIRE || stats->type == LICH_ICE )
@@ -870,12 +874,12 @@ void Entity::actMidGamePortal()
 			node_t* node;
 			for ( node = map.creatures->first; node != nullptr; node = node->next )
 			{
-				Entity* entity = (Entity*)node->element;
-				if ( entity )
+				Creature* creature = (Creature*)node->element;
+				if ( creature )
 				{
-					if ( entity->behavior == &actMonster )
+					if ( creature->behavior == &actMonster )
 					{
-						Stat* stats = entity->getStats();
+						Stat* stats = creature->getStats();
 						if ( stats )
 						{
 							if ( stats->type == LICH || stats->type == DEVIL )

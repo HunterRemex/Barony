@@ -1488,7 +1488,7 @@ void Entity::chestHandleDamageMagic(int damage, Entity &magicProjectile, Entity 
 	chestHealth -= damage; //Decrease chest health.
 	if ( caster )
 	{
-		if ( caster->behavior == &actPlayer )
+		if ( ((Creature*)(caster))->behavior == &actPlayer )
 		{
 			if ( chestHealth <= 0 )
 			{

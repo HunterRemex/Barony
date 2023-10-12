@@ -30,6 +30,7 @@ bool spellIsNaturallyLearnedByRaceOrClass(Entity& caster, Stat& stat, int spellI
 void castSpellInit(Uint32 caster_uid, spell_t* spell, bool usingSpellbook)
 {
 	Entity* caster = uidToEntity(caster_uid);
+    Creature* casterCrtr = dynamic_cast<Creature*>(caster);
 	node_t* node = NULL;
 	if ( !caster || !spell )
 	{
@@ -136,8 +137,8 @@ void castSpellInit(Uint32 caster_uid, spell_t* spell, bool usingSpellbook)
 					messagePlayerColor(player, MESSAGE_STATUS, uint32ColorGreen, Language::get(3241));
 					messagePlayerColor(player, MESSAGE_HINT, uint32ColorGreen, Language::get(3242));
 					//messagePlayer(player, Language::get(408), spell->getSpellName());
-					caster->setEffect(EFF_VAMPIRICAURA, true, 1, false); // apply 1 tick countdown to finish effect.
-					caster->playerVampireCurse = 2; // cured.
+					casterCrtr->setEffect(EFF_VAMPIRICAURA, true, 1, false); // apply 1 tick countdown to finish effect.
+					casterCrtr->playerVampireCurse = 2; // cured.
 					steamAchievement("BARONY_ACH_REVERSE_THIS_CURSE");
 					playSoundEntity(caster, 402, 128);
 					createParticleDropRising(caster, 174, 1.0);
@@ -175,7 +176,7 @@ void castSpellInit(Uint32 caster_uid, spell_t* spell, bool usingSpellbook)
 		magiccost = getCostOfSpell(spell, caster);
 	}
 
-	if ( caster->behavior == &actPlayer && stat->type == VAMPIRE )
+	if ( casterCrtr && casterCrtr->behavior == &actPlayer && stat->type == VAMPIRE )
 	{
 		// allow overexpending.
 	}
@@ -249,6 +250,7 @@ int getSpellcastingAbilityFromUsingSpellbook(spell_t* spell, Entity* caster, Sta
 
 bool isSpellcasterBeginner(int player, Entity* caster)
 {
+    Creature* casterCrtr = dynamic_cast<Creature*>(caster);
 	if ( !caster && player < 0 )
 	{
 		return false;
@@ -267,7 +269,7 @@ bool isSpellcasterBeginner(int player, Entity* caster)
 	{
 		return false;
 	}
-	else if ( caster && caster->behavior == &actMonster )
+	else if ( casterCrtr && casterCrtr->behavior == &actMonster )
 	{
 		return false;
 	}
@@ -322,6 +324,7 @@ int getSpellbookBonusPercent(Entity* caster, Stat* stat, Item* spellbookItem)
 Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool trap, bool usingSpellbook)
 {
 	Entity* caster = uidToEntity(caster_uid);
+    Creature* casterCrtr = dynamic_cast<Creature*>(caster);
 
 	if (!caster || !spell)
 	{
@@ -462,9 +465,9 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 			}
 		}
 
-		if ( multiplayer != CLIENT )
+		if ( multiplayer != CLIENT && casterCrtr )
 		{
-			if ( caster->behavior == &actPlayer && stat->playerRace == RACE_INSECTOID && stat->appearance == 0 )
+			if ( casterCrtr->behavior == &actPlayer && stat->playerRace == RACE_INSECTOID && stat->appearance == 0 )
 			{
 				if ( !achievementObserver.playerAchievements[caster->skill[2]].gastricBypass )
 				{
@@ -510,7 +513,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 		}
 
 		// Check for natural monster spells - we won't fizzle those.
-		if ( caster->behavior == &actPlayer )
+		if ( casterCrtr && casterCrtr->behavior == &actPlayer )
 		{
 			if ( spellIsNaturallyLearnedByRaceOrClass(*caster, *stat, spell->ID) )
 			{
@@ -530,10 +533,10 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 				{
 					messagePlayer(player, MESSAGE_COMBAT, Language::get(409));
 				}
-				if ( usingSpellbook && stat->shield && itemCategory(stat->shield) == SPELLBOOK 
+				if ( casterCrtr && usingSpellbook && stat->shield && itemCategory(stat->shield) == SPELLBOOK
 					&& (stat->shield->beatitude < 0 && !shouldInvertEquipmentBeatitude(stat)) )
 				{
-					caster->degradeArmor(*stat, *(stat->shield), 4);
+					casterCrtr->degradeArmor(*stat, *(stat->shield), 4);
 					if ( stat->shield->status == BROKEN )
 					{
 						Item* toBreak = stat->shield;
@@ -792,7 +795,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 			{
 				for ( node_t* node = map.creatures->first; node != nullptr; node = node->next )
 				{
-					Entity* creature = (Entity*)node->element;
+					Creature* creature = (Creature*)node->element;
 					if ( creature && creature->behavior == &actMonster && creature->monsterTarget == caster->getUID() )
 					{
 						if ( !creature->isBossMonster() )
@@ -855,58 +858,58 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 			if ( caster->creatureShadowTaggedThisUid != 0 )
 			{
 				Entity* entityToTeleport = uidToEntity(caster->creatureShadowTaggedThisUid);
-				if ( entityToTeleport )
+				if ( entityToTeleport && casterCrtr )
 				{
-					caster->teleportAroundEntity(entityToTeleport, 3, 0);
-					if ( caster->behavior == &actPlayer )
+					casterCrtr->teleportAroundEntity(entityToTeleport, 3, 0);
+					if ( casterCrtr->behavior == &actPlayer )
 					{
 						achievementObserver.addEntityAchievementTimer(caster, AchievementObserver::BARONY_ACH_OHAI_MARK, 100, true, 0);
 					}
 				}
-				else
+				else if ( casterCrtr )
 				{
-					caster->teleportRandom();
+					casterCrtr->teleportRandom();
 				}
 			}
-			else
+			else if ( casterCrtr )
 			{
-				caster->teleportRandom();
+				casterCrtr->teleportRandom();
 			}
 		}
-		else if ( !strcmp(element->element_internal_name, spellElement_selfPolymorph.element_internal_name) )
+		else if ( !strcmp(element->element_internal_name, spellElement_selfPolymorph.element_internal_name) && casterCrtr )
 		{
-			if ( caster->behavior == &actPlayer )
+			if ( casterCrtr->behavior == &actPlayer )
 			{
 				spellEffectPolymorph(caster, caster, true, TICKS_PER_SECOND * 60 * 2); // 2 minutes.
 			}
-			else if ( caster->behavior == &actMonster )
+			else if ( casterCrtr->behavior == &actMonster )
 			{
 				spellEffectPolymorph(caster, caster, true);
 			}
 		}
-		else if ( !strcmp(element->element_internal_name, spellElement_strike.element_internal_name) )
+		else if ( !strcmp(element->element_internal_name, spellElement_strike.element_internal_name) && casterCrtr )
 		{
-			caster->attack(MONSTER_POSE_SPECIAL_WINDUP1, MAXCHARGE, nullptr); // this is server only, tells client to attack.
+			casterCrtr->attack(MONSTER_POSE_SPECIAL_WINDUP1, MAXCHARGE, nullptr); // this is server only, tells client to attack.
 		}
 		else if ( !strcmp(element->element_internal_name, spellElement_fear.element_internal_name) )
 		{
 			playSoundEntity(caster, 79, 128);
 			playSoundEntity(caster, 405, 128);
-			if ( caster->behavior == &actPlayer )
+			if ( casterCrtr && casterCrtr->behavior == &actPlayer )
 			{
-				caster->setEffect(EFF_STUNNED, true, 35, true);
-				caster->attack(MONSTER_POSE_SPECIAL_WINDUP2, 0, nullptr);
+				casterCrtr->setEffect(EFF_STUNNED, true, 35, true);
+				casterCrtr->attack(MONSTER_POSE_SPECIAL_WINDUP2, 0, nullptr);
 				//spawnMagicEffectParticles(caster->x, caster->y, caster->z, 174);
 				int foundTarget = 0;
-				if ( caster->behavior == &actPlayer )
+				if ( casterCrtr->behavior == &actPlayer )
 				{
 					messagePlayer(caster->skill[2], MESSAGE_COMBAT, Language::get(3437));
 				}
 				for ( node_t* node3 = map.creatures->first; node3 != nullptr; node3 = node3->next )
 				{
-					Entity* creature = (Entity*)node3->element;
-					if ( creature && creature != caster && creature->behavior == &actMonster 
-						&& !caster->checkFriend(creature) && entityDist(caster, creature) < TOUCHRANGE * 2 )
+					Creature* creature = (Creature*)node3->element; //TODO: BIRD -- Double-check logic
+					if ( creature  && creature != caster && creature->behavior == &actMonster
+						&& (!casterCrtr || !casterCrtr->checkFriend(creature)) && entityDist(caster, creature) < TOUCHRANGE * 2 )
 					{
 						// check LOS
 						Entity* ohit = hit.entity;
@@ -929,22 +932,22 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 				{
 					createParticleErupt(caster, 864);
 					serverSpawnMiscParticles(caster, PARTICLE_EFFECT_ERUPT, 864);
-					if ( caster->behavior == &actPlayer )
+					if ( casterCrtr && casterCrtr->behavior == &actPlayer )
 					{
 						messagePlayer(caster->skill[2], MESSAGE_COMBAT, Language::get(3438));
 					}
 				}
 			}
-			else if ( caster->behavior == &actMonster )
+			else if ( casterCrtr && casterCrtr->behavior == &actMonster )
 			{
-				caster->setEffect(EFF_STUNNED, true, 35, true);
-				caster->attack(MONSTER_POSE_SPECIAL_WINDUP2, 0, nullptr);
+				casterCrtr->setEffect(EFF_STUNNED, true, 35, true);
+				casterCrtr->attack(MONSTER_POSE_SPECIAL_WINDUP2, 0, nullptr);
 				int foundTarget = 0;
 				for ( node_t* node3 = map.creatures->first; node3 != nullptr; node3 = node3->next )
 				{
-					Entity* creature = (Entity*)node3->element;
+					Creature* creature = (Creature*)node3->element;
 					if ( creature && creature != caster
-						&& !caster->checkFriend(creature) && entityDist(caster, creature) < TOUCHRANGE * 2 )
+						&& (!casterCrtr || !casterCrtr->checkFriend(creature)) && entityDist(caster, creature) < TOUCHRANGE * 2 )
 					{
 						// check LOS
 						Entity* ohit = hit.entity;
@@ -967,7 +970,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 				{
 					createParticleErupt(caster, 864);
 					serverSpawnMiscParticles(caster, PARTICLE_EFFECT_ERUPT, 864);
-					if ( caster->behavior == &actPlayer )
+					if ( casterCrtr && casterCrtr->behavior == &actPlayer )
 					{
 						messagePlayer(caster->skill[2], MESSAGE_COMBAT, Language::get(3438));
 					}
@@ -1219,7 +1222,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 					messagePlayerColor(i, MESSAGE_HINT, color, Language::get(3490));
 					for ( node = map.creatures->first; node; node = node->next )
 					{
-						Entity* entity = (Entity*)(node->element);
+						Creature* entity = (Creature*)(node->element);
 						if ( !entity || entity == caster )
 						{
 							continue;
@@ -1243,7 +1246,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 					break;
 				}
 			}
-			if ( caster->behavior == &actMonster )
+			if ( casterCrtr && casterCrtr->behavior == &actMonster )
 			{
 				caster->setEffect(EFF_TROLLS_BLOOD, true, element->duration, true);
 			}
@@ -1295,17 +1298,17 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 					else
 					{
 						real_t vel = sqrt(pow(caster->vel_y, 2) + pow(caster->vel_x, 2));
-						caster->monsterKnockbackVelocity = std::min(2.25, std::max(1.0, vel));
-						caster->monsterKnockbackTangentDir = atan2(caster->vel_y, caster->vel_x);
+						casterCrtr->monsterKnockbackVelocity = std::min(2.25, std::max(1.0, vel));
+						casterCrtr->monsterKnockbackTangentDir = atan2(caster->vel_y, caster->vel_x);
 						if ( vel < 0.01 )
 						{
-							caster->monsterKnockbackTangentDir = caster->yaw + PI;
+							casterCrtr->monsterKnockbackTangentDir = caster->yaw + PI;
 						}
 					}
 					break;
 				}
 			}
-			if ( caster->behavior == &actMonster )
+			if ( casterCrtr && casterCrtr->behavior == &actMonster )
 			{
 				playSoundEntity(caster, 180, 128);
 				spawnMagicEffectParticles(caster->x, caster->y, caster->z, 982);
@@ -1345,7 +1348,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 					messagePlayerColor(i, MESSAGE_STATUS, uint32ColorGreen, Language::get(768));
 					for ( node = map.creatures->first; node; node = node->next )
 					{
-						Entity* entity = (Entity*)(node->element);
+						Creature* entity = (Creature*)(node->element);
 						if ( !entity || entity == caster )
 						{
 							continue;
@@ -1369,7 +1372,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 					break;
 				}
 			}
-			if ( caster->behavior == &actMonster )
+			if ( casterCrtr && casterCrtr->behavior == &actMonster )
 			{
 				if ( caster->getStats()->EFFECTS[EFF_SLOW] )
 				{
@@ -1423,7 +1426,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 
 					for ( node = map.creatures->first; node; node = node->next )
 					{
-						Entity* entity = (Entity*)(node->element);
+						Creature* entity = (Creature*)(node->element);
 						if ( !entity ||  entity == caster )
 						{
 							continue;
@@ -1455,7 +1458,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 				}
 			}
 
-			if ( caster->behavior == &actMonster )
+			if ( casterCrtr && casterCrtr->behavior == &actMonster )
 			{
 				spell_changeHealth(caster, element->damage * element->mana);
 			}
@@ -1464,7 +1467,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 			spawnMagicEffectParticles(caster->x, caster->y, caster->z, 169);
 		}
 		else if ( !strcmp(element->element_internal_name, spellElement_shapeshift.element_internal_name) 
-			&& caster && caster->behavior == &actPlayer )
+			&& casterCrtr && casterCrtr->behavior == &actPlayer )
 		{
 			Monster type = NOTHING;
 			switch ( spell->ID )
@@ -1499,7 +1502,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 
 				for ( node = map.creatures->first; node && stat; node = node->next )
 				{
-					Entity* entity = (Entity*)(node->element);
+					Creature* entity = (Creature*)(node->element);
 					if ( !entity || entity == caster )
 					{
 						continue;
@@ -1627,7 +1630,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 					int numAlliesEffectsCured = 0;
 					for ( node = map.creatures->first; node; node = node->next )
 					{
-						Entity* entity = (Entity*)(node->element);
+						Creature* entity = (Creature*)(node->element);
 						if ( !entity || entity == caster )
 						{
 							continue;
@@ -1712,15 +1715,15 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 		{
 			playSoundEntity(caster, 251, 128);
 			playSoundEntity(caster, 252, 128);
-			if ( caster->behavior == &actPlayer && stats[caster->skill[2]] )
+			if ( casterCrtr && casterCrtr->behavior == &actPlayer && stats[caster->skill[2]] )
 			{
 				// kill old summons.
 				for ( node = stats[caster->skill[2]]->FOLLOWERS.first; node != nullptr; node = node->next )
 				{
-					Entity* follower = nullptr;
+					Creature* follower = nullptr;
 					if ( (Uint32*)(node)->element )
 					{
-						follower = uidToEntity(*((Uint32*)(node)->element));
+						follower = uidToCreature(*((Uint32*)(node)->element));
 					}
 					if ( follower && follower->monsterAllySummonRank != 0 )
 					{
@@ -1784,11 +1787,11 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 		}
 		else if ( !strcmp(element->element_internal_name, spellElement_reflectMagic.element_internal_name) )
 		{
-			if ( caster->behavior == &actMonster )
+			if ( casterCrtr && casterCrtr->behavior == &actMonster )
 			{
-				caster->setEffect(EFF_MAGICREFLECT, true, 600, true);
+				casterCrtr->setEffect(EFF_MAGICREFLECT, true, 600, true);
 				playSoundEntity(caster, 166, 128);
-				spawnMagicEffectParticles(caster->x, caster->y, caster->z, 174);
+				spawnMagicEffectParticles(casterCrtr->x, casterCrtr->y, casterCrtr->z, 174);
 			}
 			else
 			{
@@ -1833,7 +1836,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 		}
 		else if ( !strcmp(element->element_internal_name, spellElement_amplifyMagic.element_internal_name) )
 		{
-			if ( caster->behavior == &actMonster )
+			if ( casterCrtr && casterCrtr->behavior == &actMonster )
 			{
 				caster->setEffect(EFF_MAGICAMPLIFY, true, 600, true);
 				playSoundEntity(caster, 166, 128);
@@ -1883,14 +1886,14 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 		}
 		else if ( !strcmp(element->element_internal_name, spellElement_vampiricAura.element_internal_name) )
 		{
-			if ( caster->behavior == &actMonster )
+			if ( casterCrtr && casterCrtr->behavior == &actMonster )
 			{
 				createParticleDropRising(caster, 600, 0.7);
 				serverSpawnMiscParticles(caster, PARTICLE_EFFECT_VAMPIRIC_AURA, 600);
 				caster->getStats()->EFFECTS[EFF_VAMPIRICAURA] = true;
 				caster->getStats()->EFFECTS_TIMERS[EFF_VAMPIRICAURA] = 600;
 			}
-			else if ( caster->behavior == &actPlayer )
+			else if ( casterCrtr && casterCrtr->behavior == &actPlayer )
 			{
 				channeled_spell = spellEffectVampiricAura(caster, spell, extramagic_to_use);
 			}
@@ -1963,7 +1966,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 			int volume = 128;
 
 			// IMPORTANT - TRAP IS USED FOR STORM POTIONS AND ORBIT PARTICLES, QUIET SOUND HERE.
-			if ( trap && caster && (caster->behavior == &actPlayer || caster->behavior == &actMonster) )
+			if ( trap && casterCrtr && (casterCrtr->behavior == &actPlayer || casterCrtr->behavior == &actMonster) )
 			{
 				volume = 8;
 			}
@@ -2482,7 +2485,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 					if ( local_rng.rand() % magicChance == 0 )
 					{
 						caster->increaseSkill(PRO_MAGIC); // otherwise you will basically never be able to learn all the spells in the game...
-						if ( usingSpellbook && caster->behavior == &actPlayer )
+						if ( usingSpellbook && casterCrtr && casterCrtr->behavior == &actPlayer )
 						{
 							if ( stats[caster->skill[2]] && stats[caster->skill[2]]->playerRace == RACE_INSECTOID && stats[caster->skill[2]]->appearance == 0 )
 							{
@@ -2502,7 +2505,7 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 		{
 			chance = 16;
 
-			if ( caster && caster->behavior == &actPlayer && stat->playerRace == RACE_GOBLIN && stat->appearance == 0 )
+			if ( casterCrtr && casterCrtr->behavior == &actPlayer && stat->playerRace == RACE_GOBLIN && stat->appearance == 0 )
 			{
 				if ( spell->ID >= 30 && spell->ID < 60 )
 				{
@@ -2521,12 +2524,12 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 		{
 			chance = 1; // cursed books always degrade, or blessed books in succubus/incubus
 		}
-		if ( local_rng.rand() % chance == 0 && stat->shield && itemCategory(stat->shield) == SPELLBOOK )
+		if ( local_rng.rand() % chance == 0 && stat->shield && itemCategory(stat->shield) == SPELLBOOK && casterCrtr )
 		{
-			caster->degradeArmor(*stat, *(stat->shield), 4);
+			casterCrtr->degradeArmor(*stat, *(stat->shield), 4);
 			if ( stat->shield->status == BROKEN && player >= 0 )
 			{
-				if ( caster && caster->behavior == &actPlayer && stat->playerRace == RACE_GOBLIN && stat->appearance == 0 )
+				if ( casterCrtr->behavior == &actPlayer && stat->playerRace == RACE_GOBLIN && stat->appearance == 0 )
 				{
 					steamStatisticUpdateClient(player, STEAM_STAT_DYSLEXIA, STEAM_STAT_INT, 1);
 				}
@@ -2618,7 +2621,8 @@ int spellGetCastSound(spell_t* spell)
 
 bool spellIsNaturallyLearnedByRaceOrClass(Entity& caster, Stat& stat, int spellID)
 {
-	if ( caster.behavior != &actPlayer )
+    Creature& casterCrtr = dynamic_cast<Creature&>(caster);
+	if ( casterCrtr.behavior != &actPlayer )
 	{
 		return false;
 	}

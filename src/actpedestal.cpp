@@ -95,8 +95,8 @@ void Entity::actPedestalBase()
 				node_t* node;
 				for ( node = map.entities->first; node != NULL; node = node->next )
 				{
-					Entity* entity = (Entity*)node->element;
-					if ( entity->behavior == &actMonster )
+					Creature* entity = (Creature*)node->element;
+					if ( entity && entity->behavior == &actMonster )
 					{
 						Stat* stats = entity->getStats();
 						if ( stats )

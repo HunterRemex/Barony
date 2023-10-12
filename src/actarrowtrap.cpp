@@ -13,6 +13,7 @@
 #include "game.hpp"
 #include "stat.hpp"
 #include "entity.hpp"
+#include "creature.h"
 #include "engine/audio/sound.hpp"
 #include "collision.hpp"
 #include "items.hpp"
@@ -154,10 +155,10 @@ void actArrowTrap(Entity* my)
 			// misfire from a lockpick, try to find a nearby target.
 			for ( node_t* node = map.creatures->first; node != nullptr; node = node->next )
 			{
-				Entity* entity = (Entity*)node->element;
-				if ( entity && entity->behavior == &actPlayer && entityDist(my, entity) < TOUCHRANGE )
+				Creature* entity = (Creature*)node->element;
+				if ( entity && entity->behavior == &actPlayer && entityDist(my, (Entity*)entity) < TOUCHRANGE )
 				{
-					targetToAutoHit = entity;
+					targetToAutoHit = (Entity*)entity;
 					break;
 				}
 			}

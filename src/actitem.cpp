@@ -637,7 +637,7 @@ void actItem(Entity* my)
 	{
 		if ( ITEM_TYPE == ARTIFACT_MACE && my->parent != 0 )
 		{
-			steamAchievementEntity(uidToEntity(my->parent), "BARONY_ACH_STFU");
+			steamAchievementEntity(uidToCreature(my->parent), "BARONY_ACH_STFU");
 		}
 		list_RemoveNode(my->mynode);
 		return;

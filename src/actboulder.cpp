@@ -199,15 +199,16 @@ int boulderCheckAgainstEntity(Entity* my, Entity* entity, bool ignoreInsideEntit
 	{
 		return 0;
 	}
+    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 
-	if ( entity->behavior == &actPlayer || entity->behavior == &actMonster )
+	if ( entityCrtr )
 	{
 		if ( ignoreInsideEntity || entityInsideEntity( my, entity ) )
 		{
 			Stat* stats = entity->getStats();
 			if ( stats )
 			{
-				if ( entity->behavior == &actPlayer )
+				if ( entityCrtr->behavior == &actPlayer )
 				{
 					Uint32 color = makeColorRGB(255, 0, 0);
 					messagePlayerColor(entity->skill[2], MESSAGE_STATUS, color, Language::get(455));
@@ -251,13 +252,13 @@ int boulderCheckAgainstEntity(Entity* my, Entity* entity, bool ignoreInsideEntit
 					entity->setObituary(Language::get(1505));
 					stats->killer = KilledBy::BOULDER;
 				}
-				if ( entity->behavior == &actPlayer )
+				if ( entityCrtr->behavior == &actPlayer )
 				{
 					if ( stats->HP <= 0 )
 					{
 						if ( stats->type == AUTOMATON )
 						{
-							entity->playerAutomatonDeathCounter = TICKS_PER_SECOND * 5; // set the death timer to immediately pop for players.
+							entityCrtr->playerAutomatonDeathCounter = TICKS_PER_SECOND * 5; // set the death timer to immediately pop for players.
 						}
 						steamAchievementClient(entity->skill[2], "BARONY_ACH_THROW_ME_THE_WHIP");
 						if ( BOULDER_PLAYERPUSHED >= 0 && entity->skill[2] != BOULDER_PLAYERPUSHED )
@@ -271,7 +272,7 @@ int boulderCheckAgainstEntity(Entity* my, Entity* entity, bool ignoreInsideEntit
 				bool lifeSaving = (stats->HP <= 0 && stats->amulet && stats->amulet->type == AMULET_LIFESAVING);
 				if ( !lifeSaving )
 				{
-					if ( stats->HP <= 0 && entity->behavior == &actPlayer 
+					if ( stats->HP <= 0 && entityCrtr->behavior == &actPlayer
 						&& ((stats->playerRace == RACE_SKELETON && stats->appearance == 0) || stats->type == SKELETON) )
 					{
 						if ( stats->MP >= 75 )
@@ -287,10 +288,10 @@ int boulderCheckAgainstEntity(Entity* my, Entity* entity, bool ignoreInsideEntit
 							for ( node_t* node = stats->FOLLOWERS.first; node != nullptr; node = node->next )
 							{
 								Uint32* c = (Uint32*)node->element;
-								Entity* mySummon = nullptr;
+								Creature* mySummon = nullptr;
 								if ( c )
 								{
-									mySummon = uidToEntity(*c);
+									mySummon = uidToCreature(*c);
 								}
 								if ( mySummon && mySummon->monsterAllySummonRank != 0 )
 								{
