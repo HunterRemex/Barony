@@ -3097,6 +3097,7 @@ void Player::WorldUI_t::reset()
 
 bool monsterIsFriendlyForTooltip(const int player, Entity& entity)
 {
+    Creature& entityCrtr = (Creature&)entity;
 	if ( multiplayer != CLIENT )
 	{
 		if ( !entity.checkEnemy(players[player]->entity) )
@@ -3117,7 +3118,7 @@ bool monsterIsFriendlyForTooltip(const int player, Entity& entity)
 	Monster targetEntityType = entity.getMonsterTypeFromSprite();
 	if ( targetEntityType == SHOPKEEPER )
 	{
-		if ( shopIsMysteriousShopkeeper(&entity) || !ShopkeeperPlayerHostility.isPlayerEnemy(player) )
+		if ( shopIsMysteriousShopkeeper(&entityCrtr) || !ShopkeeperPlayerHostility.isPlayerEnemy(player) )
 		{
 			return true;
 		}
@@ -3185,6 +3186,7 @@ real_t Player::WorldUI_t::tooltipInRange(Entity& tooltip)
 
 	real_t dist = entityDist(&tooltip, players[player.playernum]->entity);
 	Entity* parent = uidToEntity(tooltip.parent);
+    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
 
 	real_t maxDist = 24.0;
 	real_t minDist = 4.0;
@@ -3198,7 +3200,7 @@ real_t Player::WorldUI_t::tooltipInRange(Entity& tooltip)
 	else if ( parent 
 		&& (parent->getMonsterTypeFromSprite() == SHOPKEEPER 
 			|| (parent->behavior == &actFloorDecoration && parent->sprite == 991 /* sign */)
-			|| (parent->behavior == &actMonster && (monsterIsFriendlyForTooltip(player.playernum, *parent)))
+			|| (parentCrtr && parentCrtr->behavior == &actMonster && (monsterIsFriendlyForTooltip(player.playernum, *parent)))
 			|| (parent->monsterAllyGetPlayerLeader()
 				&& parent->monsterAllyGetPlayerLeader() == players[player.playernum]->entity)) )
 	{
@@ -3269,14 +3271,14 @@ real_t Player::WorldUI_t::tooltipInRange(Entity& tooltip)
 			{
 				return 0.0;
 			}
-			if ( parent->getMonsterTypeFromSprite() == SHOPKEEPER )
+			if ( parent->getMonsterTypeFromSprite() == SHOPKEEPER && parentCrtr )
 			{
-				if ( !shopIsMysteriousShopkeeper(parent) && ShopkeeperPlayerHostility.isPlayerEnemy(player.playernum) )
+				if ( !shopIsMysteriousShopkeeper(parentCrtr) && ShopkeeperPlayerHostility.isPlayerEnemy(player.playernum) )
 				{
 					return 0.0;
 				}
 			}
-			if ( parent->behavior == &actPlayer || parent->behavior == &actMonster )
+			if ( parentCrtr && (parentCrtr->behavior == &actPlayer || parentCrtr->behavior == &actMonster) )
 			{
 				interactAngle = PI / 16;
 			}
@@ -3317,7 +3319,7 @@ real_t Player::WorldUI_t::tooltipInRange(Entity& tooltip)
 
 			if ( followerSelectInteract )
 			{
-				if ( parent->behavior == &actMonster 
+				if ( parentCrtr && parentCrtr->behavior == &actMonster
 					&& ((multiplayer != CLIENT && parent->checkEnemy(player.entity)) 
 						|| (multiplayer == CLIENT 
 							&& !parent->monsterAllyGetPlayerLeader() && !monsterally[parent->getMonsterTypeFromSprite()][stats[player.playernum]->type])) )
@@ -3479,6 +3481,7 @@ void Player::WorldUI_t::setTooltipActive(Entity& tooltip)
 	if ( uidToEntity(tooltip.parent) )
 	{
 		Entity* parent = uidToEntity(tooltip.parent);
+        Creature* parentCrtr = dynamic_cast<Creature*>(parent);
 		if ( !parent )
 		{
 			setTooltipDisabled(tooltip);
@@ -3570,7 +3573,7 @@ void Player::WorldUI_t::setTooltipActive(Entity& tooltip)
 		{
 			interactText = Language::get(4010); // "Inspect gravestone" 
 		}
-		else if ( parent->behavior == &actMonster )
+		else if ( parentCrtr && parentCrtr->behavior == &actMonster )
 		{
 			int monsterType = parent->getMonsterTypeFromSprite();
 			std::string name = Language::get(4011); // "follower" 
@@ -3879,6 +3882,7 @@ void Player::WorldUI_t::cycleToPreviousTooltip()
 
 bool entityBlocksTooltipInteraction(const int player, Entity& entity)
 {
+    Creature& entityCrtr = (Creature&)entity;
 	if ( entity.behavior == &actGate )
 	{
 		return false;
@@ -3925,13 +3929,13 @@ bool entityBlocksTooltipInteraction(const int player, Entity& entity)
 	}
 	else if ( entity.behavior == &actDoor || entity.behavior == &actFountain || entity.behavior == &actSink
 		|| entity.behavior == &actHeadstone || entity.behavior == &actChest || entity.behavior == &actChestLid
-		|| entity.behavior == &actBoulder || entity.behavior == &actPlayer || entity.behavior == &actPedestalOrb || entity.behavior == &actPowerCrystalBase
+		|| entity.behavior == &actBoulder || (entityCrtr.behavior == &actPlayer) || entity.behavior == &actPedestalOrb || entity.behavior == &actPowerCrystalBase
 		|| entity.behavior == &actPowerCrystal
 		|| entity.behavior == &actColliderDecoration )
 	{
 		return false;
 	}
-	else if ( entity.behavior == &actMonster )
+	else if ( entityCrtr.behavior == &actMonster )
 	{
 		if ( monsterIsFriendlyForTooltip(player, entity) )
 		{
@@ -4053,11 +4057,12 @@ void Player::WorldUI_t::handleTooltips()
 		if ( !bDoingActionHideTooltips )
 		{
 			Entity* ohitentity = hit.entity;
+            Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
 			lineTrace(players[player]->entity, players[player]->entity->x, players[player]->entity->y,
 				players[player]->entity->yaw, STRIKERANGE, 0, true);
 			if ( hit.entity )
 			{
-				if ( hit.entity->behavior == &actMonster && followerSelectInteract )
+				if ( hitEntityCrtr && hitEntityCrtr->behavior == &actMonster && followerSelectInteract )
 				{
 					// don't let hostile monsters get in the way of selection
 				}
@@ -4132,8 +4137,9 @@ void Player::WorldUI_t::handleTooltips()
 					continue;
 				}
 				parent = uidToEntity(tooltip->parent);
-				if ( parent && parent->flags[INVISIBLE] 
-					&& !(parent->behavior == &actMonster && parent->getMonsterTypeFromSprite() == DUMMYBOT) )
+                Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+				if ( parent && parent->flags[INVISIBLE]
+					&& !((!parentCrtr || parentCrtr->behavior == &actMonster) && parent->getMonsterTypeFromSprite() == DUMMYBOT) )//TODO: BIRD -- Double-check
 				{
 					continue;
 				}
@@ -4145,10 +4151,10 @@ void Player::WorldUI_t::handleTooltips()
 				if ( newDist > 0.01 )
 				{
 					players[player]->worldUI.tooltipsInRange.push_back(std::make_pair(tooltip, newDist));
-					if ( followerSelectInteract && parent && closestTooltip && parent->behavior != &actMonster )
+					if ( followerSelectInteract && parent && closestTooltip && (!parentCrtr || parentCrtr->behavior != &actMonster) )
 					{
 						// follower interaction - monsters have higher priority than interactibles.
-						Entity* closestParent = uidToEntity(closestTooltip->parent);
+						Creature* closestParent = uidToCreature(closestTooltip->parent);
 						if ( closestParent && closestParent->behavior == &actMonster )
 						{
 							continue;

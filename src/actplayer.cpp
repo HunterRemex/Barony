@@ -30,6 +30,7 @@
 #include "classdescriptions.hpp"
 #include "ui/MainMenu.hpp"
 #include "interface/consolecommand.hpp"
+#include "creature.h"
 
 bool settings_smoothmouse = false;
 bool usecamerasmoothing = false;
@@ -453,7 +454,7 @@ void Player::PlayerMovement_t::startQuickTurn()
 		return;
 	}
 
-	Entity* my = players[player.playernum]->entity;
+	Creature* my = players[player.playernum]->entity;
 
 	if ( gamePaused || !stats[PLAYER_NUM] || !my->isMobile() )
 	{
@@ -511,7 +512,7 @@ void Player::PlayerMovement_t::handlePlayerCameraUpdate(bool useRefreshRateDelta
 		return;
 	}
 
-	Entity* my = players[player.playernum]->entity;
+	Creature* my = players[player.playernum]->entity;
 	int playernum = player.playernum;
 
 	real_t mousex_relative = mousexrel;
@@ -1150,7 +1151,7 @@ void Player::PlayerMovement_t::handlePlayerMovement(bool useRefreshRateDelta)
 		return;
 	}
 
-	Entity* my = players[player.playernum]->entity;
+	Creature* my = players[player.playernum]->entity;
 
 	Input& input = Input::inputs[player.playernum];
 
@@ -1517,6 +1518,7 @@ void doStatueEditor(int player)
 	if ( ticks % 5 == 0 )
 	{
 		Entity* underMouse = nullptr;
+        Creature* underMouseCrtr = dynamic_cast<Creature*>(underMouse);
 		Uint32 uidnum = 0;
 		if ( !shootmode )
 		{
@@ -1541,7 +1543,7 @@ void doStatueEditor(int player)
 			{
 				underMouse = players[underMouse->skill[2]]->entity;
 			}
-			if ( underMouse->behavior == &actPlayer )
+  			if ( underMouseCrtr && underMouseCrtr->behavior == &actPlayer )
 			{
 				StatueManager.editingPlayerUid = underMouse->getUID();
 				StatueManager.lastEntityUnderMouse = uidnum;
@@ -1618,9 +1620,9 @@ void doStatueEditor(int player)
 			}
 		}
 
-		if ( Entity* playerEntity = uidToEntity(StatueManager.editingPlayerUid) )
+		if ( Creature* playerCreature = uidToCreature(StatueManager.editingPlayerUid) )
 		{
-			Stat* stats = playerEntity->getStats();
+			Stat* stats = playerCreature->getStats();
 
 			if ( keystatus[SDLK_LEFTBRACKET] )
 			{
@@ -1640,11 +1642,11 @@ void doStatueEditor(int player)
 				keystatus[SDLK_F1] = 0;
 
 				++stats->playerRace;
-				if ( playerEntity->getMonsterFromPlayerRace(stats->playerRace) == HUMAN && stats->playerRace > 0 )
+				if (playerCreature->getMonsterFromPlayerRace(stats->playerRace) == HUMAN && stats->playerRace > 0 )
 				{
 					stats->playerRace = RACE_HUMAN;
 				}
-				if ( playerEntity->getMonsterFromPlayerRace(stats->playerRace) != HUMAN )
+				if (playerCreature->getMonsterFromPlayerRace(stats->playerRace) != HUMAN )
 				{
 					stats->appearance = 0;
 				}
@@ -1967,7 +1969,7 @@ int playerHeadSprite(Monster race, sex_t sex, int appearance, int frame) {
     }
 }
 
-void actPlayer(Entity* my)
+void actPlayer(Creature* my)
 {
 	if (!my)
 	{
@@ -4052,6 +4054,7 @@ void actPlayer(Entity* my)
 			if ( followerMenu.optionSelected == ALLY_CMD_ATTACK_SELECT )
 			{
 				Entity* underMouse = nullptr;
+                Creature* underMouseCrtr = dynamic_cast<Creature*>(underMouse);
 				if ( followerMenu.optionSelected == ALLY_CMD_ATTACK_SELECT && ticks % 10 == 0 )
 				{
 					if ( !players[PLAYER_NUM]->worldUI.isEnabled() )
@@ -4074,8 +4077,8 @@ void actPlayer(Entity* my)
 						}
 						if ( underMouse && followerMenu.followerToCommand )
 						{
-							Entity* parent = uidToEntity(underMouse->skill[2]);
-							if ( underMouse->behavior == &actMonster || (parent && parent->behavior == &actMonster) )
+							Creature* parent = uidToCreature(underMouse->skill[2]);
+							if ( underMouseCrtr && underMouseCrtr->behavior == &actMonster || (parent && parent->behavior == &actMonster) )
 							{
 								// see if we selected a limb
 								if ( parent )
@@ -4238,12 +4241,14 @@ void actPlayer(Entity* my)
 						{
 							// we're selecting a target for the ally.
 							Entity* target = entityClicked(nullptr, false, PLAYER_NUM, EntityClickType::ENTITY_CLICK_FOLLOWER_INTERACT);
+                            Creature* targetCrtr = dynamic_cast<Creature*>(target);
 							input.consumeBinaryToggle("Use");
 							//input.consumeBindingsSharedWithBinding("Use");
 							if ( target && followerMenu.followerToCommand )
 							{
 								Entity* parent = uidToEntity(target->skill[2]);
-								if ( target->behavior == &actMonster || (parent && parent->behavior == &actMonster) )
+                                Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+								if ( targetCrtr && targetCrtr->behavior == &actMonster || (parentCrtr && parentCrtr->behavior == &actMonster) )
 								{
 									// see if we selected a limb
 									if ( parent )
@@ -4375,17 +4380,18 @@ void actPlayer(Entity* my)
 			{
 				followerMenu.followerToCommand = nullptr;
 				Entity* parent = uidToEntity(selectedEntity[PLAYER_NUM]->skill[2]);
-				if ( selectedEntity[PLAYER_NUM]->behavior == &actMonster || (parent && parent->behavior == &actMonster) )
+                Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+				if ( ((Creature*)(selectedEntity[PLAYER_NUM]))->behavior == &actMonster || (parentCrtr && parentCrtr->behavior == &actMonster) )
 				{
 					// see if we selected a follower to process right click menu.
-					if ( parent && parent->monsterAllyIndex == PLAYER_NUM )
+					if ( parent && parent->monsterAllyIndex == PLAYER_NUM && parentCrtr )
 					{
-						followerMenu.followerToCommand = parent;
+						followerMenu.followerToCommand = parentCrtr;
 						//messagePlayer(0, "limb");
 					}
 					else if ( selectedEntity[PLAYER_NUM]->monsterAllyIndex == PLAYER_NUM )
 					{
-						followerMenu.followerToCommand = selectedEntity[PLAYER_NUM];
+						followerMenu.followerToCommand = (Creature*)selectedEntity[PLAYER_NUM];
 						//messagePlayer(0, "head");
 					}
 
@@ -4465,9 +4471,10 @@ void actPlayer(Entity* my)
 						else
 						{
 							Entity* tempEntity = uidToEntity(selectedEntity[PLAYER_NUM]->skill[2]);
+                            Creature* tempCreature = dynamic_cast<Creature*>(tempEntity);
 							if (tempEntity)
 							{
-								if (tempEntity->behavior == &actMonster)
+								if (tempCreature && tempCreature->behavior == &actMonster)
 								{
 									SDLNet_Write32((Uint32)tempEntity->getUID(), &net_packet->data[5]);
 								}
@@ -4813,10 +4820,10 @@ void actPlayer(Entity* my)
 						{
 							nextnode = node->next;
 							Uint32* c = (Uint32*)node->element;
-							Entity* myFollower = nullptr;
+							Creature* myFollower = nullptr;
 							if ( c )
 							{
-								myFollower = uidToEntity(*c);
+								myFollower = uidToCreature(*c);
 							}
 							if ( myFollower )
 							{
@@ -5066,7 +5073,7 @@ void actPlayer(Entity* my)
 							}
 							for ( node_t* mapNode = map.creatures->first; mapNode != nullptr; mapNode = mapNode->next )
 							{
-								Entity* mapCreature = (Entity*)mapNode->element;
+								Creature* mapCreature = (Creature*)mapNode->element;
 								if ( mapCreature )
 								{
 									mapCreature->monsterEntityRenderAsTelepath = 0; // do a final pass to undo any telepath rendering.
@@ -5204,12 +5211,13 @@ void actPlayer(Entity* my)
 			// bumping into monsters disturbs them
 			if ( hit.entity && !intro && multiplayer != CLIENT )
 			{
-				if ( !everybodyfriendly && hit.entity->behavior == &actMonster )
+                Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+				if ( !everybodyfriendly && hitEntityCrtr && hitEntityCrtr->behavior == &actMonster )
 				{
 					bool enemy = my->checkEnemy(hit.entity);
 					if ( enemy )
 					{
-						if ( hit.entity->monsterState == MONSTER_STATE_WAIT || (hit.entity->monsterState == MONSTER_STATE_HUNT && hit.entity->monsterTarget == 0) )
+ 						if ( hitEntityCrtr->monsterState == MONSTER_STATE_WAIT || (hitEntityCrtr->monsterState == MONSTER_STATE_HUNT && hitEntityCrtr->monsterTarget == 0) )
 						{
 							double tangent = atan2( my->y - hit.entity->y, my->x - hit.entity->x );
 							hit.entity->skill[4] = 1;
@@ -5255,24 +5263,25 @@ void actPlayer(Entity* my)
 			// bumping into monsters disturbs them
 			if ( hit.entity && !intro )
 			{
-				if ( !everybodyfriendly && hit.entity->behavior == &actMonster )
-				{
-					bool enemy = my->checkEnemy(hit.entity);
-					if ( enemy )
-					{
-						if ( hit.entity->monsterState == MONSTER_STATE_WAIT || (hit.entity->monsterState == MONSTER_STATE_HUNT && hit.entity->monsterTarget == 0) )
-						{
-							double tangent = atan2( my->y - hit.entity->y, my->x - hit.entity->x );
-							hit.entity->skill[4] = 1;
-							hit.entity->skill[6] = local_rng.rand() % 10 + 1;
-							hit.entity->fskill[4] = tangent;
-						}
-					}
-				}
-				else if ( stats[PLAYER_NUM]->EFFECTS[EFF_DASH] && hit.entity->behavior == &actDoor )
-				{
-					hit.entity->doorHealth = 0;
-				}
+                Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+                if ( !everybodyfriendly && hitEntityCrtr && hitEntityCrtr->behavior == &actMonster )
+                {
+                    bool enemy = my->checkEnemy(hit.entity);
+                    if ( enemy )
+                    {
+                        if ( hitEntityCrtr->monsterState == MONSTER_STATE_WAIT || (hitEntityCrtr->monsterState == MONSTER_STATE_HUNT && hitEntityCrtr->monsterTarget == 0) )
+                        {
+                            double tangent = atan2( my->y - hit.entity->y, my->x - hit.entity->x );
+                            hit.entity->skill[4] = 1;
+                            hit.entity->skill[6] = local_rng.rand() % 10 + 1;
+                            hit.entity->fskill[4] = tangent;
+                        }
+                    }
+                }
+                else if ( stats[PLAYER_NUM]->EFFECTS[EFF_DASH] && hit.entity->behavior == &actDoor )
+                {
+                    hit.entity->doorHealth = 0;
+                }
 			}
 		}
 		else
@@ -5292,7 +5301,7 @@ void actPlayer(Entity* my)
 	{
 		for ( node_t* mapNode = map.creatures->first; mapNode != nullptr; mapNode = mapNode->next )
 		{
-			Entity* mapCreature = (Entity*)mapNode->element;
+			Creature* mapCreature = (Creature*)mapNode->element;
 			if ( mapCreature )
 			{
 				if ( stats[PLAYER_NUM]->EFFECTS[EFF_TELEPATH] && !intro )
@@ -6869,7 +6878,7 @@ void actPlayerLimb(Entity* my)
 {
 	int i;
 
-	Entity* parent = uidToEntity(my->parent);
+	Creature* parent = uidToCreature(my->parent);
 
 	if ( multiplayer == CLIENT )
 	{
@@ -6984,7 +6993,7 @@ void actPlayerLimb(Entity* my)
 	}
 }
 
-void Entity::playerLevelEntrySpeechSecond()
+void Creature::playerLevelEntrySpeechSecond()
 {
 	int timeDiff = playerAliveTime - 300;
 	int orangeSpeechVolume = 128;
@@ -7191,7 +7200,7 @@ void Entity::playerLevelEntrySpeechSecond()
 	}
 }
 
-bool Entity::isPlayerHeadSprite(const int sprite)
+bool Creature::isPlayerHeadSprite(const int sprite)
 {
 	switch ( sprite )
 	{
@@ -7260,9 +7269,9 @@ bool Entity::isPlayerHeadSprite(const int sprite)
 	return false;
 }
 
-bool Entity::isPlayerHeadSprite() const
+bool Creature::isPlayerHeadSprite() const
 {
-	return Entity::isPlayerHeadSprite(sprite);
+	return Creature::isPlayerHeadSprite(sprite);
 }
 
 Monster getMonsterFromPlayerRace(int playerRace)
@@ -7315,7 +7324,7 @@ Monster getMonsterFromPlayerRace(int playerRace)
 	return HUMAN;
 }
 
-Monster Entity::getMonsterFromPlayerRace(int playerRace)
+Monster Creature::getMonsterFromPlayerRace(int playerRace)
 {
     return ::getMonsterFromPlayerRace(playerRace);
 }
