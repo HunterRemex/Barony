@@ -424,7 +424,7 @@ void ShopkeeperPlayerHostility_t::setWantedLevel(ShopkeeperPlayerHostility_t::Pl
 	}
 }
 
-void ShopkeeperPlayerHostility_t::onShopkeeperDeath(Entity* my, Stat* myStats, Entity* attacker)
+void ShopkeeperPlayerHostility_t::onShopkeeperDeath(Creature* my, Stat* myStats, Creature * attacker)
 {
 	if ( shopIsMysteriousShopkeeper(my) ) { return; }
 	if ( my && myStats && attacker && myStats->type == SHOPKEEPER )
@@ -446,12 +446,13 @@ void ShopkeeperPlayerHostility_t::onShopkeeperDeath(Entity* my, Stat* myStats, E
 		}
 	}
 }
-void ShopkeeperPlayerHostility_t::onShopkeeperHit(Entity* my, Stat* myStats, Entity* attacker)
+void ShopkeeperPlayerHostility_t::onShopkeeperHit(Creature* my, Stat* myStats, Entity* attacker)
 {
 	if ( shopIsMysteriousShopkeeper(my) ) { return; }
 	if ( my && myStats && attacker && myStats->type == SHOPKEEPER )
-	{
-		if ( attacker->behavior == &actPlayer )
+    {
+        Creature* attackerCrtr = dynamic_cast<Creature*>(attacker);
+		if ( attackerCrtr && attackerCrtr->behavior == &actPlayer )
 		{
 			if ( auto h = getPlayerHostility(attacker->skill[2]) )
 			{
@@ -462,13 +463,13 @@ void ShopkeeperPlayerHostility_t::onShopkeeperHit(Entity* my, Stat* myStats, Ent
 	}
 }
 
-void ShopkeeperPlayerHostility_t::updateShopkeeperActMonster(Entity& my, Stat& myStats, bool ringconflict)
+void ShopkeeperPlayerHostility_t::updateShopkeeperActMonster(Creature& my, Stat& myStats, bool ringconflict)
 {
 	// unused? if attacking after a ring of conflict then it could set enemy
 	return;
 	if ( ringconflict ) { return; }
 	if ( shopIsMysteriousShopkeeper(&my) ) { return; }
-	if ( Entity* entity = uidToEntity(my.monsterTarget) )
+	if ( Creature* entity = uidToCreature(my.monsterTarget) )
 	{
 		if ( entity->behavior == &actPlayer )
 		{
@@ -528,15 +529,16 @@ void Entity::updateEntityOnHit(Entity* attacker, bool alertTarget)
 	if ( !attacker ) return;
 	if ( attacker == this ) { return; }
 
+    Creature* attackerCrtr = dynamic_cast<Creature*>(attacker);
 	if ( Stat* myStats = getStats() )
 	{
 		if ( myStats->type == SHOPKEEPER )
 		{
 			if ( alertTarget )
 			{
-				if ( attacker->behavior == &actPlayer )
+				if ( attackerCrtr && attackerCrtr->behavior == &actPlayer )
 				{
-					ShopkeeperPlayerHostility.onShopkeeperHit(this, myStats, attacker);
+					ShopkeeperPlayerHostility.onShopkeeperHit((Creature*)this, myStats, attacker);
 				}
 				/*else if ( attacker->behavior == &actMonster )
 				{
@@ -555,7 +557,7 @@ bool MonsterAllyFormation_t::getFollowLocation(Uint32 uid, Uint32 leaderUid, std
 {
 	outPos.first = -1;
 	outPos.second = -1;
-	Entity* leader = uidToEntity(leaderUid);
+	Creature* leader = uidToCreature(leaderUid);
 	if ( !leader ) { return false; }
 	if ( leader->behavior != &actPlayer && leader->behavior != &actMonster ) { return false; }
 
@@ -772,7 +774,7 @@ int MonsterAllyFormation_t::getFollowerTryExtendedPathSearch(Entity& my, Stat& m
 
 void MonsterAllyFormation_t::updateFormation(Uint32 leaderUid, Uint32 monsterUpdateUid)
 {
-	Entity* leader = uidToEntity(leaderUid);
+	Creature* leader = uidToCreature(leaderUid);
 	if ( !leader ) { return; }
 	if ( !(leader->behavior == &actPlayer || leader->behavior == &actMonster) ) { return; }
 	auto& leaderUnits = units[leaderUid];
@@ -975,7 +977,7 @@ void summonMonsterClient(Monster creature, long x, long y, Uint32 uid)
 	}
 }
 
-Entity* summonMonster(Monster creature, long x, long y, bool forceLocation)
+Creature* summonMonster(Monster creature, long x, long y, bool forceLocation)
 {
     auto entity = summonMonsterNoSmoke(creature, x, y, forceLocation);
 
@@ -997,9 +999,9 @@ Entity* summonMonster(Monster creature, long x, long y, bool forceLocation)
     return entity;
 }
 
-Entity* summonMonsterNoSmoke(Monster creature, long x, long y, bool forceLocation)
+Creature* summonMonsterNoSmoke(Monster creature, long x, long y, bool forceLocation)
 {
-	Entity* entity = newEntity(-1, 1, map.entities, map.creatures); //Monster entity.
+	Creature* entity = newCreature(-1, 1, map.entities, map.creatures); //Monster entity.
 	//Set the monster's variables.
 	entity->sizex = 4;
 	entity->sizey = 4;
@@ -1157,7 +1159,7 @@ void summonManyMonster(Monster creature)
 
 -------------------------------------------------------------------------------*/
 
-bool monsterMoveAside(Entity* my, Entity* entity, bool ignoreMonsterState)
+bool monsterMoveAside(Creature* my, Entity* entity, bool ignoreMonsterState)
 {
 	if ( !my || !entity )
 	{
@@ -1251,7 +1253,7 @@ int devilroar = 0;
 int devilsummonedtimes = 0;
 
 bool makeFollower(int monsterclicked, bool ringconflict, char namesays[64], 
-	Entity* my, Stat* myStats, bool checkReturnValueOnly)
+	Creature* my, Stat* myStats, bool checkReturnValueOnly)
 {
 	if ( !myStats )
 	{
@@ -1765,10 +1767,10 @@ bool makeFollower(int monsterclicked, bool ringconflict, char namesays[64],
 	for ( node_t* node = stats[monsterclicked]->FOLLOWERS.first; node != nullptr; node = node->next )
 	{
 		Uint32* c = (Uint32*)node->element;
-		Entity* entity = nullptr;
+		Creature* entity = nullptr;
 		if ( c )
 		{
-			entity = uidToEntity(*c);
+			entity = uidToCreature(*c);
 		}
 		if ( entity && entity->monsterTarget == *myuid )
 		{
@@ -1836,7 +1838,7 @@ bool makeFollower(int monsterclicked, bool ringconflict, char namesays[64],
 	return true;
 }
 
-void printFollowerTableForSkillsheet(int monsterclicked, Entity* my, Stat* myStats)
+void printFollowerTableForSkillsheet(int monsterclicked, Creature* my, Stat* myStats)
 {
 	if ( !players[monsterclicked]->entity ) { return; }
 	if ( !my || !myStats ) { return; }
@@ -2050,7 +2052,7 @@ void sentrybotPickSpotNoise(Entity* my, Stat* myStats)
 	}
 }
 
-void actMonster(Entity* my)
+void actMonster(Creature* my)
 {
 	if (!my)
 	{
@@ -2070,6 +2072,7 @@ void actMonster(Entity* my)
 	double tangent;
 	Stat* myStats;
 	Entity* entity;
+    Creature* entityCrtr;
 	Stat* hitstats = NULL;
 	bool hasrangedweapon = false;
 	bool myReflex;
@@ -2454,14 +2457,14 @@ void actMonster(Entity* my)
 			my->monsterHitTime = HITRATE * 2;
 		}
 		//messagePlayer(0, "Ally state: %d", my->monsterLichAllyStatus);
-		Entity* lichAlly = nullptr;
+		Creature* lichAlly = nullptr;
 		if ( my->ticks > (TICKS_PER_SECOND) 
 			&& my->monsterLichAllyStatus == LICH_ALLY_ALIVE 
 			&& ticks % (TICKS_PER_SECOND * 2) == 0 )
 		{
 			if ( myStats->type == LICH_ICE )
 			{
-				numMonsterTypeAliveOnMap(LICH_FIRE, lichAlly);
+				numMonsterTypeAliveOnMap(LICH_FIRE, (Entity*&)lichAlly);
 				if ( lichAlly == nullptr )
 				{
 					//messagePlayer(0, "DEAD");
@@ -2480,7 +2483,7 @@ void actMonster(Entity* my)
 			}
 			else
 			{
-				numMonsterTypeAliveOnMap(LICH_ICE, lichAlly);
+				numMonsterTypeAliveOnMap(LICH_ICE, (Entity*&)lichAlly);
 				if ( lichAlly == nullptr )
 				{
 					//messagePlayer(0, "DEAD");
@@ -2560,7 +2563,7 @@ void actMonster(Entity* my)
 					// chance to change state to teleport after being hit.
 					if ( my->monsterLichAllyUID != 0 )
 					{
-						lichAlly = uidToEntity(my->monsterLichAllyUID);
+						lichAlly = uidToCreature(my->monsterLichAllyUID);
 					}
 					if ( myStats->type == LICH_FIRE )
 					{
@@ -2783,7 +2786,7 @@ void actMonster(Entity* my)
 						{
 							if ( my->monsterLichAllyUID != 0 )
 							{
-								lichAlly = uidToEntity(my->monsterLichAllyUID);
+								lichAlly = uidToCreature(my->monsterLichAllyUID);
 							}
 							if ( lichAlly && target )
 							{
@@ -2875,13 +2878,13 @@ void actMonster(Entity* my)
 				lichDist = 1024;
 				for ( node = map.creatures->first; node != nullptr; node = node->next ) //Only creatures need to be targeted.
 				{
-					Entity* tempEntity = (Entity*)node->element;
-					if ( tempEntity->behavior == &actPlayer 
-						&& (sqrt(pow(my->x - tempEntity->x, 2) + pow(my->y - tempEntity->y, 2)) < lichDist)
+					Creature* tempCreature = (Creature*)node->element;
+					if (tempCreature->behavior == &actPlayer
+                        && (sqrt(pow(my->x - tempCreature->x, 2) + pow(my->y - tempCreature->y, 2)) < lichDist)
 						)
 					{
-						lichDist = sqrt(pow(my->x - tempEntity->x, 2) + pow(my->y - tempEntity->y, 2));
-						target = tempEntity;
+						lichDist = sqrt(pow(my->x - tempCreature->x, 2) + pow(my->y - tempCreature->y, 2));
+						target = tempCreature;
 					}
 				}
 				if ( target )
@@ -2903,13 +2906,13 @@ void actMonster(Entity* my)
 				lichDist = 1024;
 				for ( node = map.creatures->first; node != nullptr; node = node->next ) //Only creatures need to be targeted.
 				{
-					Entity* tempEntity = (Entity*)node->element;
-					if ( tempEntity && tempEntity->behavior == &actPlayer
-						&& (sqrt(pow(my->x - tempEntity->x, 2) + pow(my->y - tempEntity->y, 2)) < lichDist)
+					Creature* tempCreature = (Creature*)node->element;
+					if (tempCreature && tempCreature->behavior == &actPlayer
+                        && (sqrt(pow(my->x - tempCreature->x, 2) + pow(my->y - tempCreature->y, 2)) < lichDist)
 						)
 					{
-						lichDist = sqrt(pow(my->x - tempEntity->x, 2) + pow(my->y - tempEntity->y, 2));
-						target = tempEntity;
+						lichDist = sqrt(pow(my->x - tempCreature->x, 2) + pow(my->y - tempCreature->y, 2));
+						target = tempCreature;
 					}
 				}
 				if ( target )
@@ -3842,7 +3845,7 @@ void actMonster(Entity* my)
 	{
 		isIllusionTaunt = true;
 		hasrangedweapon = false;
-		Entity* myTarget = uidToEntity(static_cast<Uint32>(my->monsterIllusionTauntingThisUid));
+		Creature* myTarget = uidToCreature(static_cast<Uint32>(my->monsterIllusionTauntingThisUid));
 		if ( myTarget )
 		{
 			if ( my->ticks % 50 == 0 )
@@ -3901,7 +3904,7 @@ void actMonster(Entity* my)
 	{
 		if ( myStats && myStats->leader_uid != 0 )
 		{
-			Entity* leader = uidToEntity(myStats->leader_uid);
+			Creature* leader = uidToCreature(myStats->leader_uid);
 			if ( !leader && my->flags[USERFLAG2] )
 			{
 				my->flags[USERFLAG2] = false;
@@ -3963,11 +3966,12 @@ void actMonster(Entity* my)
 			for ( node2 = currentList->first; node2 != nullptr; node2 = node2->next ) //Can't convert to map.creatures because of doorframes.
 			{
 				entity = (Entity*)node2->element;
+                entityCrtr = (Creature*)entity;
 				if ( entity == my )
 				{
 					continue;
 				}
-				if ( entity->behavior != &actMonster && entity->behavior != &actPlayer && entity->behavior != &actDoorFrame )
+				if ( (!entityCrtr || entityCrtr->behavior != &actMonster && entityCrtr->behavior != &actPlayer) && entity->behavior != &actDoorFrame )
 				{
 					continue;
 				}
@@ -4230,9 +4234,11 @@ void actMonster(Entity* my)
 							}
 							if ( targetdist > TOUCHRANGE && targetdist > light )
 							{
+                                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+
 								if ( !(myStats->leader_uid == entity->getUID()) 
 									&& !(hitstats->leader_uid == my->getUID())
-									&& !(my->monsterAllyGetPlayerLeader() && entity->behavior == &actPlayer) )
+									&& !(my->monsterAllyGetPlayerLeader() && entityCrtr && entityCrtr->behavior == &actPlayer) )
 								{
 									if ( !levitating )
 									{
@@ -4327,7 +4333,8 @@ void actMonster(Entity* my)
 
 									if ( entity != nullptr )
 									{
-										if ( entity->behavior == &actPlayer && myStats->type != DUMMYBOT )
+                                        auto crtrBhvr = ((void(*)(Creature *))entity->behavior);
+										if ( crtrBhvr && crtrBhvr == &actPlayer && myStats->type != DUMMYBOT )
 										{
 											assailant[entity->skill[2]] = true;  // as long as this is active, combat music doesn't turn off
 											assailantTimer[entity->skill[2]] = COMBAT_MUSIC_COOLDOWN;
@@ -4338,22 +4345,23 @@ void actMonster(Entity* my)
 									for ( node = map.creatures->first; node != nullptr; node = node->next )
 									{
 										entity = (Entity*)node->element;
-										if ( entity->behavior == &actMonster && entity != my )
+                                        auto* crtrEntity = dynamic_cast<Creature*>(entity);
+										if ( crtrEntity && crtrEntity->behavior == &actMonster && crtrEntity != my )
 										{
 											Stat* buddystats = entity->getStats();
 											if ( buddystats != nullptr )
 											{
-												if ( entity->checkFriend(my) )
+												if ( crtrEntity->checkFriend(my) )
 												{
-													if ( entity->monsterState == MONSTER_STATE_WAIT )   // monster is waiting
+													if ( crtrEntity->monsterState == MONSTER_STATE_WAIT )   // monster is waiting
 													{
-														if ( !entity->checkFriend(attackTarget) )
+														if ( !crtrEntity->checkFriend(attackTarget) )
 														{
 															tangent = atan2( entity->y - my->y, entity->x - my->x );
 															lineTrace(my, my->x, my->y, tangent, monsterVisionRange, 0, false);
 															if ( hit.entity == entity )
 															{
-																entity->monsterAcquireAttackTarget(*attackTarget, MONSTER_STATE_PATH);
+																crtrEntity->monsterAcquireAttackTarget(*attackTarget, MONSTER_STATE_PATH);
 															}
 														}
 													}
@@ -4629,7 +4637,7 @@ void actMonster(Entity* my)
 						real_t dist = sightranges[myStats->type];
 						for ( node = map.creatures->first; node != nullptr; node = node->next )
 						{
-							Entity* target = (Entity*)node->element;
+							Creature* target = (Creature*)node->element;
 							if ( target->behavior == &actMonster && my->checkEnemy(target) )
 							{
 								real_t oldDist = dist;
@@ -4816,7 +4824,8 @@ void actMonster(Entity* my)
 			}
 			if ( entity != nullptr )
 			{
-				if ( entity->behavior == &actPlayer && myStats->type != DUMMYBOT )
+                auto crtrBhvr = ((void(*)(Creature *))entity->behavior);
+				if ( crtrBhvr && crtrBhvr == &actPlayer && myStats->type != DUMMYBOT )
 				{
 					assailant[entity->skill[2]] = true;  // as long as this is active, combat music doesn't turn off
 					assailantTimer[entity->skill[2]] = COMBAT_MUSIC_COOLDOWN;
@@ -4884,9 +4893,11 @@ void actMonster(Entity* my)
 				{
 					if ( targetdist > TOUCHRANGE && targetdist > light && myReflex )
 					{
+                        auto crtrBhvr = ((void(*)(Creature *))entity->behavior);
+
 						if ( !(myStats->leader_uid == entity->getUID())
 							&& !(hitstats->leader_uid == my->getUID())
-							&& !(my->monsterAllyGetPlayerLeader() && entity->behavior == &actPlayer) )
+							&& !(my->monsterAllyGetPlayerLeader() && crtrBhvr && crtrBhvr == &actPlayer) )
 						{
 							tangent = atan2( my->monsterTargetY - my->y, my->monsterTargetX - my->x );
 							if ( !levitating )
@@ -5583,9 +5594,10 @@ timeToGoAgain:
 			}
 
 			entity = uidToEntity(my->monsterTarget);
+            entityCrtr = dynamic_cast<Creature*>(entity);
 			if ( entity != nullptr )
 			{
-				if ( entity->behavior == &actPlayer )
+				if ( entityCrtr && entityCrtr->behavior == &actPlayer )
 				{
 					assailant[entity->skill[2]] = true;  // as long as this is active, combat music doesn't turn off
 					assailantTimer[entity->skill[2]] = COMBAT_MUSIC_COOLDOWN;
@@ -5625,6 +5637,7 @@ timeToGoAgain:
 			if ( myStats->type == SHADOW && my->monsterSpecialTimer == 0 && my->monsterTarget )
 			{
 				Entity* target = uidToEntity(my->monsterTarget);
+                Creature* targetCrtr = dynamic_cast<Creature*>(entity);
 				if ( !target )
 				{
 					my->monsterReleaseAttackTarget(true);
@@ -5668,7 +5681,7 @@ timeToGoAgain:
 					my->monsterSpecialTimer = MONSTER_SPECIAL_COOLDOWN_SHADOW_PASIVE_TELEPORT;
 					my->shadowTeleportToTarget(target, 3); // teleport in closer range
 					my->monsterState = MONSTER_STATE_WAIT;
-					if ( target && target->behavior == actPlayer )
+					if ( targetCrtr && targetCrtr->behavior == actPlayer )
 					{
 						messagePlayer(target->skill[2], MESSAGE_HINT, Language::get(2518));
 					}
@@ -5724,7 +5737,7 @@ timeToGoAgain:
 							{
 								if ( !(myStats->leader_uid == entity->getUID())
 									&& !(hitstats->leader_uid == my->getUID())
-									&& !(my->monsterAllyGetPlayerLeader() && entity->behavior == &actPlayer) )
+									&& !(my->monsterAllyGetPlayerLeader() && entityCrtr && entityCrtr->behavior == &actPlayer) )
 								{
 									if ( !levitating )
 									{
@@ -5861,7 +5874,7 @@ timeToGoAgain:
 
 												if ( entity != nullptr )
 												{
-													if ( entity->behavior == &actPlayer && myStats->type != DUMMYBOT )
+													if ( entityCrtr && entityCrtr->behavior == &actPlayer && myStats->type != DUMMYBOT )
 													{
 														assailant[entity->skill[2]] = true;  // as long as this is active, combat music doesn't turn off
 														assailantTimer[entity->skill[2]] = COMBAT_MUSIC_COOLDOWN;
@@ -5887,9 +5900,10 @@ timeToGoAgain:
 			{
 				bool shouldHuntPlayer = false;
 				Entity* playerOrNot = uidToEntity(my->monsterTarget);
+                Creature* playerOrNotCrtr = dynamic_cast<Creature*>(playerOrNot);
 				if (playerOrNot)
 				{
-					if (ticks % 180 == 0 && playerOrNot->behavior == &actPlayer)
+					if (ticks % 180 == 0 && playerOrNotCrtr && playerOrNotCrtr->behavior == &actPlayer)
 					{
 						shouldHuntPlayer = true;
 					}
@@ -6118,9 +6132,10 @@ timeToGoAgain:
 			}
 
 			entity = uidToEntity(my->monsterTarget);
-			if ( entity != NULL )
+            entityCrtr = dynamic_cast<Creature*>(entity);
+            if ( entity != NULL )
 			{
-				if ( entity->behavior == &actPlayer && myStats->type != DUMMYBOT )
+				if ( entityCrtr && entityCrtr->behavior == &actPlayer && myStats->type != DUMMYBOT )
 				{
 					assailant[entity->skill[2]] = true; // as long as this is active, combat music doesn't turn off
 					assailantTimer[entity->skill[2]] = COMBAT_MUSIC_COOLDOWN;
@@ -6189,6 +6204,7 @@ timeToGoAgain:
 							}
 							dist2 = clipMove(&my->x, &my->y, MONSTER_VELX, MONSTER_VELY, my);
 							my->handleKnockbackDamage(*myStats, hit.entity);
+                            Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
 							if ( hit.entity != NULL )
 							{
 								if ( hit.entity->behavior == &actDoor )
@@ -6278,7 +6294,7 @@ timeToGoAgain:
 									magicDig(nullptr, nullptr, 0, 1);
 									hit.entity = nullptr;
 								}
-								else if ( hit.entity->behavior == &actMonster )
+								else if ( hitEntityCrtr && hitEntityCrtr->behavior == &actMonster )
 								{
 									Stat* yourStats = hit.entity->getStats();
 									if ( hit.entity->getUID() == my->monsterTarget )
@@ -6341,7 +6357,7 @@ timeToGoAgain:
 										}
 									}
 								}
-								else if ( hit.entity->behavior == &actPlayer )
+								else if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
 								{
 									if ( my->checkEnemy(hit.entity) )
 									{
@@ -6533,7 +6549,7 @@ timeToGoAgain:
 								real_t dist = sightranges[myStats->type];
 								for ( node = map.creatures->first; node != nullptr; node = node->next )
 								{
-									Entity* target = (Entity*)node->element;
+									Creature* target = (Creature*)node->element;
 									if ( target && target->behavior == &actMonster && my->checkEnemy(target) )
 									{
 										real_t oldDist = dist;
@@ -6574,7 +6590,7 @@ timeToGoAgain:
 							real_t dist = sightranges[myStats->type];
 							for ( node = map.creatures->first; node != nullptr; node = node->next )
 							{
-								Entity* target = (Entity*)node->element;
+								Creature* target = (Creature*)node->element;
 								if ( target && target->behavior == &actMonster && my->checkEnemy(target) )
 								{
 									real_t oldDist = dist;
@@ -6682,7 +6698,7 @@ timeToGoAgain:
 							real_t dist = sightranges[myStats->type];
 							for ( node = map.creatures->first; node != nullptr; node = node->next )
 							{
-								Entity* target = (Entity*)node->element;
+								Creature* target = (Creature*)node->element;
 								if ( target && target->behavior == &actMonster && my->checkEnemy(target) )
 								{
 									real_t oldDist = dist;
@@ -6737,6 +6753,7 @@ timeToGoAgain:
 
 			// turn towards target
 			Entity* target = uidToEntity(my->monsterTarget);
+            Creature* targetCrtr = dynamic_cast<Creature*>(target);
 			if ( target != NULL )
 			{
 				dir = my->yaw - atan2( target->y - my->y, target->x - my->x );
@@ -6764,7 +6781,7 @@ timeToGoAgain:
 					my->monsterState = MONSTER_STATE_WAIT;
 					my->monsterTarget = 0;
 					int player = -1;
-					if ( target && target->behavior == &actPlayer )
+					if ( targetCrtr && targetCrtr->behavior == &actPlayer )
 					{
 						player = target->skill[2];
 					}
@@ -7185,14 +7202,14 @@ timeToGoAgain:
 				Entity* playertotrack = nullptr;
 				for ( tempNode = map.creatures->first; tempNode != nullptr; tempNode = tempNode->next ) //Only inspects players, so don't iterate map.entities.
 				{
-					Entity* tempEntity = (Entity*)tempNode->element;
+					Creature* tempCreature = (Creature*)tempNode->element;
 					double lowestdist = 5000;
-					if ( tempEntity->behavior == &actPlayer )
+					if (tempCreature->behavior == &actPlayer )
 					{
-						double disttoplayer = entityDist(my, tempEntity);
+						double disttoplayer = entityDist(my, tempCreature);
 						if ( disttoplayer < lowestdist )
 						{
-							playertotrack = tempEntity;
+							playertotrack = tempCreature;
 						}
 					}
 				}
@@ -7328,7 +7345,7 @@ timeToGoAgain:
 				Entity* playertotrack = nullptr;
 				for ( tempNode = map.creatures->first; tempNode != nullptr; tempNode = tempNode->next ) //Only inspects players, so don't iterate map.entities. Technically, only needs to iterate through the players[] array, eh?
 				{
-					Entity* tempEntity = (Entity*)tempNode->element;
+					Creature* tempEntity = (Creature*)tempNode->element;
 					double lowestdist = 5000;
 					if ( tempEntity->behavior == &actPlayer )
 					{
@@ -7637,14 +7654,14 @@ timeToGoAgain:
 				Entity* playertotrack = nullptr;
 				for ( tempNode = map.creatures->first; tempNode != nullptr; tempNode = tempNode->next ) //Iterate map.creatures, since only inspecting players, not all entities. Technically should just iterate over players[]?
 				{
-					Entity* tempEntity = (Entity*)tempNode->element;
+					Creature* tempCreature = (Creature*)tempNode->element;
 					double lowestdist = 5000;
-					if ( tempEntity->behavior == &actPlayer )
+					if (tempCreature->behavior == &actPlayer )
 					{
-						double disttoplayer = entityDist(my, tempEntity);
+						double disttoplayer = entityDist(my, tempCreature);
 						if ( disttoplayer < lowestdist )
 						{
-							playertotrack = tempEntity;
+							playertotrack = tempCreature;
 						}
 					}
 				}
@@ -8101,7 +8118,7 @@ timeToGoAgain:
 	}
 }
 
-void Entity::handleMonsterAttack(Stat* myStats, Entity* target, double dist)
+void Creature::handleMonsterAttack(Stat* myStats, Entity* target, double dist)
 {
 	Stat* hitstats = nullptr;
 	int charge = 1;
@@ -8294,12 +8311,13 @@ void Entity::handleMonsterAttack(Stat* myStats, Entity* target, double dist)
 			{
 				// found the target in range
 				hitstats = hit.entity->getStats();
-				if ( hit.entity->behavior == &actMonster && !hasrangedweapon )
+                Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+				if ( hitEntityCrtr && hitEntityCrtr->behavior == &actMonster && !hasrangedweapon )
 				{
 					// alert the monster!
-					if ( hit.entity->skill[0] != MONSTER_STATE_ATTACK )
+					if ( hitEntityCrtr->skill[0] != MONSTER_STATE_ATTACK )
 					{
-						hit.entity->monsterAcquireAttackTarget(*this, MONSTER_STATE_PATH);
+						hitEntityCrtr->monsterAcquireAttackTarget(*this, MONSTER_STATE_PATH);
 					}
 				}
 				if ( hitstats != nullptr )
@@ -8765,7 +8783,7 @@ real_t normaliseAngle2PI(real_t angle)
 	return angle;
 }
 
-bool forceFollower(Entity& leader, Entity& follower)
+bool forceFollower(Creature& leader, Creature& follower)
 {
 	Stat* leaderStats = leader.getStats();
 	Stat* followerStats = follower.getStats();
@@ -8781,7 +8799,7 @@ bool forceFollower(Entity& leader, Entity& follower)
 	//Deal with the old leader.
 	if ( followerStats->leader_uid != 0 )
 	{
-		Entity* oldLeader = uidToEntity(followerStats->leader_uid);
+		Creature* oldLeader = uidToCreature(followerStats->leader_uid);
 		if ( oldLeader )
 		{
 			Stat* oldLeaderStats = oldLeader->getStats();
@@ -8812,14 +8830,14 @@ bool forceFollower(Entity& leader, Entity& follower)
 	for ( node_t* node = leaderStats->FOLLOWERS.first; node != nullptr; node = node->next )
 	{
 		Uint32* c = (Uint32*)node->element;
-		Entity* entity = nullptr;
+		Creature* creature = nullptr;
 		if ( c )
 		{
-			entity = uidToEntity(*c);
+            creature = uidToCreature(*c);
 		}
-		if ( entity && entity->monsterTarget == *myuid )
+		if (creature && creature->monsterTarget == *myuid )
 		{
-			entity->monsterReleaseAttackTarget(); // followers stop punching the new target.
+			creature->monsterReleaseAttackTarget(); // followers stop punching the new target.
 		}
 	}
 
@@ -9565,7 +9583,7 @@ void getTargetsAroundEntity(Entity* my, Entity* originalTarget, double distToFin
 	// aoe
 	for ( node = map.creatures->first; node != nullptr; node = node->next ) //Only looks at monsters and players, don't iterate all entities (map.entities).
 	{
-		entity = (Entity*)node->element;
+		entity = (Creature*)node->element;
 		if ( (entity->behavior == &actMonster || entity->behavior == &actPlayer) && entity != originalTarget && entity != my )
 		{
 			if ( searchType == MONSTER_TARGET_ENEMY )
@@ -9626,7 +9644,7 @@ void getTargetsAroundEntity(Entity* my, Entity* originalTarget, double distToFin
 	return;
 }
 
-int numTargetsAroundEntity(Entity* my, double distToFind, real_t angleToSearch, int searchType)
+int numTargetsAroundEntity(Creature* my, double distToFind, real_t angleToSearch, int searchType)
 {
 	list_t* aoeTargets = nullptr;
 	int count = 0;
@@ -9746,7 +9764,7 @@ int numMonsterTypeAliveOnMap(Monster creature, Entity*& lastMonster)
 	return monsterCount;
 }
 
-void Entity::monsterMoveBackwardsAndPath()
+void Creature::monsterMoveBackwardsAndPath()
 {
 	while ( yaw < 0 )
 	{
@@ -9817,7 +9835,7 @@ void Entity::monsterMoveBackwardsAndPath()
 	monsterState = MONSTER_STATE_HUNT; // hunt state
 }
 
-bool Entity::monsterHasLeader()
+bool Creature::monsterHasLeader()
 {
 	Stat* myStats = this->getStats();
 	if ( myStats )
@@ -9830,7 +9848,7 @@ bool Entity::monsterHasLeader()
 	return false;
 }
 
-void Entity::monsterAllySendCommand(int command, int destX, int destY, Uint32 uid)
+void Creature::monsterAllySendCommand(int command, int destX, int destY, Uint32 uid)
 {
 	if ( multiplayer == CLIENT )
 	{
@@ -9934,9 +9952,10 @@ void Entity::monsterAllySendCommand(int command, int destX, int destY, Uint32 ui
 			if ( uid != 0 && uid != getUID() )
 			{
 				Entity* target = uidToEntity(uid);
+				Creature* targetCrtr = dynamic_cast<Creature*>(target);
 				if ( target )
 				{
-					if ( target->behavior == &actMonster || target->behavior == &actPlayer )
+					if ( targetCrtr )
 					{
 						if ( stats[monsterAllyIndex] ) // check owner's proficiency.
 						{
@@ -10463,7 +10482,7 @@ void Entity::monsterAllySendCommand(int command, int destX, int destY, Uint32 ui
 	//messagePlayer(0, "received: %d", command);
 }
 
-bool Entity::monsterAllySetInteract()
+bool Creature::monsterAllySetInteract()
 {
 	if ( multiplayer == CLIENT )
 	{
@@ -10547,7 +10566,7 @@ void Entity::clearMonsterInteract()
 	interactedByMonster = 0;
 }
 
-bool Entity::monsterSetPathToLocation(int destX, int destY, int adjacentTilesToCheck, int pathingType, bool tryRandomSpot)
+bool Creature::monsterSetPathToLocation(int destX, int destY, int adjacentTilesToCheck, int pathingType, bool tryRandomSpot)
 {
 	int u, v;
 	bool foundplace = false;
@@ -10614,7 +10633,7 @@ bool Entity::monsterSetPathToLocation(int destX, int destY, int adjacentTilesToC
 	return true;
 }
 
-bool Entity::gyrobotSetPathToReturnLocation(int destX, int destY, int adjacentTilesToCheck, bool tryRandomSpot)
+bool Creature::gyrobotSetPathToReturnLocation(int destX, int destY, int adjacentTilesToCheck, bool tryRandomSpot)
 {
 	int u, v;
 	bool foundplace = false;
@@ -10686,7 +10705,7 @@ bool Entity::gyrobotSetPathToReturnLocation(int destX, int destY, int adjacentTi
 	return true;
 }
 
-void Entity::handleNPCInteractDialogue(Stat& myStats, AllyNPCChatter event)
+void Creature::handleNPCInteractDialogue(Stat& myStats, AllyNPCChatter event)
 {
 	if ( multiplayer == CLIENT )
 	{
@@ -11079,7 +11098,7 @@ void Entity::handleNPCInteractDialogue(Stat& myStats, AllyNPCChatter event)
 	}
 }
 
-int Entity::shouldMonsterDefend(Stat& myStats, const Entity& target, const Stat& targetStats, int targetDist, bool hasrangedweapon)
+int Creature::shouldMonsterDefend(Stat& myStats, const Entity& target, const Stat& targetStats, int targetDist, bool hasrangedweapon)
 {
 	if ( behavior != &actMonster )
 	{
@@ -11193,7 +11212,7 @@ int Entity::shouldMonsterDefend(Stat& myStats, const Entity& target, const Stat&
 	return false;
 }
 
-bool Entity::monsterConsumeFoodEntity(Entity* food, Stat* myStats)
+bool Creature::monsterConsumeFoodEntity(Entity* food, Stat* myStats)
 {
 	if ( !myStats )
 	{
@@ -11378,9 +11397,9 @@ bool Entity::monsterConsumeFoodEntity(Entity* food, Stat* myStats)
 	return foodEntityConsumed;
 }
 
-Entity* Entity::monsterAllyGetPlayerLeader()
+Creature* Entity::monsterAllyGetPlayerLeader()
 {
-	if ( behavior != &actMonster )
+	if ( typeid(this) != typeid(Creature) || ((Creature*)this)->behavior != &actMonster )
 	{
 		return nullptr;
 	}
@@ -11394,7 +11413,7 @@ Entity* Entity::monsterAllyGetPlayerLeader()
 	return nullptr;
 }
 
-bool Entity::monsterAllyEquipmentInClass(const Item& item) const
+bool Creature::monsterAllyEquipmentInClass(const Item& item) const
 {
 	Stat* myStats = getStats();
 	if ( !myStats )
@@ -11595,8 +11614,8 @@ bool Entity::monsterAllyEquipmentInClass(const Item& item) const
 bool Entity::monsterIsTinkeringCreation()
 {
 	int race = this->getMonsterTypeFromSprite();
-	if ( behavior != &actMonster )
-	{
+    if ( typeid(this) != typeid(Creature) || ((Creature*)this)->behavior != &actMonster )
+    {
 		return false;
 	}
 	if ( race == GYROBOT || race == DUMMYBOT || race == SENTRYBOT || race == SPELLBOT )
@@ -11606,7 +11625,7 @@ bool Entity::monsterIsTinkeringCreation()
 	return false;
 }
 
-void Entity::monsterHandleKnockbackVelocity(real_t monsterFacingTangent, real_t weightratio)
+void Creature::monsterHandleKnockbackVelocity(real_t monsterFacingTangent, real_t weightratio)
 {
 	// this function makes the monster accelerate to running forwards or 0 movement speed after being knocked back.
 	// vel_x, vel_y are set on knockback impact and this slowly accumulates speed from the knocked back movement by a factor of monsterKnockbackVelocity.
@@ -11633,7 +11652,7 @@ void Entity::monsterHandleKnockbackVelocity(real_t monsterFacingTangent, real_t 
 	this->monsterKnockbackVelocity *= 1.1;
 }
 
-int Entity::monsterGetDexterityForMovement()
+int Creature::monsterGetDexterityForMovement()
 {
 	int myDex = this->getDEX();
 	if ( this->monsterAllyGetPlayerLeader() )
@@ -11647,7 +11666,7 @@ int Entity::monsterGetDexterityForMovement()
 	return myDex;
 }
 
-void Entity::monsterGenerateQuiverItem(Stat* myStats, bool lesserMonster)
+void Creature::monsterGenerateQuiverItem(Stat* myStats, bool lesserMonster)
 {
 	if ( !myStats )
 	{
@@ -11864,7 +11883,7 @@ void Entity::monsterGenerateQuiverItem(Stat* myStats, bool lesserMonster)
 	}
 }
 
-int Entity::getMonsterEffectiveDistanceOfRangedWeapon(Item* weapon)
+int Creature::getMonsterEffectiveDistanceOfRangedWeapon(Item* weapon)
 {
 	if ( !weapon )
 	{
@@ -11897,7 +11916,7 @@ int Entity::getMonsterEffectiveDistanceOfRangedWeapon(Item* weapon)
 	return distance;
 }
 
-bool Entity::isFollowerFreeToPathToPlayer(Stat* myStats)
+bool Creature::isFollowerFreeToPathToPlayer(Stat* myStats)
 {
 	Entity* currentTarget = uidToEntity(monsterTarget);
 	if ( currentTarget )
