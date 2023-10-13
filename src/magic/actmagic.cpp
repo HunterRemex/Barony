@@ -75,6 +75,7 @@ static const char* colorForSprite(int sprite, bool darker) {
 void actMagiclightBall(Entity* my)
 {
 	Entity* caster = NULL;
+	Creature* casterCrtr = nullptr;
 	if (!my)
 	{
 		return;
@@ -168,6 +169,7 @@ void actMagiclightBall(Entity* my)
 	}
 
 	caster = uidToEntity(spell->caster);
+	casterCrtr = (Creature*)caster;
 	if (caster)
 	{
 		Stat* stats = caster->getStats();
@@ -226,10 +228,10 @@ void actMagiclightBall(Entity* my)
 			if ( spell->sustain )
 			{
 				//Attempt to sustain the magic light.
-				if (caster)
+				if (casterCrtr)
 				{
 					//Deduct mana from caster. Cancel spell if not enough mana (simply leave sustained at false).
-					bool deducted = caster->safeConsumeMP(1); //Consume 1 mana every duration / mana seconds
+					bool deducted = casterCrtr->safeConsumeMP(1); //Consume 1 mana every duration / mana seconds
 					if (deducted)
 					{
 						lightball_timer = spell->channel_duration / getCostOfSpell(spell);
@@ -240,7 +242,7 @@ void actMagiclightBall(Entity* my)
 						int player = -1;
 						for (i = 0; i < MAXPLAYERS; ++i)
 						{
-							if (players[i]->entity == caster)
+							if (players[i]->entity == casterCrtr)
 							{
 								player = i;
 							}
@@ -2646,6 +2648,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 						if ( hitEntityCrtr )
 						{
 							Entity* parent = uidToEntity(my->parent);
+							Creature* parentCrtr = (Creature*)parent;
 							playSoundEntity(my, 173, 64);
 							playSoundEntity(hit.entity, 28, 128);
 							int damage = element->damage;
@@ -2680,18 +2683,18 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 								{
 									hitstats->bleedInflictedBy = static_cast<Sint32>(my->parent);
 								}
-								if ( !wasBleeding && parent && casterStats )
+								if ( !wasBleeding && parentCrtr && casterStats )
 								{
 									// energize if wearing punisher hood!
 									if ( casterStats->helmet && casterStats->helmet->type == PUNISHER_HOOD )
 									{
-										parent->modMP(1 + local_rng.rand() % 2);
+										parentCrtr->modMP(1 + local_rng.rand() % 2);
 										Uint32 color = makeColorRGB(0, 255, 0);
-										parent->setEffect(EFF_MP_REGEN, true, 250, true);
+										parentCrtr->setEffect(EFF_MP_REGEN, true, 250, true);
 										if ( parentCrtr && parentCrtr->behavior == &actPlayer )
 										{
-											messagePlayerColor(parent->skill[2], MESSAGE_HINT, color, Language::get(3753));
-											steamStatisticUpdateClient(parent->skill[2], STEAM_STAT_ITS_A_LIVING, STEAM_STAT_INT, 1);
+											messagePlayerColor(parentCrtr->skill[2], MESSAGE_HINT, color, Language::get(3753));
+											steamStatisticUpdateClient(parentCrtr->skill[2], STEAM_STAT_ITS_A_LIVING, STEAM_STAT_INT, 1);
 										}
 										playSoundEntity(parent, 168, 128);
 									}
@@ -4801,8 +4804,11 @@ void actParticleSapCenter(Entity* my)
 			}
 			else if ( my->skill[6] == SPELL_DRAIN_SOUL )
 			{
-				parent->modHP(my->skill[7]);
-				parent->modMP(my->skill[8]);
+				if ( parentCrtr )
+				{
+					parentCrtr->modHP(my->skill[7]);
+					parentCrtr->modMP(my->skill[8]);
+				}
 				if ( parentCrtr && parentCrtr->behavior == &actPlayer )
 				{
 					Uint32 color = makeColorRGB(0, 255, 0);
@@ -4819,7 +4825,10 @@ void actParticleSapCenter(Entity* my)
 			}
 			else if ( my->skill[6] == SPELL_SUMMON )
 			{
-				parent->modMP(my->skill[7]);
+				if ( parentCrtr )
+				{
+					parentCrtr->modMP(my->skill[7]);
+				}
 				/*if ( parent->behavior == &actPlayer )
 				{
 					Uint32 color = makeColorRGB(0, 255, 0);
