@@ -236,7 +236,7 @@ void scarabAnimate(Entity* my, Stat* myStats, double dist)
 	node_t* node;
 	int bodypart;
 	Entity* entity = nullptr;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 
 	// set invisibility //TODO: isInvisible()?
 	if ( multiplayer != CLIENT )

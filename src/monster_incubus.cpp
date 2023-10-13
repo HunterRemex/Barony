@@ -552,7 +552,7 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr, *entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	int bodypart;
 	bool wearingring = false;
 

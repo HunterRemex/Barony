@@ -721,7 +721,7 @@ void insectoidMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
 	Entity* torso = nullptr;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	int bodypart;
 	bool wearingring = false;
 

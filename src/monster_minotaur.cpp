@@ -295,7 +295,7 @@ void minotaurMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* rightbody = NULL;
 	Entity* head = NULL;
 	Entity* chest = NULL;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	int bodypart;
 
 	// set invisibility //TODO: isInvisible()?
@@ -807,7 +807,7 @@ void actMinotaurTimer(Entity* my)
 void actMinotaurCeilingBuster(Entity* my)
 {
 	double x, y;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 
 	// levitate particles
 	int u = std::min<unsigned int>(std::max<int>(0, my->x / 16), map.width - 1);

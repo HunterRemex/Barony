@@ -501,7 +501,7 @@ void sentryBotAnimate(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr, *entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	int bodypart;
 
 	if ( multiplayer != CLIENT && myCrtr )
@@ -985,7 +985,7 @@ void gyroBotAnimate(Entity* my, Stat* myStats, double dist)
 {
 	node_t* node;
 	Entity* entity = nullptr;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	int bodypart;
 
 	if ( multiplayer != CLIENT )
@@ -1848,7 +1848,7 @@ void dummyBotAnimate(Entity* my, Stat* myStats, double dist)
 	node_t* node;
 	Entity* entity = nullptr;
 	Entity* head = nullptr;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	int bodypart;
 
 	my->flags[INVISIBLE] = true; // hide the "AI" bodypart

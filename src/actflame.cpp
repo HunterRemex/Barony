@@ -84,7 +84,7 @@ static ConsoleVariable<bool> cvar_flame_use_vismap("/flame_use_vismap", true);
 
 Entity* spawnFlame(Entity* parentent, Sint32 sprite )
 {
-    Creature* parentCrtr = dynamic_cast<Creature*>(parentent);
+    Creature* parentCrtr = (Creature*)parentent;
 	if ( !parentent )
 	{
 		return nullptr;

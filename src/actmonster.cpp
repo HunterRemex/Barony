@@ -451,7 +451,7 @@ void ShopkeeperPlayerHostility_t::onShopkeeperHit(Creature* my, Stat* myStats, E
 	if ( shopIsMysteriousShopkeeper(my) ) { return; }
 	if ( my && myStats && attacker && myStats->type == SHOPKEEPER )
     {
-        Creature* attackerCrtr = dynamic_cast<Creature*>(attacker);
+        Creature* attackerCrtr = (Creature*)attacker;
 		if ( attackerCrtr && attackerCrtr->behavior == &actPlayer )
 		{
 			if ( auto h = getPlayerHostility(attacker->skill[2]) )
@@ -529,7 +529,7 @@ void Entity::updateEntityOnHit(Entity* attacker, bool alertTarget)
 	if ( !attacker ) return;
 	if ( attacker == this ) { return; }
 
-    Creature* attackerCrtr = dynamic_cast<Creature*>(attacker);
+    Creature* attackerCrtr = (Creature*)attacker;
 	if ( Stat* myStats = getStats() )
 	{
 		if ( myStats->type == SHOPKEEPER )
@@ -4234,7 +4234,7 @@ void actMonster(Creature* my)
 							}
 							if ( targetdist > TOUCHRANGE && targetdist > light )
 							{
-                                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                                Creature* entityCrtr = (Creature*)entity;
 
 								if ( !(myStats->leader_uid == entity->getUID()) 
 									&& !(hitstats->leader_uid == my->getUID())
@@ -4345,7 +4345,7 @@ void actMonster(Creature* my)
 									for ( node = map.creatures->first; node != nullptr; node = node->next )
 									{
 										entity = (Entity*)node->element;
-                                        auto* crtrEntity = dynamic_cast<Creature*>(entity);
+                                        auto* crtrEntity = (Creature*)entity;
 										if ( crtrEntity && crtrEntity->behavior == &actMonster && crtrEntity != my )
 										{
 											Stat* buddystats = entity->getStats();
@@ -5594,7 +5594,7 @@ timeToGoAgain:
 			}
 
 			entity = uidToEntity(my->monsterTarget);
-            entityCrtr = dynamic_cast<Creature*>(entity);
+            entityCrtr = (Creature*)entity;
 			if ( entity != nullptr )
 			{
 				if ( entityCrtr && entityCrtr->behavior == &actPlayer )
@@ -5637,7 +5637,7 @@ timeToGoAgain:
 			if ( myStats->type == SHADOW && my->monsterSpecialTimer == 0 && my->monsterTarget )
 			{
 				Entity* target = uidToEntity(my->monsterTarget);
-                Creature* targetCrtr = dynamic_cast<Creature*>(entity);
+                Creature* targetCrtr = (Creature*)entity;
 				if ( !target )
 				{
 					my->monsterReleaseAttackTarget(true);
@@ -5900,7 +5900,7 @@ timeToGoAgain:
 			{
 				bool shouldHuntPlayer = false;
 				Entity* playerOrNot = uidToEntity(my->monsterTarget);
-                Creature* playerOrNotCrtr = dynamic_cast<Creature*>(playerOrNot);
+                Creature* playerOrNotCrtr = (Creature*)playerOrNot;
 				if (playerOrNot)
 				{
 					if (ticks % 180 == 0 && playerOrNotCrtr && playerOrNotCrtr->behavior == &actPlayer)
@@ -6132,7 +6132,7 @@ timeToGoAgain:
 			}
 
 			entity = uidToEntity(my->monsterTarget);
-            entityCrtr = dynamic_cast<Creature*>(entity);
+            entityCrtr = (Creature*)entity;
             if ( entity != NULL )
 			{
 				if ( entityCrtr && entityCrtr->behavior == &actPlayer && myStats->type != DUMMYBOT )
@@ -6204,7 +6204,7 @@ timeToGoAgain:
 							}
 							dist2 = clipMove(&my->x, &my->y, MONSTER_VELX, MONSTER_VELY, my);
 							my->handleKnockbackDamage(*myStats, hit.entity);
-                            Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+                            Creature* hitEntityCrtr = (Creature*)hit.entity;
 							if ( hit.entity != NULL )
 							{
 								if ( hit.entity->behavior == &actDoor )
@@ -6753,7 +6753,7 @@ timeToGoAgain:
 
 			// turn towards target
 			Entity* target = uidToEntity(my->monsterTarget);
-            Creature* targetCrtr = dynamic_cast<Creature*>(target);
+            Creature* targetCrtr = (Creature*)target;
 			if ( target != NULL )
 			{
 				dir = my->yaw - atan2( target->y - my->y, target->x - my->x );
@@ -8311,7 +8311,7 @@ void Creature::handleMonsterAttack(Stat* myStats, Entity* target, double dist)
 			{
 				// found the target in range
 				hitstats = hit.entity->getStats();
-                Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+                Creature* hitEntityCrtr = (Creature*)hit.entity;
 				if ( hitEntityCrtr && hitEntityCrtr->behavior == &actMonster && !hasrangedweapon )
 				{
 					// alert the monster!
@@ -9308,7 +9308,7 @@ void Creature::monsterAllySendCommand(int command, int destX, int destY, Uint32 
 			if ( uid != 0 && uid != getUID() )
 			{
 				Entity* target = uidToEntity(uid);
-				Creature* targetCrtr = dynamic_cast<Creature*>(target);
+				Creature* targetCrtr = (Creature*)target;
 				if ( target )
 				{
 					if ( targetCrtr )

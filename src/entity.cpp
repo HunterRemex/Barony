@@ -578,7 +578,7 @@ Sets the obituary to that of a mon
 
 void Entity::killedByMonsterObituary(Entity* victim)
 {
-    Creature* victimCrtr = dynamic_cast<Creature*>(victim);
+    Creature* victimCrtr = (Creature*)victim;
 	if ( !victim )
 	{
 		return;
@@ -823,7 +823,7 @@ int Entity::entityLightAfterReductions(Stat& myStats, Entity* observer)
 			{
 				light = TOUCHRANGE;
 			}
-			if ( Creature* crtrObserver = dynamic_cast<Creature*>(observer);
+			if ( Creature* crtrObserver = (Creature*)observer;
                 crtrObserver && crtrObserver->behavior == &actMonster
                 && crtrObserver->monsterLastDistractedByNoisemaker > 0
                 && uidToEntity(crtrObserver->monsterLastDistractedByNoisemaker) )
@@ -1408,7 +1408,7 @@ base number
 Sint32 Entity::getAttack(Entity* my, Stat* myStats, bool isPlayer)
 {
 	Sint32 attack = 0;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 
 	if ( !myStats )
 	{
@@ -1607,7 +1607,7 @@ Sint32 Entity::getSTR()
 Sint32 statGetSTR(Stat* entitystats, Entity* my)
 {
 	Sint32 STR;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	if ( !entitystats )
 	{
 		return 0;
@@ -1752,7 +1752,7 @@ Sint32 Entity::getDEX()
 Sint32 statGetDEX(Stat* entitystats, Entity* my)
 {
 	Sint32 DEX;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	if ( !entitystats )
 	{
 		return 0;
@@ -1984,7 +1984,7 @@ Sint32 Entity::getCON()
 Sint32 statGetCON(Stat* entitystats, Entity* my)
 {
 	Sint32 CON;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 
 	if ( !entitystats )
 	{
@@ -2077,7 +2077,7 @@ Sint32 Entity::getINT()
 Sint32 statGetINT(Stat* entitystats, Entity* my)
 {
 	Sint32 INT;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	if ( !entitystats )
 	{
 		return 0;
@@ -2194,7 +2194,7 @@ Sint32 statGetPER(Stat* entitystats, Entity* my)
 
 	bool cursedItemIsBuff = false;
 	bool shapeshifted = false;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	if ( myCrtr && myCrtr->behavior == &actPlayer )
 	{
 		cursedItemIsBuff = shouldInvertEquipmentBeatitude(entitystats);
@@ -2339,7 +2339,7 @@ Sint32 Entity::getCHR()
 Sint32 statGetCHR(Stat* entitystats, Entity* my)
 {
 	Sint32 CHR;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 
 	if ( !entitystats )
 	{
@@ -4342,7 +4342,7 @@ int Entity::getManaRegenInterval(Entity* my, Stat& myStats, bool isPlayer)
 {
 	int regenTime = getBaseManaRegen(my, myStats);
 	int manaring = 0;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	if ( isPlayer && myStats.type != HUMAN )
 	{
 		if ( myStats.type == SKELETON )
@@ -4828,7 +4828,7 @@ void messagePlayerMonsterEvent(int player, Uint32 color, Stat& monsterStats, con
 	// If true, pretend the monster doesn't have a name and use the generic message "You hit the lesser skeleton!"
 	bool namedMonsterAsGeneric = monsterNameIsGeneric(monsterStats);
 	int monsterType = monsterStats.type;
-    Creature* optionalEntityCrtr = dynamic_cast<Creature*>(optionalEntity);
+    Creature* optionalEntityCrtr = (Creature*)optionalEntity;
 	if ( optionalEntityCrtr != nullptr )
 	{
 		if ( optionalEntityCrtr->behavior == &actPlayer )
@@ -6191,7 +6191,7 @@ void Entity::awardXP(Entity* src, bool share, bool root)
 	{
 		return;
 	}
-    Creature* srcCrtr = dynamic_cast<Creature*>(src);
+    Creature* srcCrtr = (Creature*)src;
 
 	Stat* destStats = getStats();
 	Stat* srcStats = src->getStats();
@@ -6613,7 +6613,7 @@ bool Entity::checkEnemy(Entity* your)
 
 	bool result;
 
-    Creature* yourCrtr = dynamic_cast<Creature*>(your);
+    Creature* yourCrtr = (Creature*)your;
 	Stat* myStats = getStats();
 	Stat* yourStats = your->getStats();
 

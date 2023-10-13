@@ -29,7 +29,7 @@
 
 bool item_PotionWater(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
     if ( !entity )
 	{
 		return false;
@@ -404,7 +404,7 @@ bool item_PotionWater(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionBooze(Item*& item, Entity* entity, Creature* usedBy, bool shouldConsumeItem)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -556,7 +556,7 @@ bool item_PotionBooze(Item*& item, Entity* entity, Creature* usedBy, bool should
 
 bool item_PotionJuice(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -742,7 +742,7 @@ bool item_PotionJuice(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionSickness(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -852,7 +852,7 @@ bool item_PotionSickness(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionConfusion(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -921,7 +921,7 @@ bool item_PotionConfusion(Item*& item, Entity* entity, Creature* usedBy)
 	}
 	if ( entity->setEffect(EFF_CONFUSED, true, duration, false) )
 	{
-		if ( Creature* crtrEntity = dynamic_cast<Creature*>(entity); crtrEntity && crtrEntity->behavior == &actMonster )
+		if ( Creature* crtrEntity = (Creature*)entity; crtrEntity && crtrEntity->behavior == &actMonster )
 		{
 			crtrEntity->monsterTarget = 0; // monsters forget what they're doing
 		}
@@ -948,7 +948,7 @@ bool item_PotionConfusion(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionCureAilment(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -1079,7 +1079,7 @@ bool item_PotionCureAilment(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionBlindness(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -1136,7 +1136,7 @@ bool item_PotionBlindness(Item*& item, Entity* entity, Creature* usedBy)
 		return true;
 	}
 
-	if ( Creature* crtrEntity = dynamic_cast<Creature*>(entity); crtrEntity && crtrEntity->behavior == &actMonster && !entity->isBossMonster() )
+	if ( Creature* crtrEntity = (Creature*)entity; crtrEntity && crtrEntity->behavior == &actMonster && !entity->isBossMonster() )
 	{
 		crtrEntity->monsterReleaseAttackTarget();
 	}
@@ -1161,7 +1161,7 @@ bool item_PotionBlindness(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionInvisibility(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -1253,7 +1253,7 @@ bool item_PotionInvisibility(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionLevitation(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -1334,7 +1334,7 @@ bool item_PotionLevitation(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionSpeed(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -1434,7 +1434,7 @@ bool item_PotionSpeed(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionStrength(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if ( !entity )
 	{
 		return false;
@@ -1524,7 +1524,7 @@ bool item_PotionStrength(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionAcid(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -1619,7 +1619,7 @@ bool item_PotionAcid(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionUnstableStorm(Item*& item, Entity* entity, Creature* usedBy, Entity* thrownPotion)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if ( !entity )
 	{
 		return false;
@@ -1776,7 +1776,7 @@ bool item_PotionUnstableStorm(Item*& item, Entity* entity, Creature* usedBy, Ent
 
 bool item_PotionParalysis(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -1860,7 +1860,7 @@ bool item_PotionParalysis(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionHealing(Item*& item, Entity* entity, Creature* usedBy, bool shouldConsumeItem)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -2009,7 +2009,7 @@ bool item_PotionHealing(Item*& item, Entity* entity, Creature* usedBy, bool shou
 
 bool item_PotionExtraHealing(Item*& item, Entity* entity, Creature* usedBy, bool shouldConsumeItem)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -2157,7 +2157,7 @@ bool item_PotionExtraHealing(Item*& item, Entity* entity, Creature* usedBy, bool
 
 bool item_PotionRestoreMagic(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -2283,7 +2283,7 @@ bool item_PotionRestoreMagic(Item*& item, Entity* entity, Creature* usedBy)
 
 Entity* item_PotionPolymorph(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if ( !entity )
 	{
 		return nullptr;
@@ -5601,7 +5601,7 @@ bool itemIsConsumableByAutomaton(const Item& item)
 
 void updateHungerMessages(Entity* my, Stat* myStats, Item* eaten)
 {
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	if ( !myStats || !eaten || !my)
 	{
 		return;

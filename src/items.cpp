@@ -1406,7 +1406,7 @@ Entity* dropItemMonster(Item* const item, Entity* const monster, Stat* const mon
 {
 	// WARNING - dropItemMonster is used on playerDeaths, modifying this here neet to edit in actPlayer.cpp and net.cpp
 	Entity* entity = nullptr;
-    const Creature* monsterCrtr = dynamic_cast<Creature*>(monster);
+    const Creature* monsterCrtr = (Creature*)monster;
 	bool itemDroppable = true;
 
 	if ( !item || !monster )
@@ -1983,7 +1983,7 @@ EquipItemResult equipItem(Item* const item, Item** const slot, const int player,
 
 void useItem(Item* item, const int player, Entity* usedBy, bool unequipForDropping)
 {
-    Creature* usedByCrtr = dynamic_cast<Creature*>(usedBy);
+    Creature* usedByCrtr = (Creature*)usedBy;
 	if ( item == nullptr )
 	{
 		return;

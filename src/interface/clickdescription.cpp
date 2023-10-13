@@ -82,7 +82,7 @@ void clickDescription(int player, Entity* entity)
 			if ( (stat = entity->getStats()) == NULL )
 			{
 				Entity* parent = uidToEntity(entity->parent);
-                Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+                Creature* parentCrtr = (Creature*)parent;
 				if ( entity->behavior == &actPlayerLimb || entity->skill[2] == entity->parent )
 				{
 					if ( parentCrtr )

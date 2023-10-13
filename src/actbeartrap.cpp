@@ -303,8 +303,8 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 		return;
 	}
 	Entity* parent = uidToEntity(my->parent);
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
-    Creature* triggeredCrtr = dynamic_cast<Creature*>(triggered);
+    Creature* parentCrtr = (Creature*)parent;
+    Creature* triggeredCrtr = (Creature*)triggered;
 	Stat* stat = triggered->getStats();
 	Stat* parentStats = nullptr;
 	if ( parent )
@@ -880,7 +880,7 @@ void actBomb(Entity* my)
 		for ( node = currentList->first; node != nullptr && !triggered; node = node->next )
 		{
 			Entity* entity = (Entity*)node->element;
-            Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+            Creature* entityCrtr = (Creature*)entity;
 			if ( !entity )
 			{
 				continue;
@@ -895,7 +895,7 @@ void actBomb(Entity* my)
 				if ( stat )
 				{
 					Entity* parent = uidToEntity(my->parent);
-                    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+                    Creature* parentCrtr = (Creature*)parent;
 					if ( parentCrtr && parentCrtr->checkFriend(entity) && !(BOMB_TRIGGER_TYPE == Item::ItemBombTriggerType::BOMB_TRIGGER_ALL) )
 					{
 						continue;
@@ -1138,7 +1138,7 @@ void actDecoyBox(Entity* my)
 	if ( my->ticks % TICKS_PER_SECOND == 0 )
 	{
 		Entity* parent = uidToEntity(my->parent);
-        Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+        Creature* parentCrtr = (Creature*)parent;
 		std::vector<list_t*> entLists = TileEntityList.getEntitiesWithinRadiusAroundEntity(my, decoyBoxRange * 2 + 1);
 		std::vector<Entity*> listOfOtherDecoys;
 		// find other decoys (so monsters don't wiggle back and forth.)
@@ -1167,7 +1167,7 @@ void actDecoyBox(Entity* my)
 			for ( node = currentList->first; node != nullptr; node = node->next )
 			{
 				Entity* entity = (Entity*)node->element;
-                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                Creature* entityCrtr = (Creature*)entity;
 				if ( parent && entityCrtr && entityCrtr->behavior == &actMonster
 					&& parent->checkEnemy(entityCrtr) && entityCrtr->isMobile() )
 				{
@@ -1321,7 +1321,7 @@ void actDecoyBox(Entity* my)
 		// stop working.
 		bool decoyBreak = (local_rng.rand() % 5 == 0);
 		Entity* parent = uidToEntity(my->parent);
-        Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+        Creature* parentCrtr = (Creature*)parent;
 		playSoundEntity(my, 485 + local_rng.rand() % 3, 192);
 		if ( !decoyBreak )
 		{

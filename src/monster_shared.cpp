@@ -269,7 +269,7 @@ void Entity::actMonsterLimb(bool processLight)
 {
 	//If no longer part of a monster, delete the limb.
 	Entity *parentEnt = nullptr;
-    Creature* parentEntCrtr = dynamic_cast<Creature*>(parentEnt);
+    Creature* parentEntCrtr = (Creature*)parentEnt;
 	if ( (parentEnt = uidToEntity(skill[2])) == nullptr )
 	{
 		if ( multiplayer == CLIENT )

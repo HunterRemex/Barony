@@ -658,7 +658,7 @@ bool Entity::devilSummonMonster(Entity* summonOnEntity, Monster creature, int ra
 			for ( int i = std::max(hellArena_x0, spawn_x - radiusFromCenter); i <= std::min(hellArena_x1, spawn_x + radiusFromCenter); ++i )
 			{
 				int index = (j)* MAPLAYERS + (i)* MAPLAYERS * map.height;
-                Creature* targetCrtr = dynamic_cast<Creature*>(target);
+                Creature* targetCrtr = (Creature*)target;
 				if ( !map.tiles[OBSTACLELAYER + index] &&
 					((targetCrtr && targetCrtr->behavior == &actPlayer && !map.tiles[index])
 						|| (!targetCrtr || targetCrtr->behavior != &actPlayer

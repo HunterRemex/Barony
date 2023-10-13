@@ -555,7 +555,7 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = NULL, *entity2 = NULL;
 	Entity* rightbody = NULL;
 	Entity* weaponarm = NULL;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	int bodypart;
 	bool wearingring = false;
 

@@ -134,8 +134,8 @@ bool spellEffectDominate(Entity& my, spellElement_t& element, Entity& caster, En
 	{
 		return false;
 	}
-    Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+    Creature* hitEntityCrtr = (Creature*)hit.entity;
+    Creature* parentCrtr = (Creature*)parent;
     Creature& casterCrtr = (Creature&)caster;
 	if ( !hitEntityCrtr || hitEntityCrtr->behavior != &actMonster )
 	{
@@ -229,7 +229,7 @@ bool spellEffectDominate(Entity& my, spellElement_t& element, Entity& caster, En
 void spellEffectAcid(Entity& my, spellElement_t& element, Entity* parent, int resistance)
 {
 	playSoundEntity(&my, 173, 128);
-    Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+    Creature* hitEntityCrtr = (Creature*)hit.entity;
 
 	if ( hit.entity )
 	{
@@ -389,7 +389,7 @@ void spellEffectAcid(Entity& my, spellElement_t& element, Entity* parent, int re
 void spellEffectPoison(Entity& my, spellElement_t& element, Entity* parent, int resistance)
 {
 	playSoundEntity(&my, 173, 128);
-    Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+    Creature* hitEntityCrtr = (Creature*)hit.entity;
 	if ( hit.entity )
 	{
 		int damage = element.damage;
@@ -505,7 +505,7 @@ void spellEffectPoison(Entity& my, spellElement_t& element, Entity* parent, int 
 
 bool spellEffectFear(Entity* my, spellElement_t& element, Entity* forceParent, Entity* target, int resistance)
 {
-    Creature* targetCrtr = dynamic_cast<Creature*>(target);
+    Creature* targetCrtr = (Creature*)target;
 	if ( !target )
 	{
 		//spawnMagicEffectParticles(my.x, my.y, my.z, 863);
@@ -514,7 +514,7 @@ bool spellEffectFear(Entity* my, spellElement_t& element, Entity* forceParent, E
 
 	if ( targetCrtr )
 	{
-		Creature* parent = dynamic_cast<Creature*>(forceParent);
+		Creature* parent = (Creature*)forceParent;
 		if ( my && !parent )
 		{
 			parent = uidToCreature(my->parent);
@@ -603,7 +603,7 @@ bool spellEffectFear(Entity* my, spellElement_t& element, Entity* forceParent, E
 
 void spellEffectSprayWeb(Entity& my, spellElement_t& element, Entity* parent, int resistance)
 {
-    Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+    Creature* hitEntityCrtr = (Creature*)hit.entity;
 	if ( hit.entity )
 	{
 		if ( hitEntityCrtr )
@@ -701,7 +701,7 @@ void spellEffectSprayWeb(Entity& my, spellElement_t& element, Entity* parent, in
 
 void spellEffectStealWeapon(Entity& my, spellElement_t& element, Entity* parent, int resistance)
 {
-    Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+    Creature* hitEntityCrtr = (Creature*)hit.entity;
 	if ( hit.entity )
 	{
 		if ( hitEntityCrtr )
@@ -857,8 +857,8 @@ void spellEffectStealWeapon(Entity& my, spellElement_t& element, Entity* parent,
 
 void spellEffectDrainSoul(Entity& my, spellElement_t& element, Entity* parent, int resistance)
 {
-    Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+    Creature* hitEntityCrtr = (Creature*)hit.entity;
+    Creature* parentCrtr = (Creature*)parent;
 	if ( hit.entity )
 	{
 		if ( hitEntityCrtr )
@@ -1100,7 +1100,7 @@ void spellEffectDrainSoul(Entity& my, spellElement_t& element, Entity* parent, i
 
 spell_t* spellEffectVampiricAura(Entity* caster, spell_t* spell, int extramagic_to_use)
 {
-    Creature* casterCrtr = dynamic_cast<Creature*>(caster);
+    Creature* casterCrtr = (Creature*)caster;
 	if ( !caster )
 	{
 		return nullptr;
@@ -1178,8 +1178,8 @@ spell_t* spellEffectVampiricAura(Entity* caster, spell_t* spell, int extramagic_
 
 void spellEffectCharmMonster(Entity& my, spellElement_t& element, Entity* parent, int resistance, bool magicstaff)
 {
-    Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+    Creature* hitEntityCrtr = (Creature*)hit.entity;
+    Creature* parentCrtr = (Creature*)parent;
 	if ( hit.entity )
 	{
 		if ( hitEntityCrtr )
@@ -1593,8 +1593,8 @@ Entity* spellEffectPolymorph(Entity* target, Entity* parent, bool fromMagicSpell
 {
 	int effectDuration = 0;
 	effectDuration = TICKS_PER_SECOND * 60 * (4 + local_rng.rand() % 3); // 4-6 minutes
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
-    Creature* targetCrtr = dynamic_cast<Creature*>(target);
+    Creature* parentCrtr = (Creature*)parent;
+    Creature* targetCrtr = (Creature*)target;
 	if ( customDuration > 0 )
 	{
 		effectDuration = customDuration;
@@ -2256,8 +2256,8 @@ bool spellEffectTeleportPull(Entity* my, spellElement_t& element, Entity* parent
 	{
 		return false;
 	}
-    Creature* targetCrtr = dynamic_cast<Creature*>(target);
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+    Creature* targetCrtr = (Creature*)target;
+    Creature* parentCrtr = (Creature*)parent;
 	if ( target )
 	{
 		playSoundEntity(target, 173, 128);
@@ -2476,8 +2476,8 @@ bool spellEffectTeleportPull(Entity* my, spellElement_t& element, Entity* parent
 
 void spellEffectShadowTag(Entity& my, spellElement_t& element, Entity* parent, int resistance)
 {
-    Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+    Creature* hitEntityCrtr = (Creature*)hit.entity;
+    Creature* parentCrtr = (Creature*)parent;
 	if ( hit.entity )
 	{
 		//int damage = element.damage;
@@ -2568,8 +2568,8 @@ void spellEffectShadowTag(Entity& my, spellElement_t& element, Entity* parent, i
 
 bool spellEffectDemonIllusion(Entity& my, spellElement_t& element, Entity* parent, Entity* target, int resistance)
 {
-    Creature* targetCrtr = dynamic_cast<Creature*>(target);
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+    Creature* targetCrtr = (Creature*)target;
+    Creature* parentCrtr = (Creature*)parent;
 	if ( target )
 	{
 		//int damage = element.damage;

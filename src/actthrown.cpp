@@ -680,7 +680,7 @@ void actThrown(Entity* my)
 			tryHitEntity = false;
 		}
 
-        Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+        Creature* hitEntityCrtr = (Creature*)hit.entity;
 		if ( hit.entity != nullptr && tryHitEntity )
 		{
 			Creature* parent = uidToCreature(my->parent);

@@ -1518,7 +1518,7 @@ void doStatueEditor(int player)
 	if ( ticks % 5 == 0 )
 	{
 		Entity* underMouse = nullptr;
-        Creature* underMouseCrtr = dynamic_cast<Creature*>(underMouse);
+        Creature* underMouseCrtr = (Creature*)underMouse;
 		Uint32 uidnum = 0;
 		if ( !shootmode )
 		{
@@ -4054,7 +4054,7 @@ void actPlayer(Creature* my)
 			if ( followerMenu.optionSelected == ALLY_CMD_ATTACK_SELECT )
 			{
 				Entity* underMouse = nullptr;
-                Creature* underMouseCrtr = dynamic_cast<Creature*>(underMouse);
+                Creature* underMouseCrtr = (Creature*)underMouse;
 				if ( followerMenu.optionSelected == ALLY_CMD_ATTACK_SELECT && ticks % 10 == 0 )
 				{
 					if ( !players[PLAYER_NUM]->worldUI.isEnabled() )
@@ -4241,13 +4241,13 @@ void actPlayer(Creature* my)
 						{
 							// we're selecting a target for the ally.
 							Entity* target = entityClicked(nullptr, false, PLAYER_NUM, EntityClickType::ENTITY_CLICK_FOLLOWER_INTERACT);
-                            Creature* targetCrtr = dynamic_cast<Creature*>(target);
+                            Creature* targetCrtr = (Creature*)target;
 							input.consumeBinaryToggle("Use");
 							//input.consumeBindingsSharedWithBinding("Use");
 							if ( target && followerMenu.followerToCommand )
 							{
 								Entity* parent = uidToEntity(target->skill[2]);
-                                Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+                                Creature* parentCrtr = (Creature*)parent;
 								if ( targetCrtr && targetCrtr->behavior == &actMonster || (parentCrtr && parentCrtr->behavior == &actMonster) )
 								{
 									// see if we selected a limb
@@ -4380,7 +4380,7 @@ void actPlayer(Creature* my)
 			{
 				followerMenu.followerToCommand = nullptr;
 				Entity* parent = uidToEntity(selectedEntity[PLAYER_NUM]->skill[2]);
-                Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+                Creature* parentCrtr = (Creature*)parent;
 				if ( ((Creature*)(selectedEntity[PLAYER_NUM]))->behavior == &actMonster || (parentCrtr && parentCrtr->behavior == &actMonster) )
 				{
 					// see if we selected a follower to process right click menu.
@@ -4471,7 +4471,7 @@ void actPlayer(Creature* my)
 						else
 						{
 							Entity* tempEntity = uidToEntity(selectedEntity[PLAYER_NUM]->skill[2]);
-                            Creature* tempCreature = dynamic_cast<Creature*>(tempEntity);
+                            Creature* tempCreature = (Creature*)tempEntity;
 							if (tempEntity)
 							{
 								if (tempCreature && tempCreature->behavior == &actMonster)
@@ -5211,7 +5211,7 @@ void actPlayer(Creature* my)
 			// bumping into monsters disturbs them
 			if ( hit.entity && !intro && multiplayer != CLIENT )
 			{
-                Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+                Creature* hitEntityCrtr = (Creature*)hit.entity;
 				if ( !everybodyfriendly && hitEntityCrtr && hitEntityCrtr->behavior == &actMonster )
 				{
 					bool enemy = my->checkEnemy(hit.entity);
@@ -5263,7 +5263,7 @@ void actPlayer(Creature* my)
 			// bumping into monsters disturbs them
 			if ( hit.entity && !intro )
 			{
-                Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+                Creature* hitEntityCrtr = (Creature*)hit.entity;
                 if ( !everybodyfriendly && hitEntityCrtr && hitEntityCrtr->behavior == &actMonster )
                 {
                     bool enemy = my->checkEnemy(hit.entity);

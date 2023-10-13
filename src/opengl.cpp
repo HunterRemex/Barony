@@ -682,7 +682,7 @@ static void uploadLightUniforms(view_t* camera, Shader& shader, Entity* entity, 
             }
             
             mat4x4_t remap(1.f);
-            Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+            Creature* entityCrtr = (Creature*)entity;
             if (doGrayScale) {
                 remap.x.x = 1.f / 3.f;
                 remap.x.y = 1.f / 3.f;
@@ -730,7 +730,7 @@ static void uploadLightUniforms(view_t* camera, Shader& shader, Entity* entity, 
             GL_CHECK_ERR(glUniformMatrix4fv(shader.uniform("uColorRemap"), 1, false, (float*)&remap));
         }
 
-        if (Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+        if (Creature* entityCrtr = (Creature*)entity;
             entityCrtr && entityCrtr->monsterEntityRenderAsTelepath) {
             const GLfloat factor[4] = { 1.f, 1.f, 1.f, 1.f, };
             GL_CHECK_ERR(glUniform4fv(shader.uniform("uLightFactor"), 1, factor));
@@ -1091,7 +1091,7 @@ void glDrawVoxel(view_t* camera, Entity* entity, int mode) {
         GL_CHECK_ERR(glEnable(GL_BLEND));
 	}
     bool changedDepthRange = false;
-	if (entity->flags[OVERDRAW] || (dynamic_cast<Creature*>(entity)->monsterEntityRenderAsTelepath == 1 && !intro)
+	if (entity->flags[OVERDRAW] || ((Creature*)entity)->monsterEntityRenderAsTelepath == 1 && !intro
 		|| modelindex == FOLLOWER_SELECTED_PARTICLE
 		|| modelindex == FOLLOWER_TARGET_PARTICLE ) {
         changedDepthRange = true;
@@ -1100,7 +1100,7 @@ void glDrawVoxel(view_t* camera, Entity* entity, int mode) {
     
     // bind shader
     auto& dither = entity->dithering[camera];
-    auto& shader = !entity->flags[BRIGHT] && !dynamic_cast<Creature*>(entity)->monsterEntityRenderAsTelepath ?
+    auto& shader = !entity->flags[BRIGHT] && !((Creature*)entity)->monsterEntityRenderAsTelepath ?
         (dither.value < Entity::Dither::MAX ? voxelDitheredShader : voxelShader):
         voxelBrightShader;
     shader.bind();

@@ -640,7 +640,7 @@ void actSkeletonLimb(Entity* my)
 
 void skeletonDie(Entity* my)
 {
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	if ( multiplayer != CLIENT && (!myCrtr || myCrtr->monsterAllySummonRank != 0) )
 	{
 		Stat* myStats = my->getStats();
@@ -768,7 +768,7 @@ void skeletonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr, *entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	int bodypart;
 	bool wearingring = false;
 

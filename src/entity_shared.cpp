@@ -1817,7 +1817,7 @@ void setSpriteAttributes(Entity* entityNew, Entity* entityToCopy, Entity* entity
 	}
 	else if ( spriteType == 23 ) // player spawns
 	{
-		if (Creature* creatureToCopy = dynamic_cast<Creature*>(entityToCopy);
+		if (Creature* creatureToCopy = (Creature*)entityToCopy;
             entityToCopy != nullptr
             && creatureToCopy != nullptr)
 		{

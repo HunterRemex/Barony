@@ -3186,7 +3186,7 @@ real_t Player::WorldUI_t::tooltipInRange(Entity& tooltip)
 
 	real_t dist = entityDist(&tooltip, players[player.playernum]->entity);
 	Entity* parent = uidToEntity(tooltip.parent);
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+    Creature* parentCrtr = (Creature*)parent;
 
 	real_t maxDist = 24.0;
 	real_t minDist = 4.0;
@@ -3481,7 +3481,7 @@ void Player::WorldUI_t::setTooltipActive(Entity& tooltip)
 	if ( uidToEntity(tooltip.parent) )
 	{
 		Entity* parent = uidToEntity(tooltip.parent);
-        Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+        Creature* parentCrtr = (Creature*)parent;
 		if ( !parent )
 		{
 			setTooltipDisabled(tooltip);
@@ -4057,7 +4057,7 @@ void Player::WorldUI_t::handleTooltips()
 		if ( !bDoingActionHideTooltips )
 		{
 			Entity* ohitentity = hit.entity;
-            Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+            Creature* hitEntityCrtr = (Creature*)hit.entity;
 			lineTrace(players[player]->entity, players[player]->entity->x, players[player]->entity->y,
 				players[player]->entity->yaw, STRIKERANGE, 0, true);
 			if ( hit.entity )
@@ -4137,7 +4137,7 @@ void Player::WorldUI_t::handleTooltips()
 					continue;
 				}
 				parent = uidToEntity(tooltip->parent);
-                Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+                Creature* parentCrtr = (Creature*)parent;
 				if ( parent && parent->flags[INVISIBLE]
 					&& !((!parentCrtr || parentCrtr->behavior == &actMonster) && parent->getMonsterTypeFromSprite() == DUMMYBOT) )//TODO: BIRD -- Double-check
 				{

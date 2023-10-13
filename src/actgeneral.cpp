@@ -1279,7 +1279,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 			for ( node_t* node = map.entities->first; node; node = node->next )
 			{
 				Entity* entity = (Entity*)node->element;
-                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                Creature* entityCrtr = (Creature*)entity;
 				if ( entity )
 				{
 					if ( (entityCrtr && entityCrtr->behavior == &actMonster && attachTo == TO_MONSTERS)
@@ -1320,7 +1320,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( entityCrtr && entityCrtr->behavior == &actPlayer && stats[entity->skill[2]] && !client_disconnected[entity->skill[2]] )
 						{
 							applyToEntities.push_back(entity);
@@ -1375,7 +1375,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( entityCrtr && entityCrtr->behavior == &actPlayer && stats[entity->skill[2]] && !client_disconnected[entity->skill[2]] )
 						{
 							applyToEntities.push_back(entity);
@@ -1431,7 +1431,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( !entityCrtr )
 						{
 							continue;
@@ -1456,7 +1456,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 
 				for ( auto entity : applyToEntities )
 				{
-                    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                    Creature* entityCrtr = (Creature*)entity;
 					if ( entityCrtr && entityCrtr->behavior == &actPlayer )
 					{
 						statOnlyUpdateNeeded = true;
@@ -1492,7 +1492,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( entityCrtr && entityCrtr->behavior != &actPlayer )
 						{
 							continue;
@@ -1514,7 +1514,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				for ( auto entity : applyToEntities )
 				{
 					int player = -1;
-                    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                    Creature* entityCrtr = (Creature*)entity;
 					if ( entityCrtr && entityCrtr->behavior != &actPlayer )
 					{
 						continue;
@@ -1709,7 +1709,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( entityCrtr && entityCrtr->behavior != &actMonster )
 						{
 							continue;
@@ -1753,7 +1753,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( entityCrtr && entityCrtr->behavior != &actMonster )
 						{
 							continue;
@@ -1798,7 +1798,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( !entityCrtr)
 						{
 							continue;
@@ -1826,7 +1826,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( !entityCrtr )
 						{
 							continue;
@@ -1856,7 +1856,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( !entityCrtr || entityCrtr->behavior != &actMonster )
 						{
 							continue;
@@ -1917,7 +1917,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( !entityCrtr || entityCrtr->behavior != &actMonster )
 						{
 							continue;
@@ -1961,7 +1961,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( (!entityCrtr || entityCrtr->behavior != &actMonster) || !entity->monsterAllyGetPlayerLeader() )
 						{
 							continue;
@@ -2053,7 +2053,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( !entityCrtr )
 						{
 							continue;
@@ -2069,7 +2069,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				for ( node_t* node = map.entities->first; node; node = node->next )
 				{
 					Entity* scriptEntity = (Entity*)node->element;
-                    Creature* entityCrtr = dynamic_cast<Creature*>(scriptEntity);
+                    Creature* entityCrtr = (Creature*)scriptEntity;
 					if ( entityCrtr && entityCrtr->behavior == &actMonster )
 					{
 						Stat* scriptStats = scriptEntity->getStats();
@@ -2081,7 +2081,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 								for ( auto entity : applyToEntities )
 								{
 									Stat* stats = entity->getStats();
-                                    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                                    Creature* entityCrtr = (Creature*)entity;
 									if ( stats )
 									{
 										stats->copyNPCStatsAndInventoryFrom(*scriptStats);
@@ -2119,7 +2119,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( entityCrtr && entityCrtr->behavior == &actMonster && !entity->monsterAllyGetPlayerLeader() )
 						{
 							int findx = static_cast<int>(entity->x) >> 4;
@@ -2140,7 +2140,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
                     for ( node_t* node = map.creatures->first; node; node = node->next )
 					{
                         Entity* entity = (Entity*)node->element;
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
                         if (entityCrtr && entityCrtr->behavior == &actMonster && !entityCrtr->monsterAllyGetPlayerLeader() )
                         {
 							int findx = static_cast<int>(entityCrtr->x) >> 4;
@@ -2172,7 +2172,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( entityCrtr && entityCrtr->behavior == &actMonster && !entity->monsterAllyGetPlayerLeader() )
 						{
 							int findx = static_cast<int>(entity->x) >> 4;
@@ -2338,7 +2338,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( entityCrtr && entityCrtr->behavior == &actMonster )
 						{
 							applyToEntities.push_back(entity);
@@ -2458,7 +2458,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
 					for ( auto entity : attachedEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						if ( entityCrtr && (entityCrtr->behavior == &actMonster
 							&& textSourceScript.getAttachedToEntityType(src.textSourceIsScript) != textSourceScript.TO_PLAYERS)
 							|| (entityCrtr->behavior == &actPlayer
@@ -2487,7 +2487,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 					}
 					for ( auto entity : applyToEntities )
 					{
-                        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                        Creature* entityCrtr = (Creature*)entity;
 						for ( auto i : items )
 						{
 							Item* item = newItemFromEntity(i);
@@ -2619,7 +2619,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 						{
 							for ( auto entity : attachedEntities )
 							{
-                                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                                Creature* entityCrtr = (Creature*)entity;
 								if ( entityCrtr && (entityCrtr->behavior == &actMonster
 									 || (entityCrtr->behavior == &actPlayer && stats[entity->skill[2]] && !client_disconnected[entity->skill[2]]) ))
 								{
@@ -2710,7 +2710,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 						{
 							for ( auto entity : attachedEntities )
 							{
-                                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                                Creature* entityCrtr = (Creature*)entity;
                                 if ( entityCrtr && (entityCrtr->behavior == &actMonster
                                      || (entityCrtr->behavior == &actPlayer && stats[entity->skill[2]] && !client_disconnected[entity->skill[2]]) ))
                                 {
@@ -2778,7 +2778,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 						{
 							for ( auto entity : attachedEntities )
 							{
-                                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                                Creature* entityCrtr = (Creature*)entity;
                                 if ( entityCrtr && (entityCrtr->behavior == &actMonster
                                      || (entityCrtr->behavior == &actPlayer && stats[entity->skill[2]] && !client_disconnected[entity->skill[2]]) ))
                                 {
@@ -2826,7 +2826,7 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 						{
 							for ( auto entity : attachedEntities )
 							{
-                                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                                Creature* entityCrtr = (Creature*)entity;
                                 if ( entityCrtr && (entityCrtr->behavior == &actMonster
                                      || (entityCrtr->behavior == &actPlayer && stats[entity->skill[2]] && !client_disconnected[entity->skill[2]]) ))
                                 {
@@ -3297,7 +3297,7 @@ void TextSourceScript::parseScriptInMapGeneration(Entity& src)
 		for ( node_t* node = map.entities->first; node; node = node->next )
 		{
 			Entity* entity = (Entity*)node->element;
-            Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+            Creature* entityCrtr = (Creature*)entity;
 			if ( entity )
 			{
 				if ( (entityCrtr && entityCrtr->behavior == &actMonster && attachTo == TO_MONSTERS)

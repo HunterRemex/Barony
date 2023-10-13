@@ -87,7 +87,7 @@ void actWallBuilder(Entity* my)
 			for ( node_t* node = currentList->first; node != nullptr; node = node->next )
 			{
 				Entity* entity = (Entity*)node->element;
-                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                Creature* entityCrtr = (Creature*)entity;
 				if ( entity == my || entity->flags[PASSABLE] || entity->behavior == &actDoorFrame || !entityCrtr )
 				{
 					continue;

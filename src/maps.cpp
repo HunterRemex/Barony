@@ -2131,7 +2131,7 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 			for ( node = tempMap->entities->first; node != nullptr; node = node->next )
 			{
 				entity = (Entity*)node->element;
-                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                Creature* entityCrtr = (Creature*)entity;
 				childEntity = newEntity(entity->sprite, 1, map.entities, nullptr);
 
 				// entity will return nullptr on getStats called in setSpriteAttributes as behaviour &actmonster is not set.
@@ -2160,7 +2160,7 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 				for ( subRoomNode = subRoomMap->entities->first; subRoomNode != nullptr; subRoomNode = subRoomNode->next )
 				{
 					entity = (Entity*)subRoomNode->element;
-                    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                    Creature* entityCrtr = (Creature*)entity;
 					childEntity = newEntity(entity->sprite, 1, map.entities, nullptr);
 
 					// entity will return nullptr on getStats called in setSpriteAttributes as behaviour &actmonster is not set.
@@ -3415,7 +3415,7 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 		else if ( c == 1 && secretlevel && currentlevel == 7 && !strncmp(map.name, "Underworld", 10) )
 		{
 			entity = newEntity(89, 1, map.entities, nullptr);
-            Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+            Creature* entityCrtr = (Creature*)entity;
             if ( entityCrtr )
             {
                 entityCrtr->monsterStoreType = 1;
@@ -3655,7 +3655,7 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 							doNPC = true;
 						}
 
-						if (Creature* crtrEntity = dynamic_cast<Creature*>(entity); crtrEntity && doNPC )
+						if (Creature* crtrEntity = (Creature*)entity; crtrEntity && doNPC )
 						{
 							if ( currentlevel > 15 && map_rng.rand() % 4 > 0 )
 							{

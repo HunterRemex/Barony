@@ -374,7 +374,7 @@ void Creature::initMonster(int mySprite)
 //		}
 //	}
 //
-//	if ( parentEnt && parentEnt->behavior == &actMonster && dynamic_cast<Creature*>(parentEnt)->monsterEntityRenderAsTelepath == 1 )
+//	if ( parentEnt && parentEnt->behavior == &actMonster && ((Creature*)parentEnt)->monsterEntityRenderAsTelepath == 1 )
 //	{
 //		monsterEntityRenderAsTelepath = 1;
 //	}
@@ -14302,7 +14302,7 @@ void Creature::increaseSkill(int skill, bool notify)
 
 int Creature::getHealthRegenInterval(Entity* my, Stat& myStats, bool isPlayer)
 {
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	if ( !(svFlags & SV_FLAG_HUNGER) )
 	{
 		if ( isPlayer )

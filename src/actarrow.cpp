@@ -394,8 +394,8 @@ void actArrow(Entity* my)
 			if ( hit.entity != NULL )
 			{
 				Entity* parent = uidToEntity(my->parent);
-                Creature* parentCrtr = dynamic_cast<Creature*>(parent);
-                Creature* hitEntityCreature = dynamic_cast<Creature*>(hit.entity);
+                Creature* parentCrtr = (Creature*)parent;
+                Creature* hitEntityCreature = (Creature*)hit.entity;
 				Stat* hitstats = hit.entity->getStats();
 				playSoundEntity(my, 72 + local_rng.rand() % 3, 64);
 				if ( hitstats != NULL && hit.entity != parent )

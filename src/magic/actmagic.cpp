@@ -566,7 +566,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 	double tangent;
 
 	Entity* parent = uidToEntity(my->parent);
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+    Creature* parentCrtr = (Creature*)parent;
 
 	if (magic_init)
 	{
@@ -750,7 +750,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 				if ( hit.entity )
 				{
 					hitstats = hit.entity->getStats();
-                    Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+                    Creature* hitEntityCrtr = (Creature*)hit.entity;
 					if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
 					{
 						player = hit.entity->skill[2];
@@ -804,7 +804,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 
 				bool yourSpellHitsTheMonster = false;
 				bool youAreHitByASpell = false;
-                Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+                Creature* hitEntityCrtr = (Creature*)hit.entity;
 				if ( hit.entity )
 				{
 					if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
@@ -1381,7 +1381,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 					spawnExplosion(my->x, my->y, my->z);
 					if (hit.entity)
 					{
-                        Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+                        Creature* hitEntityCrtr = (Creature*)hit.entity;
 						if (hitEntityCrtr)
 						{
 							Entity* parent = uidToEntity(my->parent);
@@ -2773,7 +2773,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 						else
 						{
 							Entity* caster = uidToEntity(spell->caster);
-                            Creature* casterCrtr = dynamic_cast<Creature*>(caster);
+                            Creature* casterCrtr = (Creature*)caster;
 							bool forceFurnitureDamage = false;
 							if ( casterCrtr && casterCrtr->behavior == &actMonster && caster->getMonsterTypeFromSprite() == SHOPKEEPER )
 							{
@@ -4327,7 +4327,7 @@ void actParticleTimer(Entity* my)
 			{
 				// teleport to target spell.
 				Entity* parent = uidToEntity(my->parent);
-                Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+                Creature* parentCrtr = (Creature*)parent;
 				if ( parentCrtr )
 				{
 					if ( parentCrtr->monsterSpecialState == SHADOW_TELEPORT_ONLY )
@@ -4416,7 +4416,7 @@ void actParticleTimer(Entity* my)
 					if ( target )
 					{
 						createParticleErupt(parent, my->particleTimerEndSprite);
-                        Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+                        Creature* parentCrtr = (Creature*)parent;
 						teleported = parentCrtr->teleport((target->x / 16) - 11 + local_rng.rand() % 23, (target->y / 16) - 11 + local_rng.rand() % 23);
 
 						if ( teleported )
@@ -4753,7 +4753,7 @@ void actParticleSapCenter(Entity* my)
 	}
 
 	Entity* parent = uidToEntity(my->parent);
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+    Creature* parentCrtr = (Creature*)parent;
 	if ( parent )
 	{
 		// if reached the caster, delete self and spawn some particles.
@@ -4919,7 +4919,7 @@ void actParticleSapCenter(Entity* my)
 			{
 				spawnMagicEffectParticles(my->skill[8], my->skill[9], 0, my->skill[5]);
 				Entity* caster = uidToEntity(my->skill[7]);
-                Creature* casterCrtr = dynamic_cast<Creature*>(caster);
+                Creature* casterCrtr = (Creature*)caster;
 				if ( casterCrtr && casterCrtr->behavior == &actPlayer && stats[caster->skill[2]] )
 				{
 					// kill old summons.
@@ -5166,7 +5166,7 @@ void createParticleExplosionCharge(Entity* parent, int sprite, int particleCount
 	{
 		return;
 	}
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+    Creature* parentCrtr = (Creature*)parent;
 
 	for ( int c = 0; c < particleCount; c++ )
 	{
@@ -5357,7 +5357,7 @@ bool Entity::magicOrbitingCollision()
 	}
 
 	Entity* caster = uidToEntity(parent);
-	Creature* casterCrtr = dynamic_cast<Creature*>(caster);
+	Creature* casterCrtr = (Creature*)caster;
 
 	std::vector<list_t*> entLists = TileEntityList.getEntitiesWithinRadiusAroundEntity(this, 1);
 
@@ -5400,7 +5400,7 @@ bool Entity::magicOrbitingCollision()
 			if ( entityInsideEntity(this, entity) && !entity->flags[PASSABLE] && (entity->getUID() != this->parent) )
 			{
 				hit.entity = entity;
-                Creature* hitEntityCrtr = dynamic_cast<Creature*>(hit.entity);
+                Creature* hitEntityCrtr = (Creature*)hit.entity;
 				if ( hitEntityCrtr )
 				{
 					if ( actmagicIsOrbiting == 2 )
@@ -6012,8 +6012,8 @@ void actParticleCharmMonster(Entity* my)
 void spawnMagicTower(Entity* parent, real_t x, real_t y, int spellID, Entity* autoHitTarget, bool castedSpell)
 {
 	bool autoHit = false;
-    Creature* autoHitTargetCrtr = dynamic_cast<Creature*>(autoHitTarget);
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+    Creature* autoHitTargetCrtr = (Creature*)autoHitTarget;
+    Creature* parentCrtr = (Creature*)parent;
 	if ( autoHitTargetCrtr )
 	{
 		autoHit = true;
@@ -6067,7 +6067,7 @@ void spawnMagicTower(Entity* parent, real_t x, real_t y, int spellID, Entity* au
 
 bool magicDig(Entity* parent, Entity* projectile, int numRocks, int randRocks)
 {
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+    Creature* parentCrtr = (Creature*)parent;
 	if ( !hit.entity )
 	{
 		if ( map.tiles[(int)(OBSTACLELAYER + hit.mapy * MAPLAYERS + hit.mapx * MAPLAYERS * map.height)] != 0 )

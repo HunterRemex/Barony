@@ -277,7 +277,7 @@ void impMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	node_t* node;
 	Entity* entity = nullptr;
 	Entity* rightbody = nullptr;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	int bodypart;
 
 	// set invisibility //TODO: isInvisible()?

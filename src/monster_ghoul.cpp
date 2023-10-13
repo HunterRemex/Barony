@@ -304,7 +304,7 @@ void ghoulMoveBodyparts(Entity* my, Stat* myStats, double dist)
 {
 	node_t* node;
 	Entity* entity = nullptr;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	Entity* rightbody = nullptr;
 	int bodypart;
 

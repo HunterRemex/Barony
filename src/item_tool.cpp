@@ -955,7 +955,7 @@ void Item::applyEmptyPotion(int player, Entity& entity)
 
 void Item::applyBomb(Entity* parent, ItemType type, ItemBombPlacement placement, ItemBombFacingDirection dir, Entity* thrown, Entity* onEntity)
 {
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+    Creature* parentCrtr = (Creature*)parent;
 	if ( multiplayer == CLIENT )
 	{
 		return;
@@ -1315,7 +1315,7 @@ void Item::applyBomb(Entity* parent, ItemType type, ItemBombPlacement placement,
 
 void Item::applyTinkeringCreation(Entity* parent, Entity* thrown)
 {
-    Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+    Creature* parentCrtr = (Creature*)parent;
 	if ( !thrown )
 	{
 		return;

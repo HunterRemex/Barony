@@ -1677,7 +1677,7 @@ void gameLogic(void)
 			{
 				nextnode = node->next;
 				entity = (Entity*)node->element;
-                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                Creature* entityCrtr = (Creature*)entity;
 
 				if ( entity && !entity->ranbehavior )
 				{
@@ -1769,7 +1769,7 @@ void gameLogic(void)
 
 							entity->ranbehavior = true;
 							nextnode = node->next;
-                            Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                            Creature* entityCrtr = (Creature*)entity;
 							if ( debugMonsterTimer && entityCrtr && entityCrtr->behavior == &actMonster )
 							{
 								auto t2 = std::chrono::high_resolution_clock::now();
@@ -2989,7 +2989,7 @@ void gameLogic(void)
 			{
 				nextnode = node->next;
 				entity = (Entity*)node->element;
-                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                Creature* entityCrtr = (Creature*)entity;
 				if ( entity && !entity->ranbehavior )
 				{
 					if ( !gamePaused || (multiplayer && !client_disconnected[0]) )

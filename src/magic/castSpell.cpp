@@ -30,7 +30,7 @@ bool spellIsNaturallyLearnedByRaceOrClass(Entity& caster, Stat& stat, int spellI
 void castSpellInit(Uint32 caster_uid, spell_t* spell, bool usingSpellbook)
 {
 	Entity* caster = uidToEntity(caster_uid);
-    Creature* casterCrtr = dynamic_cast<Creature*>(caster);
+    Creature* casterCrtr = (Creature*)caster;
 	node_t* node = NULL;
 	if ( !caster || !spell )
 	{
@@ -250,7 +250,7 @@ int getSpellcastingAbilityFromUsingSpellbook(spell_t* spell, Entity* caster, Sta
 
 bool isSpellcasterBeginner(int player, Entity* caster)
 {
-    Creature* casterCrtr = dynamic_cast<Creature*>(caster);
+    Creature* casterCrtr = (Creature*)caster;
 	if ( !caster && player < 0 )
 	{
 		return false;
@@ -324,7 +324,7 @@ int getSpellbookBonusPercent(Entity* caster, Stat* stat, Item* spellbookItem)
 Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool trap, bool usingSpellbook)
 {
 	Entity* caster = uidToEntity(caster_uid);
-    Creature* casterCrtr = dynamic_cast<Creature*>(caster);
+    Creature* casterCrtr = (Creature*)caster;
 
 	if (!caster || !spell)
 	{

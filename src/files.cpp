@@ -2148,7 +2148,7 @@ int loadMap(const char* filename2, map_t* destmap, list_t* entlist, list_t* crea
 					case 23:
 						if ( editorVersion >= 26 )
 						{
-                            if (Creature* creature = dynamic_cast<Creature*>(entity); creature)
+                            if (Creature* creature = (Creature*)entity; creature)
                             {
                                 fp->read(&creature->playerStartDir, sizeof(Sint32), 1);
                             }
@@ -2191,7 +2191,7 @@ int loadMap(const char* filename2, map_t* destmap, list_t* entlist, list_t* crea
 			default:
 				break;
 		}
-        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+        Creature* entityCrtr = (Creature*)entity;
 		if ( entityCrtr )
 		{
 			entity->addToCreatureList(creatureList);

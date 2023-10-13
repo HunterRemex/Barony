@@ -14,6 +14,7 @@
 #include "stat.hpp"
 #include "messages.hpp"
 #include "entity.hpp"
+#include "creature.h"
 #include "engine/audio/sound.hpp"
 #include "items.hpp"
 #include "interface/interface.hpp"
@@ -29,7 +30,6 @@
 #include "ui/MainMenu.hpp"
 #include "interface/consolecommand.hpp"
 #include "ui/GameUI.hpp"
-#include "creature.h"
 
 /*-------------------------------------------------------------------------------
 
@@ -356,7 +356,7 @@ bool entityInsideTile(Entity* entity, int x, int y, int z, bool checkSafeTiles)
 						{
 							return true;
 						}
-                        if (Creature* crtrEntity = dynamic_cast<Creature*>(entity);
+                        if (Creature* crtrEntity = (Creature*)entity;
                                 crtrEntity && crtrEntity->behavior == &actMonster) {
                             if (swimmingtiles[map.tiles[z + y * MAPLAYERS + x * MAPLAYERS * map.height]] ||
                                 lavatiles[map.tiles[z + y * MAPLAYERS + x * MAPLAYERS * map.height]])
@@ -450,8 +450,8 @@ bool entityInsideSomething(Entity* entity)
 static ConsoleVariable<float> cvar_linetrace_smallcollision("/linetrace_smallcollision", 4.0);
 bool useSmallCollision(Entity& my, Stat& myStats, Entity& your, Stat& yourStats)
 {
-    Creature* myCrtr = dynamic_cast<Creature*>(&my);
-    Creature* yourCrtr = dynamic_cast<Creature*>(&my);
+    Creature* myCrtr = (Creature*)&my;
+    Creature* yourCrtr = (Creature*)&my;
 	if ((myCrtr->behavior == &actMonster || myCrtr->behavior == &actPlayer) &&
         (yourCrtr->behavior == &actMonster || yourCrtr->behavior == &actPlayer) )
 	{
@@ -487,8 +487,8 @@ int barony_clear(real_t tx, real_t ty, Entity* my)
 	real_t tx2, ty2;
 	node_t* node;
 	Entity* entity;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* myCrtr = (Creature*)my;
+    Creature* entityCrtr = (Creature*)entity;
 	bool levitating = false;
 // Reworked that function to break the loop in two part. 
 // A first fast one using integer only x/y
@@ -631,7 +631,7 @@ int barony_clear(real_t tx, real_t ty, Entity* my)
 				continue;
 			}
 			if ( entity->isDamageableCollider() && entity->colliderHasCollision == 2
-				&& myCrtr && myCrtr->behavior == &actMonster && dynamic_cast<Creature *>(my)->getMonsterTypeFromSprite() == MINOTAUR )
+				&& myCrtr && myCrtr->behavior == &actMonster && ((Creature*)my)->getMonsterTypeFromSprite() == MINOTAUR )
 			{
 				continue;
 			}
@@ -870,7 +870,7 @@ real_t clipMove(real_t* x, real_t* y, real_t vx, real_t vy, Entity* my)
 
 Entity* findEntityInLine( Entity* my, real_t x1, real_t y1, real_t angle, int entities, Entity* target )
 {
-    Creature* myCrtr = dynamic_cast<Creature*>(*&my);
+    Creature* myCrtr = (Creature*)my;
 	Entity* result = NULL;
 	node_t* node;
 	real_t lowestDist = 9999;
@@ -1002,7 +1002,7 @@ Entity* findEntityInLine( Entity* my, real_t x1, real_t y1, real_t angle, int en
 		for ( node = currentList->first; node != nullptr; node = node->next )
 		{
 			Entity* entity = (Entity*)node->element;
-            Creature* creature = dynamic_cast<Creature*>(entity);
+            Creature* creature = (Creature*)entity;
 			if ( (entity != target && target != nullptr)
                 || entity->flags[PASSABLE]
                 || entity == my
@@ -1033,8 +1033,8 @@ Entity* findEntityInLine( Entity* my, real_t x1, real_t y1, real_t angle, int en
 			real_t sizey = entity->sizey;
 			if ( entities == LINETRACE_ATK_CHECK_FRIENDLYFIRE && multiplayer != CLIENT )
 			{
-                auto* myCreature = dynamic_cast<Creature*>(my);
-                auto* entityCreature = dynamic_cast<Creature*>(entity);
+                auto* myCreature = (Creature*)my;
+                auto* entityCreature = (Creature*)entity;
 				if ( (myCreature->behavior == &actMonster || myCreature->behavior == &actPlayer)
 					&& (entityCreature->behavior == &actMonster || entityCreature->behavior == &actPlayer) )
 				{
@@ -1239,7 +1239,7 @@ Entity* findEntityInLine( Entity* my, real_t x1, real_t y1, real_t angle, int en
 
 real_t lineTrace( Entity* my, real_t x1, real_t y1, real_t angle, real_t range, int entities, bool ground )
 {
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	int posx, posy;
 	real_t fracx, fracy;
 	real_t rx, ry;
@@ -1314,7 +1314,7 @@ real_t lineTrace( Entity* my, real_t x1, real_t y1, real_t angle, real_t range, 
 	}
 
 	Entity* entity = findEntityInLine(my, x1, y1, angle, entities, NULL);
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 
 	Stat* yourStats = nullptr;
 	bool reduceCollisionSize = false;
@@ -1463,8 +1463,8 @@ real_t lineTrace( Entity* my, real_t x1, real_t y1, real_t angle, real_t range, 
 
 real_t lineTraceTarget( Entity* my, real_t x1, real_t y1, real_t angle, real_t range, int entities, bool ground, Entity* target )
 {
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
-    Creature* entityCrtr = dynamic_cast<Creature*>(target);
+    Creature* myCrtr = (Creature*)my;
+    Creature* entityCrtr = (Creature*)target;
 	int posx, posy;
 	real_t fracx, fracy;
 	real_t rx, ry;
@@ -1654,8 +1654,8 @@ real_t lineTraceTarget( Entity* my, real_t x1, real_t y1, real_t angle, real_t r
 
 int checkObstacle(long x, long y, Entity* my, Entity* target, bool useTileEntityList)
 {
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
-    Creature* entityCrtr = dynamic_cast<Creature*>(target);
+    Creature* myCrtr = (Creature*)my;
+    Creature* entityCrtr = (Creature*)target;
 	node_t* node;
 	Entity* entity;
 	Stat* stats;

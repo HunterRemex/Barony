@@ -419,7 +419,7 @@ void actTrap(Entity* my)
 		for ( node = currentList->first; node != nullptr; node = node->next )
 		{
 			entity = (Entity*)node->element;
-            Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+            Creature* entityCrtr = (Creature*)entity;
 			if ( (entityCrtr && entityCrtr->behavior == &actPlayer) || entity->behavior == &actItem
 				|| (entityCrtr && entityCrtr->behavior == &actMonster) || entity->behavior == &actBoulder
 				|| entity->behavior == &actBomb || entity->behavior == &actDecoyBox )
@@ -470,7 +470,7 @@ void actTrapPermanent(Entity* my)
 		for ( node = map.creatures->first; node != nullptr; node = node->next ) //Only looking at players? Don't search full map.entities.
 		{
 			entity = (Entity*)node->element;
-            Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+            Creature* entityCrtr = (Creature*)entity;
 			if ( entityCrtr && entityCrtr->behavior == &actPlayer )
 			{
 				if ( entity->x < 26 * 16 || entity->y < 6 * 16 || entity->y >= 26 * 16 )   // hardcoded, I know...
@@ -489,7 +489,7 @@ void actTrapPermanent(Entity* my)
 			for ( node = map.creatures->first; node != nullptr; node = node->next )
 			{
 				entity = (Entity*)node->element;
-                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                Creature* entityCrtr = (Creature*)entity;
 				if ( entityCrtr && entityCrtr->behavior == &actMonster && (entity->getRace() == LICH_FIRE || entity->getRace() == LICH_ICE) )
 				{
 					monsterAlive = true;
@@ -511,7 +511,7 @@ void actTrapPermanent(Entity* my)
 			for ( node = map.creatures->first; node != nullptr; node = node->next ) //Only looking at players? Don't search full map.entities.
 			{
 				entity = (Entity*)node->element;
-                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                Creature* entityCrtr = (Creature*)entity;
 				if ( entityCrtr && entityCrtr->behavior == &actPlayer )
 				{
 					if ( entity->x < 29 * 16 )   // hardcoded, I know...
@@ -541,7 +541,7 @@ void actTrapPermanent(Entity* my)
 			for ( node = currentList->first; node != nullptr; node = node->next )
 			{
 				entity = (Entity*)node->element;
-                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+                Creature* entityCrtr = (Creature*)entity;
 				if ( (entityCrtr && entityCrtr->behavior == &actPlayer) || entity->behavior == &actItem
 					|| (entityCrtr && entityCrtr->behavior == &actMonster) || entity->behavior == &actBoulder
 					|| entity->behavior == &actBomb || entity->behavior == &actDecoyBox )

@@ -41,8 +41,8 @@ void updateEnemyBar(Entity* source, Entity* target, const char* name, Sint32 hp,
 	int player = -1;
 	int c;
 
-    Creature* sourceCrtr = dynamic_cast<Creature*>(source);
-    Creature* targetCrtr = dynamic_cast<Creature*>(target);
+    Creature* sourceCrtr = (Creature*)source;
+    Creature* targetCrtr = (Creature*)target;
 	if (!source || !target)
 	{
 		return;

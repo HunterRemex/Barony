@@ -398,8 +398,8 @@ static ConsoleVariable<bool> cvar_pathing_debug("/pathing_debug", false);
 int lastGeneratePathTries = 0;
 list_t* generatePath(int x1, int y1, int x2, int y2, Entity* my, Entity* target, GeneratePathTypes pathingType, bool lavaIsPassable)
 {
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
-    Creature* targetCrtr = dynamic_cast<Creature*>(target);
+    Creature* myCrtr = (Creature*)my;
+    Creature* targetCrtr = (Creature*)target;
 	if ( *cvar_pathing_debug )
 	{
 		pathtime = std::chrono::high_resolution_clock::now();
@@ -533,7 +533,7 @@ list_t* generatePath(int x1, int y1, int x2, int y2, Entity* my, Entity* target,
 	for ( auto entityNode = map.entities->first; entityNode != nullptr; entityNode = entityNode->next )
 	{
 		Entity* entity = (Entity*)entityNode->element;
-        Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+        Creature* entityCrtr = (Creature*)entity;
 		if ( entity->flags[PASSABLE] )
 		{
 			if ( entity->behavior == &actSpearTrap 

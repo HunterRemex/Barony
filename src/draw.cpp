@@ -2084,7 +2084,7 @@ void drawEntities3D(view_t* camera, int mode)
 				if ( intro ) { continue; } // don't draw on main menu
 #ifndef EDITOR
                 auto parent = uidToEntity(entity->parent);
-                Creature* parentCrtr = dynamic_cast<Creature*>(parent);
+                Creature* parentCrtr = (Creature*)parent;
                 if (parent) {
                     if (multiplayer == CLIENT) {
                         auto stats = (parentCrtr && parentCrtr->behavior == &actPlayer) ?

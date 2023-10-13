@@ -269,7 +269,7 @@ void demonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	node_t* node;
 	Entity* entity = nullptr;
 	Entity* rightbody = nullptr;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	int bodypart;
 
 	// set invisibility //TODO: isInvisible()?
@@ -632,7 +632,7 @@ void actDemonCeilingBuster(Entity* my)
 					{
 						if ( multiplayer != CLIENT )
 						{
-							my->attack(MONSTER_POSE_MELEE_WINDUP2, 0, nullptr);
+                            ((Creature*)my)->attack(MONSTER_POSE_MELEE_WINDUP2, 0, nullptr);
 						}
 						return;
 					}

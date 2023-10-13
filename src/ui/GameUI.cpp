@@ -345,7 +345,7 @@ std::string EnemyBarSettings_t::getEnemyBarSpriteName(Entity* entity)
 {
 	if ( !entity ) { return "default"; }
 
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if ( entityCrtr && (entityCrtr->behavior == &actPlayer || entityCrtr->behavior == &actMonster) )
 	{
 		int type = entity->getMonsterTypeFromSprite();
@@ -26924,7 +26924,7 @@ SDL_Surface* EnemyHPDamageBarHandler::EnemyHPDetails::blitEnemyBar(const int pla
 SDL_Surface* EnemyHPDamageBarHandler::EnemyHPDetails::blitEnemyBarStatusEffects(const int player)
 {
 	Entity* entity = uidToEntity(enemy_uid);
-    Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+    Creature* entityCrtr = (Creature*)entity;
 	if ( entity && (!entityCrtr || (entityCrtr->behavior != &actPlayer && entityCrtr->behavior != &actMonster)) )
 	{
 		return nullptr;

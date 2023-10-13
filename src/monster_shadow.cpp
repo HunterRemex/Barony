@@ -386,7 +386,7 @@ void shadowMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = NULL, *entity2 = NULL;
 	Entity* rightbody = NULL;
 	Entity* weaponarm = NULL;
-    Creature* myCrtr = dynamic_cast<Creature*>(my);
+    Creature* myCrtr = (Creature*)my;
 	int bodypart;
 	bool wearingring = false;
 
@@ -1387,7 +1387,7 @@ void Creature::shadowSpecialAbility(bool initialMimic)
 	}
 
 	Entity *target = uidToEntity(monsterTarget);
-    Creature* targetCrtr = dynamic_cast<Creature*>(target);
+    Creature* targetCrtr = (Creature*)target;
 	if ( !target )
 	{
 		//messagePlayer(clientnum, "Shadow's target deaded!");
