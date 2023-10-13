@@ -6150,33 +6150,6 @@ bool Entity::safeConsumeMP(int amount)
 	return false;
 }
 
-Monster Entity::getMonsterTypeFromSprite() const
-{
-	int32_t mySprite = this->sprite;
-	return Entity::getMonsterTypeFromSprite(mySprite);
-}
-
-Monster Entity::getMonsterTypeFromSprite(const int sprite)
-{
-	int32_t mySprite = sprite;
-	static std::unordered_map<int32_t, Monster> spriteToMonster;
-	if ( spriteToMonster.empty() ) {
-		for ( int c = 0; c < NUMMONSTERS; ++c ) {
-			const auto monster = static_cast<Monster>(c);
-			for ( auto sprite : monsterSprites[c] ) {
-				const auto result = spriteToMonster.emplace(sprite, monster);
-				assert(result.second == true && "spriteToMonster conflict!");
-			}
-		}
-	}
-
-	auto find = spriteToMonster.find(mySprite);
-	if ( find != spriteToMonster.end() ) {
-		return find->second;
-	}
-	return NOTHING;
-}
-
 /*-------------------------------------------------------------------------------
 
 Creature::awardXP
