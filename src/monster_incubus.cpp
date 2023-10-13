@@ -1386,7 +1386,7 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 void Creature::incubusChooseWeapon(const Entity* target, double dist)
 {
-    const Creature* targetCrtr = dynamic_cast<const Creature*>(target);
+    const Creature* targetCrtr = (const Creature*)target;
 	if ( monsterSpecialState != 0 )
 	{
 		//Holding a weapon assigned from the special attack. Don't switch weapons.

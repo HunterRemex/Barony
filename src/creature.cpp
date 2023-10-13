@@ -464,7 +464,7 @@ void Creature::effectTimes()
 						if ( invisibility_hijacked )
 						{
 							bool sustained = false;
-							Entity* caster = uidToEntity(invisibility_hijacked->caster);
+							Creature* caster = uidToCreature(invisibility_hijacked->caster);
 							if ( caster )
 							{
 								//Deduct mana from caster. Cancel spell if not enough mana (simply leave sustained at false).
@@ -534,7 +534,7 @@ void Creature::effectTimes()
 						if ( levitation_hijacked )
 						{
 							bool sustained = false;
-							Entity* caster = uidToEntity(levitation_hijacked->caster);
+							Creature* caster = uidToCreature(levitation_hijacked->caster);
 							if ( caster )
 							{
 								//Deduct mana from caster. Cancel spell if not enough mana (simply leave sustained at false).
@@ -651,7 +651,7 @@ void Creature::effectTimes()
 						if ( reflectMagic_hijacked )
 						{
 							bool sustained = false;
-							Entity* caster = uidToEntity(reflectMagic_hijacked->caster);
+							Creature* caster = uidToCreature(reflectMagic_hijacked->caster);
 							if ( caster )
 							{
 								//Deduct mana from caster. Cancel spell if not enough mana (simply leave sustained at false).
@@ -693,7 +693,7 @@ void Creature::effectTimes()
 						if ( amplifyMagic_hijacked )
 						{
 							bool sustained = false;
-							Entity* caster = uidToEntity(amplifyMagic_hijacked->caster);
+							Creature* caster = uidToCreature(amplifyMagic_hijacked->caster);
 							if ( caster )
 							{
 								//Deduct mana from caster. Cancel spell if not enough mana (simply leave sustained at false).

@@ -2621,7 +2621,7 @@ int spellGetCastSound(spell_t* spell)
 
 bool spellIsNaturallyLearnedByRaceOrClass(Entity& caster, Stat& stat, int spellID)
 {
-    Creature& casterCrtr = dynamic_cast<Creature&>(caster);
+    Creature& casterCrtr = (Creature&)caster;
 	if ( casterCrtr.behavior != &actPlayer )
 	{
 		return false;

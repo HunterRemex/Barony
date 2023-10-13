@@ -1052,7 +1052,7 @@ Returns a pointer to a Stat instance given a pointer to an entity
 
 Stat* Entity::getStats() const
 {
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actMonster ) // monsters
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actMonster ) // monsters
 	{
 		if ( multiplayer == CLIENT && clientStats )
 		{
@@ -1066,7 +1066,7 @@ Stat* Entity::getStats() const
 			}
 		}
 	}
-	else if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer ) // players
+	else if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer ) // players
 	{
 		return stats[this->skill[2]];
 	}
@@ -1489,7 +1489,7 @@ Sint32 Entity::getRangedAttack()
 	{
 		attack += entitystats->weapon->weaponGetAttack(entitystats);
 		attack += getDEX();
-		if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actMonster )
+		if ( ((Creature*)this) && ((Creature*)this)->behavior == &actMonster )
 		{
 			attack += getPER(); // monsters take PER into their ranged attacks to avoid having to increase their speed.
 			attack += entitystats->PROFICIENCIES[PRO_RANGED] / 20; // 0 to 5 bonus attack for monsters
@@ -2414,7 +2414,7 @@ bool Entity::isBlind()
 	}
 
 	bool shapeshifted = false;
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
 	{
 		if ( effectShapeshift != NOTHING )
 		{
@@ -2500,7 +2500,7 @@ bool Entity::isInvisible() const
 		}
 	}
 
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
 	{
 		if ( this->skill[2] >= 0 && this->skill[2] < MAXPLAYERS )
 		{
@@ -2772,7 +2772,7 @@ bool Entity::teleporterMove(int tele_x, int tele_y, int type)
 {
 	int player = -1;
 
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
 	{
 		player = skill[2];
 	}
@@ -3286,7 +3286,7 @@ bool Entity::setBootSprite(Entity* leg, int spriteOffset)
 
 	Stat* myStats;
 
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
 	{
 		myStats = stats[this->skill[2]]; // skill[2] contains the player number.
 	}
@@ -4226,7 +4226,7 @@ void Entity::playerStatIncrease(int playerClass, int chosenStats[3])
 	//{
 	//	messagePlayer(0, "%2d, ", *i);
 	//}
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer && playerClass == CLASS_SHAMAN && stats[skill[2]] )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer && playerClass == CLASS_SHAMAN && stats[skill[2]] )
 	{
 		if ( stats[skill[2]]->type == RAT )
 		{
@@ -4710,7 +4710,7 @@ void Entity::SetEntityOnFire(Entity* sourceOfFire)
 	// Check if the Entity can be set on fire
 	if ( this->flags[BURNABLE] )
 	{
-		if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer )
+		if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
 		{
 			Stat* myStats = this->getStats();
 			if ( myStats )
@@ -4757,7 +4757,7 @@ void Entity::SetEntityOnFire(Entity* sourceOfFire)
 				return; // The Entity was set on fire, it does not have Stats, so it is on fire for maximum duration
 			}
 
-			if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer )
+			if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
 			{
 				messagePlayerColor(this->skill[2], MESSAGE_COMBAT, makeColorRGB(255, 0, 0), Language::get(4324));
 			}
@@ -4797,7 +4797,7 @@ void Entity::SetEntityOnFire(Entity* sourceOfFire)
 
 			if ( sourceOfFire && sourceOfFire->behavior == &actArrow )
 			{
-				if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actMonster )
+				if ( ((Creature*)this) && ((Creature*)this)->behavior == &actMonster )
 				{
 					// monsters shot with arrow burn less, harder for players.
 					this->char_fire = std::min(this->char_fire, TICKS_TO_PROCESS_FIRE * 6);
@@ -5760,12 +5760,12 @@ bool Entity::bEntityHighlightedForPlayer(const int player) const
 	{
 		return false;
 	}
-	if ( ((typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer) || behavior == &actPlayerLimb)
+	if ( ((((Creature*)this) && ((Creature*)this)->behavior == &actPlayer) || behavior == &actPlayerLimb)
 		&& StatueManager.activeEditing && highlightForUI > 0.001 )
 	{
 		return true;
 	}
-	if ( typeid(this) == typeid(Creature) )
+	if ( ((Creature*)this) )
 	{
 		return false;
 	}
@@ -5879,7 +5879,7 @@ void Entity::setHP(int amount)
 
 	int healthDiff = entitystats->HP;
 
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer && godmode )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer && godmode )
 	{
 		amount = entitystats->MAXHP;
 	}
@@ -5891,12 +5891,12 @@ void Entity::setHP(int amount)
 	healthDiff -= entitystats->HP;
 	strncpy(entitystats->obituary, Language::get(1500), 127);
 
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer && buddhamode && entitystats->HP < 1 )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer && buddhamode && entitystats->HP < 1 )
 	{
 		entitystats->HP = 1; //Buddhas never die!
 	}
 
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer && entitystats->OLDHP >= entitystats->HP )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer && entitystats->OLDHP >= entitystats->HP )
 	{
 		inputs.addRumbleForPlayerHPLoss(skill[2], amount);
 	}
@@ -5916,7 +5916,7 @@ void Entity::setHP(int amount)
 				net_packet->len = 12;
 				sendPacketSafe(net_sock, -1, net_packet, i - 1);
 			}
-			if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer && abs(healthDiff) > 0 )
+			if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer && abs(healthDiff) > 0 )
 			{
 				if ( serverSchedulePlayerHealthUpdate == 0 )
 				{
@@ -5924,7 +5924,7 @@ void Entity::setHP(int amount)
 				}
 			}
 		}
-		if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actMonster )
+		if ( ((Creature*)this) && ((Creature*)this)->behavior == &actMonster )
 		{
 			if ( this->monsterAllyIndex >= 1 && this->monsterAllyIndex < MAXPLAYERS )
 			{
@@ -5953,7 +5953,7 @@ void Entity::modHP(int amount)
 {
 	Stat* entitystats = this->getStats();
 
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
 	{
 		if ( godmode && amount < 0 )
 		{
@@ -5967,7 +5967,7 @@ void Entity::modHP(int amount)
 
 	if ( !entitystats || amount == 0 )
 	{
-		if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer )
+		if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
 		{
 			inputs.addRumbleForPlayerHPLoss(skill[2], amount);
 		}
@@ -6186,7 +6186,7 @@ void Entity::awardXP(Entity* src, bool share, bool root)
 	}
 
 	int player = -1;
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
 	{
 		player = skill[2];
 		if ( srcCrtr && srcCrtr->behavior == &actPlayer && root )
@@ -6272,7 +6272,7 @@ void Entity::awardXP(Entity* src, bool share, bool root)
 				}
 			}
 
-			if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer )
+			if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
 			{
 				if ( stats[this->skill[2]] )
 				{
@@ -6321,7 +6321,7 @@ void Entity::awardXP(Entity* src, bool share, bool root)
 	}
 
 	if ( (srcStats->type == LICH || srcStats->type == LICH_FIRE || srcStats->type == LICH_ICE) && root
-		&& typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actMonster )
+		&& ((Creature*)this) && ((Creature*)this)->behavior == &actMonster )
 	{
 		if ( destStats->type == CREATURE_IMP
 			|| destStats->type == DEMON
@@ -6339,11 +6339,11 @@ void Entity::awardXP(Entity* src, bool share, bool root)
 
 	if ( root ) // global stats
 	{
-		if ( srcCrtr && srcCrtr->behavior == &actPlayer && typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actMonster )
+		if ( srcCrtr && srcCrtr->behavior == &actPlayer && ((Creature*)this) && ((Creature*)this)->behavior == &actMonster )
 		{
 			achievementObserver.updateGlobalStat(getIndexForDeathType(destStats->type));
 		}
-		else if ( srcCrtr && srcCrtr->behavior == &actMonster && typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer )
+		else if ( srcCrtr && srcCrtr->behavior == &actMonster && ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
 		{
 			if ( srcStats->type == LICH )
 			{
@@ -6599,12 +6599,12 @@ bool Entity::checkEnemy(Entity* your)
 		return false;
 	}
 
-	if ( (yourCrtr && yourCrtr->behavior == &actPlayer || your->behavior == &actPlayerLimb) && (typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer || behavior == &actPlayerLimb) )
+	if ( (yourCrtr && yourCrtr->behavior == &actPlayer || your->behavior == &actPlayerLimb) && (((Creature*)this) && ((Creature*)this)->behavior == &actPlayer || behavior == &actPlayerLimb) )
 	{
 		return false;
 	}
 
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer && yourCrtr && yourCrtr->behavior == &actMonster && yourStats->monsterForceAllegiance != Stat::MONSTER_FORCE_ALLEGIANCE_NONE )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer && yourCrtr && yourCrtr->behavior == &actMonster && yourStats->monsterForceAllegiance != Stat::MONSTER_FORCE_ALLEGIANCE_NONE )
 	{
 		if ( yourStats->monsterForceAllegiance == Stat::MONSTER_FORCE_PLAYER_ALLY || yourStats->monsterForceAllegiance == Stat::MONSTER_FORCE_PLAYER_RECRUITABLE )
 		{
@@ -6615,7 +6615,7 @@ bool Entity::checkEnemy(Entity* your)
 			return true;
 		}
 	}
-	else if ( yourCrtr && yourCrtr->behavior == &actPlayer && typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actMonster && myStats->monsterForceAllegiance != Stat::MONSTER_FORCE_ALLEGIANCE_NONE )
+	else if ( yourCrtr && yourCrtr->behavior == &actPlayer && ((Creature*)this) && ((Creature*)this)->behavior == &actMonster && myStats->monsterForceAllegiance != Stat::MONSTER_FORCE_ALLEGIANCE_NONE )
 	{
 		if ( myStats->monsterForceAllegiance == Stat::MONSTER_FORCE_PLAYER_ALLY || myStats->monsterForceAllegiance == Stat::MONSTER_FORCE_PLAYER_RECRUITABLE )
 		{
@@ -6668,11 +6668,11 @@ bool Entity::checkEnemy(Entity* your)
 	{
 		return true;
 	}
-	else if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer && yourStats->type == VAMPIRE && MonsterData_t::nameMatchesSpecialNPCName(*yourStats, "bram kindly") )
+	else if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer && yourStats->type == VAMPIRE && MonsterData_t::nameMatchesSpecialNPCName(*yourStats, "bram kindly") )
 	{
 		return true;
 	}
-	else if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actMonster && myStats->type == INCUBUS && !strncmp(myStats->name, "inner demon", strlen("inner demon")) )
+	else if ( ((Creature*)this) && ((Creature*)this)->behavior == &actMonster && myStats->type == INCUBUS && !strncmp(myStats->name, "inner demon", strlen("inner demon")) )
 	{
 		Entity* parentEntity = uidToEntity(this->parent);
 		if ( parentEntity != your )
@@ -6684,7 +6684,7 @@ bool Entity::checkEnemy(Entity* your)
 			return false;
 		}
 	}
-	else if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer && yourStats->type == INCUBUS && !strncmp(yourStats->name, "inner demon", strlen("inner demon")) )
+	else if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer && yourStats->type == INCUBUS && !strncmp(yourStats->name, "inner demon", strlen("inner demon")) )
 	{
 		Entity* parentEntity = uidToEntity(your->parent);
 		if ( parentEntity != this )
@@ -6696,9 +6696,9 @@ bool Entity::checkEnemy(Entity* your)
 			return false;
 		}
 	}
-	else if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actMonster && (yourCrtr && yourCrtr->behavior == &actMonster) && yourStats->type == INCUBUS && !strncmp(yourStats->name, "inner demon", strlen("inner demon")) )
+	else if ( ((Creature*)this) && ((Creature*)this)->behavior == &actMonster && (yourCrtr && yourCrtr->behavior == &actMonster) && yourStats->type == INCUBUS && !strncmp(yourStats->name, "inner demon", strlen("inner demon")) )
 	{
-		Entity* illusionTauntingThisEntity = uidToEntity(static_cast<uint32_t>(typeid(your) == typeid(Creature) && ((Creature*)your)->monsterIllusionTauntingThisUid));
+		Entity* illusionTauntingThisEntity = uidToEntity(static_cast<uint32_t>(((Creature*)your) && ((Creature*)your)->monsterIllusionTauntingThisUid));
 		if ( illusionTauntingThisEntity == this )
 		{
 			return true;
@@ -6773,15 +6773,15 @@ bool Entity::checkEnemy(Entity* your)
 			result = swornenemies[myStats->type][yourStats->type];
 
 			// player exceptions to table go here.
-			if ( myStats->type == SHOPKEEPER && typeid(your) == typeid(Creature) && ((Creature*)your)->behavior == &actPlayer )
+			if ( myStats->type == SHOPKEEPER && ((Creature*)your) && ((Creature*)your)->behavior == &actPlayer )
 			{
 				result = ShopkeeperPlayerHostility.isPlayerEnemy(your->skill[2]);
 			}
-			else if ( yourStats->type == SHOPKEEPER && typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer )
+			else if ( yourStats->type == SHOPKEEPER && ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
 			{
 				result = ShopkeeperPlayerHostility.isPlayerEnemy(this->skill[2]);
 			}
-			else if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer && myStats->type != HUMAN )
+			else if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer && myStats->type != HUMAN )
 			{
 				result = swornenemies[HUMAN][yourStats->type];
 				if ( (yourStats->type == HUMAN || yourStats->type == SHOPKEEPER) && myStats->type != AUTOMATON )
@@ -6866,7 +6866,7 @@ bool Entity::checkEnemy(Entity* your)
 					}
 				}
 			}
-			else if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actMonster && typeid(your) == typeid(Creature) && ((Creature*)your)->behavior == &actPlayer && yourStats->type != HUMAN )
+			else if ( ((Creature*)this) && ((Creature*)this)->behavior == &actMonster && ((Creature*)your) && ((Creature*)your)->behavior == &actPlayer && yourStats->type != HUMAN )
 			{
 				result = swornenemies[myStats->type][HUMAN];
 				if ( (myStats->type == HUMAN || myStats->type == SHOPKEEPER) && yourStats->type != AUTOMATON )
@@ -7154,7 +7154,7 @@ void Entity::handleWeaponArmAttack(Entity* weaponarm)
 
 		if ( monsterAttackTime >= ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 		{
-			if ( multiplayer != CLIENT && typeid(this) == typeid(Creature) )
+			if ( multiplayer != CLIENT && ((Creature*)this) )
 			{
                 ((Creature*)this)->attack(1, 0, nullptr);
 			}
@@ -7209,7 +7209,7 @@ void Entity::handleWeaponArmAttack(Entity* weaponarm)
 
 		if ( monsterAttackTime >= ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 		{
-            if ( multiplayer != CLIENT && typeid(this) == typeid(Creature) )
+            if ( multiplayer != CLIENT && ((Creature*)this) )
             {
                 ((Creature*)this)->attack(2, 0, nullptr);
             }
@@ -7263,7 +7263,7 @@ void Entity::handleWeaponArmAttack(Entity* weaponarm)
 
 		if ( monsterAttackTime >= ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 		{
-            if ( multiplayer != CLIENT && typeid(this) == typeid(Creature) )
+            if ( multiplayer != CLIENT && ((Creature*)this) )
             {
                 ((Creature*)this)->attack(3, 0, nullptr);
             }
@@ -7325,7 +7325,7 @@ void Entity::handleWeaponArmAttack(Entity* weaponarm)
 
 		if ( monsterAttackTime >= ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 		{
-            if ( multiplayer != CLIENT && typeid(this) == typeid(Creature) )
+            if ( multiplayer != CLIENT && ((Creature*)this) )
             {
                 ((Creature*)this)->attack(MONSTER_POSE_RANGED_SHOOT1, 0, nullptr);
             }
@@ -7396,7 +7396,7 @@ void Entity::handleWeaponArmAttack(Entity* weaponarm)
 
 		if ( monsterAttackTime >= ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 		{
-            if ( multiplayer != CLIENT && typeid(this) == typeid(Creature) )
+            if ( multiplayer != CLIENT && ((Creature*)this) )
             {
                 ((Creature*)this)->attack(MONSTER_POSE_RANGED_SHOOT2, 0, nullptr);
             }
@@ -7511,7 +7511,7 @@ void Entity::handleWeaponArmAttack(Entity* weaponarm)
 
 		if ( monsterAttackTime >= 2 * ANIMATE_DURATION_WINDUP / (monsterGlobalAnimationMultiplier / 10.0) )
 		{
-            if ( multiplayer != CLIENT && typeid(this) == typeid(Creature) )
+            if ( multiplayer != CLIENT && ((Creature*)this) )
             {
                 // swing the arm after we prepped the spell
                 ((Creature*)this)->attack(MONSTER_POSE_MAGIC_WINDUP2, 0, nullptr);
@@ -7533,7 +7533,7 @@ void Entity::handleWeaponArmAttack(Entity* weaponarm)
 
 		if ( limbAnimateToLimit(weaponarm, ANIMATE_PITCH, -0.3, 5 * PI / 4, false, 0.0) )
 		{
-			if ( multiplayer != CLIENT && typeid(this) == typeid(Creature) )
+			if ( multiplayer != CLIENT && ((Creature*)this) )
 			{
 				Stat* stats = this->getStats();
 				if ( stats && stats->type == SHADOW )

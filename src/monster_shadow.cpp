@@ -1688,7 +1688,7 @@ void Creature::shadowChooseWeapon(const Entity* target, double dist)
 
 		/* THIS NEEDS TO BE ELSEWHERE, TO BE CALLED CONSTANTLY TO ALLOW SHADOW TO TELEPORT IF NO PATH/ DISTANCE IS TOO GREAT */
 
-        const Creature* targetCrtr = dynamic_cast<const Creature*>(target);
+        const Creature* targetCrtr = (const Creature*)target;
 		// occurs less often against fellow monsters.
 		specialRoll = local_rng.rand() % (20 + 50 * (targetCrtr && targetCrtr->behavior == &actMonster));
 

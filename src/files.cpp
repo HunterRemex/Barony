@@ -2584,7 +2584,7 @@ int saveMap(const char* filename2)
 					fp->write(&entity->gateDisableOpening, sizeof(Sint32), 1);
 					break;
 				case 23:
-                    if ( Creature *creature = dynamic_cast<Creature *>(entity); creature )
+                    if ( Creature *creature = (Creature*)entity; creature )
                     {
                         fp->write(&creature->playerStartDir, sizeof(Sint32), 1);
                     }

@@ -527,7 +527,7 @@ bool item_PotionBooze(Item*& item, Entity* entity, Creature* usedBy, bool should
 		// hunger off.
 		if ( entityCrtr && entityCrtr->behavior == &actPlayer && stats->playerRace == RACE_INSECTOID && stats->appearance == 0 )
 		{
-			entity->modMP(5 * (1 + item->beatitude));
+			entityCrtr->modMP(5 * (1 + item->beatitude));
 		}
 	}
 	entity->modHP(item->potionGetEffectHealth(entity, stats));
@@ -684,7 +684,7 @@ bool item_PotionJuice(Item*& item, Entity* entity, Creature* usedBy)
 			// hunger off.
 			if ( entityCrtr && entityCrtr->behavior == &actPlayer && stats->playerRace == RACE_INSECTOID && stats->appearance == 0 )
 			{
-				entity->modMP(5);
+				entityCrtr->modMP(5);
 			}
 		}
 
@@ -717,7 +717,7 @@ bool item_PotionJuice(Item*& item, Entity* entity, Creature* usedBy)
 			// hunger off.
 			if ( entityCrtr && entityCrtr->behavior == &actPlayer && stats->playerRace == RACE_INSECTOID && stats->appearance == 0 )
 			{
-				entity->modMP(5 * (1 + item->beatitude));
+				entityCrtr->modMP(5 * (1 + item->beatitude));
 			}
 		}
 	}
@@ -2254,7 +2254,11 @@ bool item_PotionRestoreMagic(Item*& item, Entity* entity, Creature* usedBy)
 	{
 		messagePlayer(player, MESSAGE_HINT, Language::get(774));
 	}
-	entity->modMP(amount);
+
+	if ( entityCrtr )
+	{
+		entityCrtr->modMP(amount);
+	}
 
 	if ( svFlags & SV_FLAG_HUNGER )
 	{

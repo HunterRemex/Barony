@@ -1319,7 +1319,7 @@ void Creature::vampireChooseWeapon(const Entity* target, double dist)
 	}
 
 	Stat *myStats = getStats();
-    const Creature* targetCrtr = dynamic_cast<const Creature*>(target);
+    const Creature* targetCrtr = (const Creature*)target;
 	if ( !myStats )
 	{
 		return;

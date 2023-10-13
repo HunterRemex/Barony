@@ -10755,7 +10755,7 @@ bool Creature::monsterConsumeFoodEntity(Entity* food, Stat* myStats)
 
 Creature* Entity::monsterAllyGetPlayerLeader()
 {
-	if ( typeid(this) != typeid(Creature) || ((Creature*)this)->behavior != &actMonster )
+	if ( ((Creature*)this)->behavior != &actMonster )
 	{
 		return nullptr;
 	}
@@ -10970,7 +10970,7 @@ bool Creature::monsterAllyEquipmentInClass(const Item& item) const
 bool Entity::monsterIsTinkeringCreation()
 {
 	int race = this->getMonsterTypeFromSprite();
-    if ( typeid(this) != typeid(Creature) || ((Creature*)this)->behavior != &actMonster )
+    if ( ((Creature*)this)->behavior != &actMonster )
     {
 		return false;
 	}
