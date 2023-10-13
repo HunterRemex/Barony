@@ -4,6 +4,12 @@
 
 #pragma once
 #include "entity.hpp"
+#include "main.hpp"
+#include "game.hpp"
+#include "stat.hpp"
+#include "light.hpp"
+#include "monster.hpp"
+#include "entity_base.hpp"
 //#include "scores.hpp" //Breaks a lot of stuff
 
 //extern Player* players[MAXPLAYERS];
@@ -16,69 +22,69 @@ public:
     void initMonster(int mySprite);
 
 //--PUBLIC MONSTER SKILLS--
-    Sint32& monsterState;
-    Sint32& monsterTarget;
-    real_t& monsterTargetX;
-    real_t& monsterTargetY;
-    Sint32& monsterSpecialTimer;
+    Sint32& monsterState; //skill[0]
+    Sint32& monsterTarget; //skill[1]
+    real_t& monsterTargetX; //fskill[2]
+    real_t& monsterTargetY; //fskill[3]
+    Sint32& monsterSpecialTimer; //skill[29]
 //Only used by goatman.
-    Sint32& monsterSpecialState;
-    Sint32& monsterFootstepType;
-    Sint32& monsterLookTime;
-    Sint32& monsterMoveTime;
-    Sint32& monsterHitTime;
-    Sint32& monsterPathBoundaryXStart;
-    Sint32& monsterPathBoundaryYStart;
-    Sint32& monsterPathBoundaryXEnd;
-    Sint32& monsterPathBoundaryYEnd;
-    Sint32& monsterStoreType;
-    Sint32& monsterStrafeDirection;
-    Sint32& monsterPathCount;
-    real_t& monsterLookDir;
-    Sint32& monsterAllyState;
-    Sint32& monsterAllyPickupItems;
-    Sint32& monsterAllyInteractTarget;
-    Sint32& monsterAllyClass;
-    Sint32& monsterDefend;
-    Sint32& monsterAllySpecial;
-    Sint32& monsterAllySpecialCooldown;
-    Sint32& monsterAllySummonRank;
-    real_t& monsterKnockbackVelocity;
+    Sint32& monsterSpecialState; //skill[33]
+    Sint32& monsterFootstepType; //skill[31]
+    Sint32& monsterLookTime; //skill[32]
+    Sint32& monsterMoveTime; //skill[4]
+    Sint32& monsterHitTime; //skill[8]
+    Sint32& monsterPathBoundaryXStart; //skill[9]
+    Sint32& monsterPathBoundaryYStart; //skill[10]
+    Sint32& monsterPathBoundaryXEnd; //fskill[5]
+    Sint32& monsterPathBoundaryYEnd; //skill[6]
+    Sint32& monsterStoreType; //skill[7]
+    Sint32& monsterStrafeDirection; //skill[14]
+    Sint32& monsterPathCount; //skill[15]
+    real_t& monsterLookDir; //skill[16]
+    Sint32& monsterAllyState; //skill[17]
+    Sint32& monsterAllyPickupItems; //skill[18]
+    Sint32& monsterAllyInteractTarget; //skill[39]
+    Sint32& monsterAllyClass; //skill[38]
+    Sint32& monsterDefend; //fskill[4]
+    Sint32& monsterAllySpecial; //skill[41]
+    Sint32& monsterAllySpecialCooldown; //skill[42] If monster is an ally of a player, assign number 0-3 to it for the players to track on the map.
+    Sint32& monsterAllySummonRank; //skill[43]
+    real_t& monsterKnockbackVelocity; //skill[44]
 
-    Sint32& monsterKnockbackUID;
-    Sint32& monsterFearfulOfUid;
+    Sint32& monsterKnockbackUID; //skill[51]
+    Sint32& monsterFearfulOfUid; //skill[53]
 
-    Sint32& monsterIllusionTauntingThisUid;
-    Sint32& monsterLastDistractedByNoisemaker;
-    Sint32& monsterExtraReflexTick;
-    real_t& monsterSentrybotLookDir;
-    real_t& monsterKnockbackTangentDir;
-    real_t& playerStrafeVelocity;
-    real_t& playerStrafeDir;
-    real_t& monsterSpecialAttackUnequipSafeguard;
+    Sint32& monsterIllusionTauntingThisUid; //skill[55]
+    Sint32& monsterLastDistractedByNoisemaker; //skill[55] shared with above as above only is for inner demons.
+    Sint32& monsterExtraReflexTick; //skill[56]
+    real_t& monsterSentrybotLookDir; //fskill[10]
+    real_t& monsterKnockbackTangentDir; //fskill[11]
+    real_t& playerStrafeVelocity; //fskill[12]
+    real_t& playerStrafeDir; //fskill[13]
+    real_t& monsterSpecialAttackUnequipSafeguard; //fskill[14]
 
     //--PUBLIC PLAYER SKILLS--
-    Sint32& playerLevelEntrySpeech;
-    Sint32& playerAliveTime;
-    Sint32& playerVampireCurse;
-    Sint32& playerAutomatonDeathCounter;
-    Sint32& playerCreatedDeathCam;
+    Sint32& playerLevelEntrySpeech; //skill[18]
+    Sint32& playerAliveTime; //skill[12]
+    Sint32& playerVampireCurse; //skill[51]
+    Sint32& playerAutomatonDeathCounter; //skill[15] - 0 if unused, > 0 if counting to death
+    Sint32& playerCreatedDeathCam; //skill[16] - if we triggered actDeathCam already.
 //--PUBLIC MONSTER SHADOW SKILLS--
-    Sint32& monsterShadowInitialMimic;
-    Sint32& monsterShadowDontChangeName;
+    Sint32& monsterShadowInitialMimic; //skill[34]. 0 = false, 1 = true.
+    Sint32& monsterShadowDontChangeName; //skill[35]. 0 = false, 1 = true. Doesn't change name in its mimic if = 1.
 //--PUBLIC MONSTER LICH SKILLS--
-    Sint32& monsterLichFireMeleeSeq;
-    Sint32& monsterLichFireMeleePrev;
-    Sint32& monsterLichIceCastSeq;
-    Sint32& monsterLichIceCastPrev;
-    Sint32& monsterLichMagicCastCount;
-    Sint32& monsterLichMeleeSwingCount;
-    Sint32& monsterLichBattleState;
-    Sint32& monsterLichTeleportTimer;
-    Sint32& monsterLichAllyStatus;
-    Sint32& monsterLichAllyUID;
+    Sint32& monsterLichFireMeleeSeq; //skill[34]
+    Sint32& monsterLichFireMeleePrev; //skill[35]
+    Sint32& monsterLichIceCastSeq; //skill[34]
+    Sint32& monsterLichIceCastPrev; //skill[35]
+    Sint32& monsterLichMagicCastCount; //skill[37] count the basic spell attacks in the seq and switch things up if too many in a row.
+    Sint32& monsterLichMeleeSwingCount; //skill[38] count the 'regular' attacks in the seq and switch things up if too many in a row.
+    Sint32& monsterLichBattleState; //skill[27] used to track hp/battle progress
+    Sint32& monsterLichTeleportTimer; //skill[40] used to track conditions to teleport away.
+    Sint32& monsterLichAllyStatus; //skill[18] used to track if allies are alive.
+    Sint32& monsterLichAllyUID; //skill[17] used to track lich ally uid.
 //--PLAYER SPAWN POINT--
-    Sint32& playerStartDir;
+    Sint32& playerStartDir; //skill[1]
 
     void effectTimes();
 
@@ -232,59 +238,54 @@ void checkBetterEquipment(Stat* myStats);
 
     bool gyrobotSetPathToReturnLocation(int destX, int destY, int adjacentTilesToCheck, bool tryRandomSpot = false);
 
-// teleport entity to a target, within a radius dist (range in whole tile lengths)
-bool teleportAroundEntity(Entity* target, int dist, int effectType = 0);
+    // teleport entity to a target, within a radius dist (range in whole tile lengths)
+    bool teleportAroundEntity(Entity* target, int dist, int effectType = 0);
 
     void handleNPCInteractDialogue(Stat& myStats, AllyNPCChatter event);
 
-    int shouldMonsterDefend(Stat& myStats, const Entity& target, const Stat& targetStats, int targetDist, bool hasrangedweapon);
-
-    bool monsterConsumeFoodEntity(Entity* food, Stat* myStats);
-
-    bool monsterAllyEquipmentInClass(const Item& item) const;
-
-    void monsterHandleKnockbackVelocity(real_t monsterFacingTangent, real_t weightratio);
-
-    int monsterGetDexterityForMovement();
-
-    void monsterGenerateQuiverItem(Stat* myStats, bool lesserMonster = false);
-
     bool checkFriend(Entity* your);
-
-    bool isFollowerFreeToPathToPlayer(Stat* myStats);
 
     void lookAtEntity(Entity& target);
 
-    void handleEffectsClient();
+	void handleEffectsClient();
 
-/*
- * @param state: required to let the entity know if it should enter MONSTER_STATE_PATH, MONSTER_STATE_ATTACK, etc.
- * @param monsterWasHit: monster is retaliating to an attack as opposed to finding an enemy. to set reaction time accordingly in hardcore
- */
-void monsterAcquireAttackTarget(const Entity& target, Sint32 state, bool monsterWasHit = false);
+    /*
+     * @param state: required to let the entity know if it should enter MONSTER_STATE_PATH, MONSTER_STATE_ATTACK, etc.
+     * @param monsterWasHit: monster is retaliating to an attack as opposed to finding an enemy. to set reaction time accordingly in hardcore
+     */
+    void monsterAcquireAttackTarget(const Entity& target, Sint32 state, bool monsterWasHit = false);
 
-/*
- * Attempts to set the target to 0.
- * May refuses to do so and consequently return false in cases such as the shadow, which cannot lose its target until it's dead.
- * Returns true otherwise, if successfully zero-d out target.
- */
-bool monsterReleaseAttackTarget(bool force = false);
+    /*
+     * Attempts to set the target to 0.
+     * May refuses to do so and consequently return false in cases such as the shadow, which cannot lose its target until it's dead.
+     * Returns true otherwise, if successfully zero-d out target.
+     */
+    bool monsterReleaseAttackTarget(bool force = false);
 
     void checkGroundForItems();
 
     bool canWieldItem(const Item& item) const;
 
 // check for nearby items to add to monster's inventory, returns true if picked up item
-bool monsterAddNearbyItemToInventory(Stat* myStats, int rangeToFind, int maxInventoryItems, Entity* forcePickupItem = nullptr);
+    bool monsterAddNearbyItemToInventory(Stat* myStats, int rangeToFind, int maxInventoryItems, Entity* forcePickupItem = nullptr);
 
-    bool shouldMonsterEquipThisWeapon(const Item& itemToEquip) const;
+    bool shouldMonsterEquipThisWeapon(const Item& itemToEquip) const; //TODO: Look @ proficiencies.
+    Item** shouldMonsterEquipThisArmor(const Item& item) const;
+    int shouldMonsterDefend(Stat& myStats, const Entity& target, const Stat& targetStats, int targetDist, bool hasrangedweapon);
+    bool monsterConsumeFoodEntity(Entity* food, Stat* myStats);
+    void monsterHandleKnockbackVelocity(real_t monsterFacingTangent, real_t weightratio);
+    int monsterGetDexterityForMovement();
+    void monsterGenerateQuiverItem(Stat* myStats, bool lesserMonster = false);
+    int getMonsterEffectiveDistanceOfRangedWeapon(Item *weapon);
+    bool isFollowerFreeToPathToPlayer(Stat* myStats);
+
 
     bool monsterWantsItem(const Item& item, Item**& shouldEquip, node_t*& replaceInventoryItem) const;
 
     double monsterRotate();
 
-// degrade chosen armor piece by 1 on entity, update clients.
-void degradeArmor(Stat& hitstats, Item& armor, int armornum);
+    // degrade chosen armor piece by 1 on entity, update clients.
+    void degradeArmor(Stat& hitstats, Item& armor, int armornum);
 
 // check stats if monster should "retreat" in actMonster
 bool shouldRetreat(Stat& myStats);
@@ -305,7 +306,6 @@ node_t* chooseAttackSpellbookFromInventory();
 
     void alertAlliesOnBeingHit(Creature *attacker, std::unordered_set<Entity*>* skipEntitiesToAlert = nullptr);
 
-    int getMonsterEffectiveDistanceOfRangedWeapon(Item *weapon);
 
     static int getHealthRegenInterval(Entity* my, Stat& myStats, bool isPlayer);
 
@@ -321,4 +321,7 @@ node_t* chooseAttackSpellbookFromInventory();
     void setHumanoidLimbOffset(Entity* limb, Monster race, int limbType);
 
     void handleMonsterAttack(Stat* myStats, Entity* target, double dist);
+
+
+	bool monsterAllyEquipmentInClass(const Item& item) const;
 };

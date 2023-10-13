@@ -23,12 +23,11 @@ struct spell_t;
 // entity class
 class Entity : public Entity_Base
 {
-	Sint32& char_gonnavomit;
 	Sint32& char_heal;
 	Sint32& char_energize;
 	Sint32& char_torchtime;
 	Sint32& char_poison;
-	Sint32& char_fire;		// skill[36] - Counter for how many ticks Entity will be on fire
+	// skill[36] - Counter for how many ticks Entity will be on fire
 	Sint32& circuit_status;	// Use CIRCUIT_OFF and CIRCUIT_ON.
 	Sint32& switch_power;	// Switch/mechanism power status.
 	Sint32& chanceToPutOutFire; // skill[37] - Value between 5 and 10, with 10 being the default starting chance, and 5 being absolute minimum
@@ -40,10 +39,7 @@ class Entity : public Entity_Base
 	//0 = closed. 1 = open.
 	//0 = closed. 1 = open.
 	Sint32& chestStatus;
-	//skill[2] is reserved for all entities.
-	//skill[3]
-	Sint32& chestHealth;
-	//skill[5]
+    //skill[5]
 	//Index of the player the chest was opened by.
 	Sint32& chestOpener;
 	//skill[6]
@@ -96,25 +92,25 @@ class Entity : public Entity_Base
 public:
 	Entity(Sint32 in_sprite, Uint32 pos, list_t* entlist, list_t* creaturelist);
 	~Entity();
-    
     bool ditheringDisabled = false;
-    struct Dither {
+
+	struct Dither {
         int value = 0;
         Uint32 lastUpdateTick = 0;
         static constexpr int MAX = 10;
     };
-    std::unordered_map<view_t*, Dither> dithering;
+	std::unordered_map<view_t*, Dither> dithering;
 	vec4_t lightBonus;
-
-
     int mapGenerationRoomX = 0; // captures the x/y of the 'room' this spawned in on generate dungeon
-	int mapGenerationRoomY = 0; // captures the x/y of the 'room' this spawned in on generate dungeon
 
+
+	int mapGenerationRoomY = 0; // captures the x/y of the 'room' this spawned in on generate dungeon
 	//--PUBLIC CHEST SKILLS--
 
 	//skill[4]
 	//0 = unlocked. 1 = locked.
 	Sint32& chestLocked;
+
 	/*
 	 * skill[10]
 	 * 1 = chest already has been unlocked, or spawned in unlocked (prevent spell exploit)
@@ -127,87 +123,17 @@ public:
 	Sint32& chestHasVampireBook; // skill[11]
 	Sint32& chestLockpickHealth; // skill[12]
 	Sint32& chestOldHealth; //skill[15]
-
-	//--PUBLIC MONSTER SKILLS--
-	Sint32& monsterState; //skill[0]
-	Sint32& monsterTarget; //skill[1]
-	real_t& monsterTargetX; //fskill[2]
-	real_t& monsterTargetY; //fskill[3]
-	Sint32& monsterSpecialTimer; //skill[29]
-	//Only used by goatman.
-	Sint32& monsterSpecialState; //skill[33]
-	Sint32& monsterSpellAnimation; //skill[31]
-	Sint32& monsterFootstepType; //skill[32]
-	Sint32& monsterLookTime; //skill[4]
-	Sint32& monsterAttack; //skill[8]
-	Sint32& monsterAttackTime; //skill[9]
-	Sint32& monsterArmbended; //skill[10]
-	real_t& monsterWeaponYaw; //fskill[5]
-	Sint32& monsterMoveTime; //skill[6]
-	Sint32& monsterHitTime; //skill[7]
-	Sint32& monsterPathBoundaryXStart; //skill[14]
-	Sint32& monsterPathBoundaryYStart; //skill[15]
-	Sint32& monsterPathBoundaryXEnd; //skill[16]
-	Sint32& monsterPathBoundaryYEnd; //skill[17]
-	Sint32& monsterStoreType; //skill[18]
-	Sint32& monsterStrafeDirection; //skill[39]
-	Sint32& monsterPathCount; //skill[38]
-	real_t& monsterLookDir; //fskill[4]
-	Sint32& monsterEntityRenderAsTelepath; //skill[41]
-	Sint32& monsterAllyIndex; //skill[42] If monster is an ally of a player, assign number 0-3 to it for the players to track on the map.
-	Sint32& monsterAllyState; //skill[43]
-	Sint32& monsterAllyPickupItems; //skill[44]
-	Sint32& monsterAllyInteractTarget; //skill[45]
-	Sint32& monsterAllyClass; //skill[46]
-	Sint32& monsterDefend; //skill[47]
-	Sint32& monsterAllySpecial; //skill[48]
-	Sint32& monsterAllySpecialCooldown; //skill[49]
-	Sint32& monsterAllySummonRank; //skill[50]
-	real_t& monsterKnockbackVelocity; //fskill[9]
-	Sint32& monsterKnockbackUID; //skill[51]
 	Sint32& creatureWebbedSlowCount; //skill[52]
-	Sint32& monsterFearfulOfUid; //skill[53]
-	Sint32& creatureShadowTaggedThisUid; //skill[54]
-	Sint32& monsterIllusionTauntingThisUid; //skill[55]
-	Sint32& monsterLastDistractedByNoisemaker;//skill[55] shared with above as above only is for inner demons.
-	Sint32& monsterExtraReflexTick; //skill[56]
+
 	Sint32& entityShowOnMap; //skill[59]
-	real_t& monsterSentrybotLookDir; //fskill[10]
-	real_t& monsterKnockbackTangentDir; //fskill[11]
-	real_t& playerStrafeVelocity; //fskill[12]
-	real_t& playerStrafeDir; //fskill[13]
-	real_t& monsterSpecialAttackUnequipSafeguard; //fskill[14]
+	Sint32& char_fire;
 
 	//--EFFECTS--
 	Sint32& effectPolymorph; // skill[50]
 	Sint32& effectShapeshift; // skill[53]
 
-	//--PUBLIC PLAYER SKILLS--
-	Sint32& playerLevelEntrySpeech; //skill[18]
-	Sint32& playerAliveTime; //skill[12]
-	Sint32& playerVampireCurse; //skill[51]
-	Sint32& playerAutomatonDeathCounter; //skill[15] - 0 if unused, > 0 if counting to death
-	Sint32& playerCreatedDeathCam; //skill[16] - if we triggered actDeathCam already.
-
-	//--PUBLIC MONSTER ANIMATION SKILLS--
-	Sint32& monsterAnimationLimbDirection;  //skill[20]
-	Sint32& monsterAnimationLimbOvershoot; //skill[30]
-
-	//--PUBLIC MONSTER SHADOW SKILLS--
-	Sint32& monsterShadowInitialMimic; //skill[34]. 0 = false, 1 = true.
-	Sint32& monsterShadowDontChangeName; //skill[35]. 0 = false, 1 = true. Doesn't change name in its mimic if = 1.
-
-	//--PUBLIC MONSTER LICH SKILLS--
-	Sint32& monsterLichFireMeleeSeq; //skill[34]
-	Sint32& monsterLichFireMeleePrev; //skill[35]
-	Sint32& monsterLichIceCastSeq; //skill[34]
-	Sint32& monsterLichIceCastPrev; //skill[35]
-	Sint32& monsterLichMagicCastCount; //skill[37] count the basic spell attacks in the seq and switch things up if too many in a row.
-	Sint32& monsterLichMeleeSwingCount; //skill[38] count the 'regular' attacks in the seq and switch things up if too many in a row.
-	Sint32& monsterLichBattleState; //skill[27] used to track hp/battle progress
-	Sint32& monsterLichTeleportTimer; //skill[40] used to track conditions to teleport away.
-	Sint32& monsterLichAllyStatus; //skill[18] used to track if allies are alive.
-	Sint32& monsterLichAllyUID; //skill[17] used to track lich ally uid.
+    //skill[20]
+    //skill[30]
 
 	//--PUBLIC POWER CRYSTAL SKILLS--
 	Sint32& crystalTurnReverse; // skill[9] 0 Clockwise, 1 Anti-Clockwise
@@ -488,9 +414,6 @@ public:
 	Sint32& thrownProjectilePower; //skill[19]
 	Sint32& thrownProjectileCharge; //skill[20]
 
-	//--PLAYER SPAWN POINT--
-	Sint32& playerStartDir; //skill[1]
-
 	//--WORLDTOOLTIP--
 	real_t& worldTooltipAlpha; //fskill[0]
 	real_t& worldTooltipZ; //fskill[1]
@@ -542,7 +465,7 @@ public:
 	void handleEffectsClient();
 
 	void effectTimes();
-	void increaseSkill(int skill, bool notify = true);
+	virtual void increaseSkill(int skill, bool notify = true);
 
 	Stat* getStats() const;
 
@@ -566,54 +489,15 @@ public:
 	
 	bool isInvisible() const;
 
-	bool isMobile();
-
-	void attack(int pose, int charge, Entity* target);
-
-	bool teleport(int x, int y);
-	bool teleportRandom();
-	// teleport entity to a target, within a radius dist (range in whole tile lengths)
-	bool teleportAroundEntity(Entity* target, int dist, int effectType = 0);
-	// teleport entity to fixed position with appropriate sounds, for actTeleporter.
+    // teleport entity to fixed position with appropriate sounds, for actTeleporter.
 	bool teleporterMove(int x, int y, int type);
 
-	//void entityAwardXP(Entity *dest, Entity *src, bool share, bool root);
-	void awardXP(Entity* src, bool share, bool root);
-
-	//--*CheckBetterEquipment functions--
-	void checkBetterEquipment(Stat* myStats);
-	void checkGroundForItems();
-	bool canWieldItem(const Item& item) const;
-	bool goblinCanWieldItem(const Item& item) const;
-	bool humanCanWieldItem(const Item& item) const;
-	bool goatmanCanWieldItem(const Item& item) const;
-	bool automatonCanWieldItem(const Item& item) const;
-	bool shadowCanWieldItem(const Item& item) const;
-	bool insectoidCanWieldItem(const Item& item) const;
-
-	bool monsterWantsItem(const Item& item, Item**& shouldEquip, node_t*& replaceInventoryItem) const;
-
-	void createPathBoundariesNPC(int maxTileDistance = -1);
-	void humanSetLimbsClient(int bodypart);
-
-	/*
-	 * Check if the goatman can wield the item, and if so, is it something it wants? E.g. does it really want to carry 2 sets of armor?
-	 */
+    /*
+     * Check if the goatman can wield the item, and if so, is it something it wants? E.g. does it really want to carry 2 sets of armor?
+     */
 	//bool goatmanWantsItem(const Item& item, Item*& shouldWield, node_t*& replaceInventoryItem) const;
 
-	bool shouldMonsterEquipThisWeapon(const Item& itemToEquip) const;//TODO: Look @ proficiencies.
-	Item** shouldMonsterEquipThisArmor(const Item& item) const;
-	int shouldMonsterDefend(Stat& myStats, const Entity& target, const Stat& targetStats, int targetDist, bool hasrangedweapon);
-	bool monsterConsumeFoodEntity(Entity* food, Stat* myStats);
-	Entity* monsterAllyGetPlayerLeader();
-	bool monsterAllyEquipmentInClass(const Item& item) const;
-	bool monsterIsTinkeringCreation();
-	void monsterHandleKnockbackVelocity(real_t monsterFacingTangent, real_t weightratio);
-	int monsterGetDexterityForMovement();
-	void monsterGenerateQuiverItem(Stat* myStats, bool lesserMonster = false);
-	int getMonsterEffectiveDistanceOfRangedWeapon(Item* weapon);
-	bool isFollowerFreeToPathToPlayer(Stat* myStats);
-	void removeLightField(); // Removes light field from entity, sets this->light to nullptr.
+    void removeLightField(); // Removes light field from entity, sets this->light to nullptr.
 
 	//--- Mechanism functions ---
 	void circuitPowerOn(); //Called when a nearby circuit or switch powers on.
@@ -641,14 +525,12 @@ public:
 	void powerCrystalCreateElectricityNodes();
 
 	//Door functions.
-	void doorHandleDamageMagic(int damage, Entity &magicProjectile, Entity *caster);
-	void colliderHandleDamageMagic(int damage, Entity &magicProjectile, Entity *caster);
+	void doorHandleDamageMagic(int damage, Entity &magicProjectile, Creature *caster);
+	void colliderHandleDamageMagic(int damage, Entity &magicProjectile, Creature *caster);
 
 	bool checkEnemy(Entity* your);
-	bool checkFriend(Entity* your);
-	void alertAlliesOnBeingHit(Entity* attacker, std::unordered_set<Entity*>* skipEntitiesToAlert = nullptr);
 
-	//Act functions.
+    //Act functions.
 	void actChest();
 	void actPowerCrystal();
 	void actGate();
@@ -700,11 +582,8 @@ public:
 	 */
 	int isEntityPlayer() const;
 
-	void initMonster(int mySprite);
-
-	//--monster type from sprite
-	Monster getMonsterTypeFromSprite() const;
-	static Monster getMonsterTypeFromSprite(const int sprite);
+    //--monster type from sprite
+    Monster getMonsterTypeFromSprite() const;
 	//--monster limb offsets
 	void setHelmetLimbOffset(Entity* helm);
 	void setHumanoidLimbOffset(Entity* limb, Monster race, int limbType);
@@ -716,62 +595,28 @@ public:
 
 	// reflection is set 1, 2 or 3 depending on the item slot. reflection of 3 does not degrade.
 	int getReflection() const;
-	// monster attack pose, return the animation to use based on weapon.
-	int getAttackPose() const;
-	// if monster holding ranged weapon.
+    // if monster holding ranged weapon.
 	bool hasRangedWeapon() const;
-	// weapon arm animation attacks
-	void handleWeaponArmAttack(Entity* weaponarm);
-	// handle walking movement for arms and legs
-	void humanoidAnimateWalk(Entity* limb, node_t* bodypartNode, int bodypart, double walkSpeed, double dist, double distForFootstepSound);
-	// monster footsteps, needs to be client friendly
+    // monster footsteps, needs to be client friendly
 	Uint32 getMonsterFootstepSound(int footstepType, int bootSprite);
-	// handle humanoid weapon arm animation/sprite offsets
-	void handleHumanoidWeaponLimb(Entity* weaponLimb, Entity* weaponArmLimb);
-	void handleHumanoidShieldLimb(Entity* shieldLimb, Entity* shieldArmLimb);
-	void handleQuiverThirdPersonModel(Stat& myStats);
+
 	// server only function to set boot sprites on monsters.
 	bool setBootSprite(Entity* leg, int spriteOffset);
-	// monster special attack handler, returns true if monster should attack after calling this function.
-	bool handleMonsterSpecialAttack(Stat* myStats, Entity* target, double dist, bool forceDeinit);
-	// monster attack handler
-	void handleMonsterAttack(Stat* myStats, Entity* target, double dist);
-	void lookAtEntity(Entity& target);
-	// automaton specific function
-	void automatonRecycleItem();
-	// incubus teleport spells
-	void incubusTeleportToTarget(const Entity* target);
-	void incubusTeleportRandom();
-	//Shadow teleport spells.
-	void shadowTeleportToTarget(const Entity* target, int range);
-	//Lich effects
-	void lichFireTeleport();
-	void lichIceTeleport();
-	void lichIceCreateCannon();
-	Entity* lichThrowProjectile(real_t angle);
-	void lichIceSummonMonster(Monster creature);
-	bool devilSummonMonster(Entity* summonOnEntity, Monster creature, int radiusFromCenter, int playerToTarget = -1);
+
+    bool devilSummonMonster(Entity* summonOnEntity, Monster creature, int radiusFromCenter, int playerToTarget = -1);
 	int devilGetNumMonstersInArena(Monster creature);
 	bool devilBoulderSummonIfPlayerIsHiding(int player);
-	void lichFireSummonMonster(Monster creature);
-	// check for nearby items to add to monster's inventory, returns true if picked up item
-	bool monsterAddNearbyItemToInventory(Stat* myStats, int rangeToFind, int maxInventoryItems, Entity* forcePickupItem = nullptr);
-	// degrade chosen armor piece by 1 on entity, update clients.
-	void degradeArmor(Stat& hitstats, Item& armor, int armornum);
-	// check stats if monster should "retreat" in actMonster
-	bool shouldRetreat(Stat& myStats);
-	// check if monster should retreat or stand still when less than given distance
-	bool backupWithRangedWeapon(Stat& myStats, int dist, int hasrangedweapon);
-	// calc time required for a mana regen tick, uses equipped gear as modifiers.
+
+    // calc time required for a mana regen tick, uses equipped gear as modifiers.
 	static int getManaringFromEquipment(Entity* my, Stat& myStats, bool isPlayer);
 	static int getManaringFromEffects(Entity* my, Stat& myStats);
 	static int getManaRegenInterval(Entity* my, Stat& myStats, bool isPlayer);
 	// calc time required for a hp regen tick, uses equipped gear as modifiers.
 	static int getHealringFromEquipment(Entity* my, Stat& myStats, bool isPlayer);
-	static int getHealringFromEffects(Entity* my, Stat& myStats);
-	static int getHealthRegenInterval(Entity* my, Stat& myStats, bool isPlayer);
-	// calc damage/effects for ranged weapons.
-	void setRangedProjectileAttack(Entity& marksman, Stat& myStats, int optionalOverrideForArrowType = 0);
+	static int getHealringFromEffects(Creature *my, Stat& myStats);
+
+    // calc damage/effects for ranged weapons.
+	void setRangedProjectileAttack(Creature& marksman, Stat& myStats, int optionalOverrideForArrowType = 0);
 	bool setArrowProjectileProperties(int weaponType);
 	real_t yawDifferenceFromPlayer(int player); // calc targets yaw compared to a player, returns 0 - 2 * PI, where > PI is facing towards player.
 	spell_t* getActiveMagicEffect(int spellID);
@@ -792,77 +637,7 @@ public:
 	 */
 	bool setEffect(int effect, bool value, int duration, bool updateClients, bool guarantee = true);
 
-	/*
-	 * @param state: required to let the entity know if it should enter MONSTER_STATE_PATH, MONSTER_STATE_ATTACK, etc.
-	 * @param monsterWasHit: monster is retaliating to an attack as opposed to finding an enemy. to set reaction time accordingly in hardcore
-	 */
-	void monsterAcquireAttackTarget(const Entity& target, Sint32 state, bool monsterWasHit = false);
-
-	/*
-	 * Attempts to set the target to 0.
-	 * May refuses to do so and consequently return false in cases such as the shadow, which cannot lose its target until it's dead.
-	 * Returns true otherwise, if successfully zero-d out target.
-	 */
-	bool monsterReleaseAttackTarget(bool force = false);
-
-	//Lets monsters swap out weapons.
-	void inline chooseWeapon(const Entity* target, double dist)
-	{
-		Stat* myStats = getStats();
-		if ( !myStats )
-		{
-			return;
-		}
-
-		if ( myStats->EFFECTS[EFF_FEAR] )
-		{
-			return; // don't change weapons while feared.
-		}
-
-		switch ( myStats->type )
-		{
-			case GOATMAN:
-				goatmanChooseWeapon(target, dist);
-				break;
-			case INSECTOID:
-				insectoidChooseWeapon(target, dist);
-				break;
-			case INCUBUS:
-				incubusChooseWeapon(target, dist);
-				break;
-			case VAMPIRE:
-				vampireChooseWeapon(target, dist);
-				break;
-			case SHADOW:
-				shadowChooseWeapon(target, dist);
-				break;
-			case SUCCUBUS:
-				succubusChooseWeapon(target, dist);
-				break;
-			case SHOPKEEPER:
-				if ( target )
-				{
-					if ( Stat* targetStats = target->getStats() )
-					{
-						if ( targetStats->type == SHOPKEEPER && myStats->weapon && myStats->weapon->type == SPELLBOOK_DRAIN_SOUL )
-						{
-							// gentlemans agreement to shoot bleed
-							myStats->weapon->type = SPELLBOOK_BLEED;
-						}
-					}
-				}
-				break;
-			default:
-				break;
-		}
-	}
-	void goatmanChooseWeapon(const Entity* target, double dist);
-	void insectoidChooseWeapon(const Entity* target, double dist);
-	void incubusChooseWeapon(const Entity* target, double dist);
-	void vampireChooseWeapon(const Entity* target, double dist);
-	void shadowChooseWeapon(const Entity* target, double dist);
-	void succubusChooseWeapon(const Entity* target, double dist);
-	void skeletonSummonSetEquipment(Stat* myStats, int rank);
+    void skeletonSummonSetEquipment(Stat* myStats, int rank);
 	static void tinkerBotSetStats(Stat* myStats, int rank);
 	bool monsterInMeleeRange(const Entity* target, double dist) const
 	{
@@ -873,13 +648,7 @@ public:
 
 	//void returnWeaponarmToNeutral(Entity* weaponarm, Entity* rightbody); //TODO: Need a proper refactor?
 
-	void shadowSpecialAbility(bool initialMimic);
-
-	bool shadowCanMimickSpell(int spellID);
-
-	double monsterRotate();
-
-	//TODO: These two won't work with multiplayer because clients are stubborn little tater tots that refuse to surrender their inventories on demand.
+    //TODO: These two won't work with multiplayer because clients are stubborn little tater tots that refuse to surrender their inventories on demand.
 	//Here's the TODO: Fix it.
 	Item* getBestMeleeWeaponIHave() const;
 	Item* getBestShieldIHave() const;
@@ -887,15 +656,13 @@ public:
 	void monsterEquipItem(Item& item, Item** slot);
 
 	bool monsterHasSpellbook(int spellbookType);
-	//bool monsterKnowsSpell(int spellID); //TODO: Should monsters use the spell item instead of spellbooks?
-	node_t* chooseAttackSpellbookFromInventory();
 
-	/* entity.cpp
-	 * Attempts to set the Entity on fire. Entities that are not Burnable or are already on fire will return before any processing
-	 * Entities that do not have Stats (such as furniture) will return after setting the fire time and chance to stop at max
-	 * Entities with Stats will have their fire time (char_fire) and chance to stop being on fire (chanceToPutOutFire) reduced by their CON
-	 * Calculations for reductions is outlined in this function
-	 */
+    /* entity.cpp
+     * Attempts to set the Entity on fire. Entities that are not Burnable or are already on fire will return before any processing
+     * Entities that do not have Stats (such as furniture) will return after setting the fire time and chance to stop at max
+     * Entities with Stats will have their fire time (char_fire) and chance to stop being on fire (chanceToPutOutFire) reduced by their CON
+     * Calculations for reductions is outlined in this function
+     */
 	void SetEntityOnFire(Entity* sourceOfFire = nullptr);
 
 	void addToCreatureList(list_t* list);
@@ -907,33 +674,28 @@ public:
 	Entity* castOrbitingMagicMissile(int spellID, real_t distFromCaster, real_t angleFromCasterDirection, int duration);
 	Entity* castStationaryOrbitingMagicMissile(Entity* parent, int spellID, real_t centerx, real_t centery, 
 		real_t distFromCenter, real_t angleFromCenterDirection, int duration);
-	void lichFireSetNextAttack(Stat& myStats);
-	void lichIceSetNextAttack(Stat& myStats);
 
-	void monsterMoveBackwardsAndPath(); // monster tries to move backwards in a cross shaped area if stuck against an entity.
-	bool monsterHasLeader(); // return true if monsterstats->leader_uid is not 0.
-	void monsterAllySendCommand(int command, int destX, int destY, Uint32 uid = 0); // update the behavior of allied NPCs.
-	bool monsterAllySetInteract(); // set interact flags for allied NPCs.
+    // monster tries to move backwards in a cross shaped area if stuck against an entity.
+    // return true if monsterstats->leader_uid is not 0.
+    // update the behavior of allied NPCs.
+    // set interact flags for allied NPCs.
 	bool isInteractWithMonster(); // is a monster interacting with me? check interact flags for allied NPCs.
 	void clearMonsterInteract(); // tidy up flags after interaction.
-	bool monsterSetPathToLocation(int destX, int destY, int adjacentTilesToCheck, int pathingType, bool tryRandomSpot = false); // monster create path to destination, search adjacent tiles if specified target is inaccessible.
-	bool gyrobotSetPathToReturnLocation(int destX, int destY, int adjacentTilesToCheck, bool tryRandomSpot = false); // gyrobot create path to destination to land safely.
+    // monster create path to destination, search adjacent tiles if specified target is inaccessible.
+    // gyrobot create path to destination to land safely.
 	static int getMagicResistance(Stat* myStats); // returns the value of magic resistance of a monster.
-	void playerLevelEntrySpeechSecond(); // handle secondary voice lines for post-herx content
-	bool isPlayerHeadSprite() const; // determines if model of entity is a human head.
-	static bool isPlayerHeadSprite(const int sprite);
-	void setDefaultPlayerModel(int playernum, Monster playerRace, int limbType); // sets correct base color/model of limbs for player characters.
-	Monster getMonsterFromPlayerRace(int playerRace); // convert playerRace into the relevant monster type
+    // handle secondary voice lines for post-herx content
+    // determines if model of entity is a human head.
+    void setDefaultPlayerModel(int playernum, Monster playerRace, int limbType); // sets correct base color/model of limbs for player characters.
+    // convert playerRace into the relevant monster type
 	void setHardcoreStats(Stat& stats); // set monster stats for hardcore mode.
-	void handleNPCInteractDialogue(Stat& myStats, AllyNPCChatter event); // monster text for interactions.
+    // monster text for interactions.
 	void playerStatIncrease(int playerClass, int chosenStats[3]);
 	bool isBossMonster(); // return true if boss map (hell boss, boss etc or shopkeeper/shadow/other boss
-	void handleKnockbackDamage(Stat& myStats, Entity* knockedInto); // handle knockback damage from getting hit into other things.
-	void setHelmetLimbOffsetWithMask(Entity* helm, Entity* mask);
-	bool entityCheckIfTriggeredBomb(bool triggerBomb);
-	Sint32 playerInsectoidExpectedManaFromHunger(Stat& myStats);
-	Sint32 playerInsectoidHungerValueOfManaPoint(Stat& myStats);
-	static real_t getDamageTableMultiplier(Entity* my, Stat& myStats, DamageTableType damageType);
+    // handle knockback damage from getting hit into other things.
+    bool entityCheckIfTriggeredBomb(bool triggerBomb);
+
+    static real_t getDamageTableMultiplier(Entity* my, Stat& myStats, DamageTableType damageType);
 	bool isBoulderSprite();
 	void createWorldUITooltip();
 	bool bEntityTooltipRequiresButtonHeld() const;
@@ -951,9 +713,61 @@ public:
 	int getColliderSfxOnHit() const;
 	int getColliderSfxOnBreak() const;
 	int getColliderLangName() const;
-	static void monsterRollLevelUpStats(int increasestat[3]);
 
     void setUID(Uint32 new_uid) override;
+
+//skill[2] is reserved for all entities.
+//skill[3]
+    Sint32& chestHealth;
+
+    Sint32& monsterAllyIndex;
+
+
+    static Monster getMonsterTypeFromSprite(const int sprite);
+
+    //void entityAwardXP(Entity *dest, Entity *src, bool share, bool root);
+    void awardXP(Entity* src, bool share, bool root);
+
+    Creature* monsterAllyGetPlayerLeader();
+
+    bool monsterIsTinkeringCreation();
+
+    Sint32& monsterAnimationLimbOvershoot;
+
+    bool teleportCoordHasTrap(const int x, const int y);
+
+    Sint32& monsterEntityRenderAsTelepath;
+
+    // monster special attack handler, returns true if monster should attack after calling this function.
+    bool handleMonsterSpecialAttack(Stat* myStats, Entity* target, double dist, bool forceDeinit);
+
+    // monster attack pose, return the animation to use based on weapon.
+    int getAttackPose() const;
+
+    // weapon arm animation attacks
+    void handleWeaponArmAttack(Entity* weaponarm);
+
+    // handle walking movement for arms and legs
+    void humanoidAnimateWalk(Entity* limb, node_t* bodypartNode, int bodypart, double walkSpeed, double dist, double distForFootstepSound);
+
+    // handle humanoid weapon arm animation/sprite offsets
+    void handleHumanoidWeaponLimb(Entity* weaponLimb, Entity* weaponArmLimb);
+	void handleQuiverThirdPersonModel(Stat& myStats);
+
+    Sint32 playerInsectoidHungerValueOfManaPoint(Stat& myStats);
+
+    void setHelmetLimbOffsetWithMask(Entity* helm, Entity* mask);
+
+    Sint32& monsterSpellAnimation;
+    Sint32& monsterAttack;
+    Sint32& monsterAttackTime;
+    Sint32& monsterArmbended;
+    real_t& monsterWeaponYaw;
+    Sint32& creatureShadowTaggedThisUid;
+
+//--PUBLIC MONSTER ANIMATION SKILLS--
+    Sint32& monsterAnimationLimbDirection;
+	Sint32& char_gonnavomit;
 };
 
 Monster getMonsterFromPlayerRace(int playerRace); // convert playerRace into the relevant monster type
@@ -983,6 +797,7 @@ extern bool monsterally[NUMMONSTERS][NUMMONSTERS];
 int AC(Stat* stat);
 
 Entity* uidToEntity(Sint32 uidnum);
+Creature* uidToCreature(Sint32 uidnum);
 list_t* checkTileForEntity(int x, int y); //Don't forget to free the list returned when you're done with it. Also, provide x and y in map, not entity, units.
 /*
  * Don't forget to free the list returned when you're done with it.
@@ -995,9 +810,9 @@ void getItemsOnTile(int x, int y, list_t** list);
 int getBaseManaRegen(Entity* my, Stat& myStats);
 
 //--- Entity act* functions ---
-void actMonster(Entity* my);
+void actMonster(Creature* my);
 int playerHeadSprite(Monster race, sex_t sex, int appearance, int frame = 0);
-void actPlayer(Entity* my);
+void actPlayer(Creature *my);
 void playerAnimateRat(Entity* my);
 void playerAnimateSpider(Entity* my);
 
@@ -1145,7 +960,7 @@ int playerEntityMatchesUid(Uint32 uid); // Returns >= 0 if player uid matches ui
 bool monsterNameIsGeneric(Stat& monsterStats); // returns true if a monster's name is a generic decription rather than a miniboss.
 
 bool playerRequiresBloodToSustain(int player); // vampire type or accursed class
-void spawnBloodVialOnMonsterDeath(Entity* entity, Stat* hitstats);
+void spawnBloodVialOnMonsterDeath(Creature* entity, Stat* hitstats);
 
 enum EntityHungerIntervals : int
 {
@@ -1156,7 +971,7 @@ enum EntityHungerIntervals : int
 	HUNGER_INTERVAL_AUTOMATON_SUPERHEATED,
 	HUNGER_INTERVAL_AUTOMATON_CRITICAL
 };
-int getEntityHungerInterval(int player, Entity* my, Stat* myStats, EntityHungerIntervals hungerInterval);
+int getEntityHungerInterval(int player, Creature* my, Stat* myStats, EntityHungerIntervals hungerInterval);
 
 //Fountain potion drop chance variables.
 extern const std::vector<unsigned int> fountainPotionDropChances;
