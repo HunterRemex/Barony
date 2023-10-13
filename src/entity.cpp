@@ -6596,22 +6596,6 @@ void Entity::awardXP(Entity* src, bool share, bool root)
 	}
 }
 
-Creature* Entity::monsterAllyGetPlayerLeader()
-{
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior != &actMonster )
-	{
-		return nullptr;
-	}
-	if ( monsterAllyIndex >= 0 && monsterAllyIndex < MAXPLAYERS )
-	{
-		if ( players[monsterAllyIndex] )
-		{
-			return players[monsterAllyIndex]->entity;
-		}
-	}
-	return nullptr;
-}
-
 /*-------------------------------------------------------------------------------
 
 Creature::checkEnemy
@@ -7013,20 +6997,6 @@ bool Entity::checkEnemy(Entity* your)
 	}
 
 	return result;
-}
-
-bool Entity::monsterIsTinkeringCreation()
-{
-	int race = this->getMonsterTypeFromSprite();
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior != &actMonster )
-	{
-		return false;
-	}
-	if ( race == GYROBOT || race == DUMMYBOT || race == SENTRYBOT || race == SPELLBOT )
-	{
-		return true;
-	}
-	return false;
 }
 
 int32_t Entity::playerInsectoidHungerValueOfManaPoint(Stat& myStats)

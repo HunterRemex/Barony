@@ -738,8 +738,6 @@ public:
 
     Sint32& monsterEntityRenderAsTelepath;
 
-    // monster special attack handler, returns true if monster should attack after calling this function.
-    bool handleMonsterSpecialAttack(Stat* myStats, Entity* target, double dist, bool forceDeinit);
 
     // monster attack pose, return the animation to use based on weapon.
     int getAttackPose() const;

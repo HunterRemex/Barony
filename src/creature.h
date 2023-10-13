@@ -99,60 +99,60 @@ public:
     void (*behavior)(class Creature* my);
 
 
-//Lets monsters swap out weapons.
-void inline chooseWeapon(const Entity* target, double dist)
-{
-    Stat* myStats = getStats();
-    if ( !myStats )
-    {
-        return;
-    }
+	//Lets monsters swap out weapons.
+	void inline chooseWeapon(const Entity* target, double dist)
+	{
+	    Stat* myStats = getStats();
+	    if ( !myStats )
+	    {
+	        return;
+	    }
 
-    if ( myStats->EFFECTS[EFF_FEAR] )
-    {
-        return; // don't change weapons while feared.
-    }
+	    if ( myStats->EFFECTS[EFF_FEAR] )
+	    {
+	        return; // don't change weapons while feared.
+	    }
 
-    switch ( myStats->type )
-    {
-        case GOATMAN:
-            goatmanChooseWeapon(target, dist);
-            break;
-        case INSECTOID:
-            insectoidChooseWeapon(target, dist);
-            break;
-        case INCUBUS:
-            incubusChooseWeapon(target, dist);
-            break;
-        case VAMPIRE:
-            vampireChooseWeapon(target, dist);
-            break;
-        case SHADOW:
-            shadowChooseWeapon(target, dist);
-            break;
-        case SUCCUBUS:
-            succubusChooseWeapon(target, dist);
-            break;
-        case SHOPKEEPER:
-            if ( target )
-            {
-                if ( Stat* targetStats = target->getStats() )
-                {
-                    if ( targetStats->type == SHOPKEEPER && myStats->weapon && myStats->weapon->type == SPELLBOOK_DRAIN_SOUL )
-                    {
-                        // gentlemans agreement to shoot bleed
-                        myStats->weapon->type = SPELLBOOK_BLEED;
-                    }
-                }
-            }
-            break;
-        default:
-            break;
-    }
-}
+	    switch ( myStats->type )
+	    {
+	        case GOATMAN:
+	            goatmanChooseWeapon(target, dist);
+	            break;
+	        case INSECTOID:
+	            insectoidChooseWeapon(target, dist);
+	            break;
+	        case INCUBUS:
+	            incubusChooseWeapon(target, dist);
+	            break;
+	        case VAMPIRE:
+	            vampireChooseWeapon(target, dist);
+	            break;
+	        case SHADOW:
+	            shadowChooseWeapon(target, dist);
+	            break;
+	        case SUCCUBUS:
+	            succubusChooseWeapon(target, dist);
+	            break;
+	        case SHOPKEEPER:
+	            if ( target )
+	            {
+	                if ( Stat* targetStats = target->getStats() )
+	                {
+	                    if ( targetStats->type == SHOPKEEPER && myStats->weapon && myStats->weapon->type == SPELLBOOK_DRAIN_SOUL )
+	                    {
+	                        // gentlemans agreement to shoot bleed
+	                        myStats->weapon->type = SPELLBOOK_BLEED;
+	                    }
+	                }
+	            }
+	            break;
+	        default:
+	            break;
+	    }
+	}
 
-//Lich effects
-void lichFireTeleport();
+	//Lich effects
+	void lichFireTeleport();
 
     void lichFireSummonMonster(Monster creature);
 
@@ -279,6 +279,8 @@ void checkBetterEquipment(Stat* myStats);
     int getMonsterEffectiveDistanceOfRangedWeapon(Item *weapon);
     bool isFollowerFreeToPathToPlayer(Stat* myStats);
 
+	// monster special attack handler, returns true if monster should attack after calling this function.
+	bool handleMonsterSpecialAttack(Stat* myStats, Entity* target, double dist, bool forceDeinit);
 
     bool monsterWantsItem(const Item& item, Item**& shouldEquip, node_t*& replaceInventoryItem) const;
 
@@ -308,8 +310,6 @@ node_t* chooseAttackSpellbookFromInventory();
 
 
     static int getHealthRegenInterval(Entity* my, Stat& myStats, bool isPlayer);
-
-    bool handleMonsterSpecialAttack(Stat* myStats, Entity* target, double dist, bool forceDeinit);
 
     int getAttackPose() const;
 
