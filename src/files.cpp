@@ -1848,6 +1848,8 @@ int loadMap(const char* filename2, map_t* destmap, list_t* entlist, list_t* crea
 				switch ( checkSpriteType(sprite) )
 				{
 					case 1:
+						list_RemoveNode(entity->mynode);
+						entity = newCreature(sprite, 0, entlist, nullptr);
 						if ( multiplayer != CLIENT )
 						{
 							// need to give the entity its list stuff.
@@ -2148,6 +2150,8 @@ int loadMap(const char* filename2, map_t* destmap, list_t* entlist, list_t* crea
 					case 23:
 						if ( editorVersion >= 26 )
 						{
+							list_RemoveNode(entity->mynode);
+							entity = newCreature(sprite, 0, entlist, nullptr);
                             if (Creature* creature = (Creature*)entity; creature)
                             {
                                 fp->read(&creature->playerStartDir, sizeof(Sint32), 1);
@@ -2191,8 +2195,7 @@ int loadMap(const char* filename2, map_t* destmap, list_t* entlist, list_t* crea
 			default:
 				break;
 		}
-        Creature* entityCrtr = (Creature*)entity;
-		if ( entityCrtr )
+		if ( dynamic_cast<Creature*>(entity) )
 		{
 			entity->addToCreatureList(creatureList);
 		}
