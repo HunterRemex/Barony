@@ -116,6 +116,7 @@ list(APPEND EDITOR_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/opengl.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/objects.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/entity_base.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/creature.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/entity_editor.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/input.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/list.cpp"

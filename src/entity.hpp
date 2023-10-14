@@ -23,14 +23,10 @@ struct spell_t;
 // entity class
 class Entity : public Entity_Base
 {
-	Sint32& char_heal;
-	Sint32& char_energize;
-	Sint32& char_torchtime;
-	Sint32& char_poison;
 	// skill[36] - Counter for how many ticks Entity will be on fire
 	Sint32& circuit_status;	// Use CIRCUIT_OFF and CIRCUIT_ON.
 	Sint32& switch_power;	// Switch/mechanism power status.
-	Sint32& chanceToPutOutFire; // skill[37] - Value between 5 and 10, with 10 being the default starting chance, and 5 being absolute minimum
+	// skill[37] - Value between 5 and 10, with 10 being the default starting chance, and 5 being absolute minimum
 
 	//Chest skills.
 	//skill[0]
@@ -89,6 +85,12 @@ class Entity : public Entity_Base
 
 	static const int SWITCH_UNPOWERED = 0;
 	static const int SWITCH_POWERED = 1;
+protected:
+	Sint32& char_heal;
+	Sint32& char_energize;
+	Sint32& char_torchtime;
+	Sint32& char_poison;
+	Sint32& chanceToPutOutFire;
 public:
 	Entity(Sint32 in_sprite, Uint32 pos, list_t* entlist, list_t* creaturelist);
 	~Entity();
@@ -460,7 +462,6 @@ public:
 	int entityLight(); //NOTE: Name change conflicted with light_t *light
 	int entityLightAfterReductions(Stat& myStats, Entity* observer);
 
-	void handleEffects(Stat* myStats);
 	static int getHungerTickRate(Stat* myStats, bool isPlayer, bool checkItemsEffects);
 	void handleEffectsClient();
 
@@ -473,12 +474,11 @@ public:
 	void modHP(int amount); //Adds amount to HP.
 	int getHP();
 
-	void setMP(int amount, bool updateClients = true);
-	void modMP(int amount, bool updateClients = true); //Adds amount to MP.
+	//Adds amount to MP.
 	int getMP();
 
 	void drainMP(int amount, bool notifyOverexpend = true); //Removes this much from MP. Anything over the entity's MP is subtracted from their health. Can be very dangerous.
-	bool safeConsumeMP(int amount); //A function for the magic code. Attempts to remove mana without overdrawing the player. Returns true if success, returns false if didn't have enough mana.
+	//A function for the magic code. Attempts to remove mana without overdrawing the player. Returns true if success, returns false if didn't have enough mana.
 
 	static Sint32 getAttack(Entity* my, Stat* myStats, bool isPlayer = false);
 	static real_t getACEffectiveness(Entity* my, Stat* myStats, bool isPlayer, Entity* attacker, Stat* attackerStats);

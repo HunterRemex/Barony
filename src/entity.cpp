@@ -1120,75 +1120,6 @@ Creature* uidToCreature(Sint32 uidnum)
 	return nullptr;
 }
 
-/*-------------------------------------------------------------------------------
-
-Entity::setMP
-
-sets the MP of the given entity
-
--------------------------------------------------------------------------------*/
-
-void Entity::setMP(int amount, bool updateClients)
-{
-	Stat* entitystats = this->getStats();
-
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer && godmode )
-	{
-		amount = entitystats->MAXMP;
-	}
-	if ( !entitystats || amount == entitystats->MP )
-	{
-		return;
-	}
-	entitystats->MP = std::min(std::max(0, amount), entitystats->MAXMP);
-
-	if ( multiplayer == SERVER && updateClients )
-	{
-		for ( int i = 1; i < MAXPLAYERS; i++ )
-		{
-			if ( players[i] && this == players[i]->entity && !players[i]->isLocalPlayer() )
-			{
-				// tell the client its MP just changed
-				strcpy((char*)net_packet->data, "UPMP");
-				SDLNet_Write32((Uint32)entitystats->MP, &net_packet->data[4]);
-				net_packet->address.host = net_clients[i - 1].host;
-				net_packet->address.port = net_clients[i - 1].port;
-				net_packet->len = 8;
-				sendPacketSafe(net_sock, -1, net_packet, i - 1);
-			}
-		}
-	}
-}
-
-/*-------------------------------------------------------------------------------
-
-Entity::modMP
-
-modifies the MP of the given entity
-
--------------------------------------------------------------------------------*/
-
-void Entity::modMP(int amount, bool updateClients)
-{
-	Stat* entitystats = this->getStats();
-
-	if ( !entitystats )
-	{
-		return;
-	}
-
-	if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer && godmode && amount < 0 )
-	{
-		amount = 0;
-	}
-	if ( !entitystats || amount == 0 )
-	{
-		return;
-	}
-
-	this->setMP(entitystats->MP + amount, updateClients);
-}
-
 int Entity::getMP()
 {
 	Stat* myStats = getStats();
@@ -1212,15 +1143,6 @@ int Entity::getHP()
 
 	return myStats->HP;
 }
-
-/*-------------------------------------------------------------------------------
-
-Entity::handleEffects
-
-processes general character status updates for a given entity, such as
-hunger, level ups, poison, etc.
-
--------------------------------------------------------------------------------*/
 
 int Entity::getHungerTickRate(Stat* myStats, bool isPlayer, bool checkItemsEffects)
 {
@@ -6092,66 +6014,6 @@ void Entity::drainMP(int amount, bool notifyOverexpend)
 
 /*-------------------------------------------------------------------------------
 
-Creature::safeConsumeMP
-
-A function for the magic code. Attempts to remove mana without overdrawing the player. Returns true if success, returns false if didn't have enough mana.
-
--------------------------------------------------------------------------------*/
-
-bool Entity::safeConsumeMP(int amount)
-{
-	Stat* stat = this->getStats();
-
-	//Check if no stats found.
-	if ( !stat )
-	{
-		return false;
-	}
-
-	if ( amount > stat->MP )
-	{
-		if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer && stat->type == VAMPIRE )
-		{
-			int HP = stat->HP;
-			this->drainMP(amount, false);
-			if ( (HP - stat->HP > 0) && (stat->HP % 5 == 0) )
-			{
-				uint32_t color = makeColorRGB(255, 255, 0);
-				messagePlayerColor(skill[2], MESSAGE_STATUS, color, Language::get(621));
-			}
-			return true;
-		}
-		return false;    //Not enough mana.
-	}
-	else
-	{
-		if ( typeid(this) == typeid(Creature) && ((Creature*)this)->behavior == &actPlayer && stat->playerRace == RACE_INSECTOID && stat->appearance == 0 )
-		{
-			if ( svFlags & SV_FLAG_HUNGER )
-			{
-				// we cast a spell or forcibly reduced our MP. therefore our hunger should reduce to match the MP value.
-				if ( amount > 0 )
-				{
-					int32_t hungerPointPerMana = playerInsectoidHungerValueOfManaPoint(*stat);
-					int32_t oldHunger = stat->HUNGER;
-					stat->HUNGER -= amount * hungerPointPerMana;
-					stat->HUNGER = std::max(0, stat->HUNGER);
-					if ( this->skill[2] > 0 )
-					{
-						serverUpdateHunger(this->skill[2]);
-					}
-				}
-			}
-		}
-		this->modMP(-amount);
-		return true;
-	}
-
-	return false;
-}
-
-/*-------------------------------------------------------------------------------
-
 Creature::awardXP
 
 Awards XP to the dest (ie killer) entity from the src (ie killed) entity
@@ -6972,6 +6834,568 @@ bool Entity::checkEnemy(Entity* your)
 	return result;
 }
 
+void Entity::handleHumanoidWeaponLimb(Entity* weaponLimb, Entity* weaponArmLimb)
+{
+	if ( weaponLimb == nullptr || weaponArmLimb == nullptr )
+	{
+		return;
+	}
+
+	int monsterType = this->getMonsterTypeFromSprite();
+	int myAttack = this->monsterAttack;
+	bool isPlayer = (Creature*)this && ((Creature*)this)->behavior == &actPlayer;
+	if ( isPlayer )
+	{
+		myAttack = this->skill[9];
+	}
+
+	if ( weaponLimb->flags[INVISIBLE] == false ) //TODO: isInvisible()?
+	{
+		if ( weaponLimb->sprite == items[SHORTBOW].index )
+		{
+			weaponLimb->x = weaponArmLimb->x - .5 * cos(weaponArmLimb->yaw);
+			weaponLimb->y = weaponArmLimb->y - .5 * sin(weaponArmLimb->yaw);
+			weaponLimb->z = weaponArmLimb->z + 1;
+			weaponLimb->pitch = weaponArmLimb->pitch + .25;
+		}
+		else if ( weaponLimb->sprite == items[ARTIFACT_BOW].index
+		          || weaponLimb->sprite == items[LONGBOW].index
+		          || weaponLimb->sprite == items[COMPOUND_BOW].index )
+		{
+			if ( isPlayer && monsterType == HUMAN )
+			{
+				weaponLimb->x = weaponArmLimb->x - .5 * cos(weaponArmLimb->yaw);
+				weaponLimb->y = weaponArmLimb->y - .5 * sin(weaponArmLimb->yaw);
+				weaponLimb->z = weaponArmLimb->z + 1;
+				weaponLimb->pitch = weaponArmLimb->pitch + .25;
+			}
+			else
+			{
+				weaponLimb->x = weaponArmLimb->x - .5 * cos(weaponArmLimb->yaw);
+				weaponLimb->y = weaponArmLimb->y - .5 * sin(weaponArmLimb->yaw);
+				weaponLimb->z = weaponArmLimb->z + 1;
+				weaponLimb->pitch = weaponArmLimb->pitch + .25;
+			}
+
+			if ( weaponLimb->sprite == items[LONGBOW].index )
+			{
+				weaponLimb->x -= .5 * cos(weaponArmLimb->yaw);
+				weaponLimb->y -= .5 * sin(weaponArmLimb->yaw);
+			}
+			else if ( weaponLimb->sprite == items[COMPOUND_BOW].index )
+			{
+				weaponLimb->x += .5 * cos(weaponArmLimb->yaw);
+				weaponLimb->y += .5 * sin(weaponArmLimb->yaw);
+			}
+		}
+		else if ( weaponLimb->sprite == items[CROSSBOW].index || weaponLimb->sprite == items[HEAVY_CROSSBOW].index )
+		{
+			weaponLimb->x = weaponArmLimb->x;
+			weaponLimb->y = weaponArmLimb->y;
+			weaponLimb->z = weaponArmLimb->z + 1;
+			weaponLimb->pitch = weaponArmLimb->pitch;
+		}
+		else if ( weaponLimb->sprite == items[TOOL_LOCKPICK].index )
+		{
+			weaponLimb->x = weaponArmLimb->x + 1.5 * cos(weaponArmLimb->yaw);
+			weaponLimb->y = weaponArmLimb->y + 1.5 * sin(weaponArmLimb->yaw);
+			weaponLimb->z = weaponArmLimb->z + 1.5;
+			weaponLimb->pitch = weaponArmLimb->pitch + .25;
+		}
+		else
+		{
+			/*weaponLimb->focalx = limbs[monsterType][6][0];
+			weaponLimb->focalz = limbs[monsterType][6][2];*/
+			if ( myAttack == 3 && !isPlayer )
+			{
+				// poking animation, weapon pointing straight ahead.
+				if ( weaponArmLimb->skill[1] < 2 && weaponArmLimb->pitch < PI / 2 )
+				{
+					// cos(weaponArmLimb->pitch)) * cos(weaponArmLimb->yaw) allows forward/back motion dependent on the arm rotation.
+					weaponLimb->x = weaponArmLimb->x + (3 * cos(weaponArmLimb->pitch)) * cos(weaponArmLimb->yaw);
+					weaponLimb->y = weaponArmLimb->y + (3 * cos(weaponArmLimb->pitch)) * sin(weaponArmLimb->yaw);
+
+					if ( weaponArmLimb->pitch < PI / 3 )
+					{
+						// adjust the z point halfway through swing.
+						weaponLimb->z = weaponArmLimb->z + 1.5 - 2 * cos(weaponArmLimb->pitch / 2);
+						if ( monsterType == INCUBUS || monsterType == SUCCUBUS )
+						{
+							weaponLimb->z += 2;
+						}
+					}
+					else
+					{
+						weaponLimb->z = weaponArmLimb->z - .5 * (myAttack == 0);
+						if ( weaponLimb->pitch > PI / 2 )
+						{
+							limbAnimateToLimit(weaponLimb, ANIMATE_PITCH, -0.5, PI * 0.5, false, 0);
+						}
+						else
+						{
+							limbAnimateToLimit(weaponLimb, ANIMATE_PITCH, 0.5, PI * 0.5, false, 0);
+						}
+						if ( monsterType == INCUBUS || monsterType == SUCCUBUS )
+						{
+							weaponLimb->z += 1.25;
+						}
+					}
+				}
+					// hold sword with pitch aligned to arm rotation.
+				else
+				{
+					weaponLimb->x = weaponArmLimb->x + .5 * cos(weaponArmLimb->yaw) * (myAttack == 0);
+					weaponLimb->y = weaponArmLimb->y + .5 * sin(weaponArmLimb->yaw) * (myAttack == 0);
+					weaponLimb->z = weaponArmLimb->z - .5;
+					weaponLimb->pitch = weaponArmLimb->pitch + .25 * (myAttack == 0);
+					if ( monsterType == INCUBUS || monsterType == SUCCUBUS )
+					{
+						weaponLimb->z += 1;
+					}
+				}
+			}
+			else
+			{
+				weaponLimb->x = weaponArmLimb->x + .5 * cos(weaponArmLimb->yaw) * (myAttack == 0);
+				weaponLimb->y = weaponArmLimb->y + .5 * sin(weaponArmLimb->yaw) * (myAttack == 0);
+				weaponLimb->z = weaponArmLimb->z - .5 * (myAttack == 0);
+				weaponLimb->pitch = weaponArmLimb->pitch + .25 * (myAttack == 0);
+			}
+		}
+	}
+
+	weaponLimb->yaw = weaponArmLimb->yaw;
+	bool isPotion = false;
+	if ( myAttack == MONSTER_POSE_RANGED_WINDUP3 && monsterType == GOATMAN && !isPlayer )
+	{
+		// specific for potion throwing goatmen.
+		limbAnimateToLimit(weaponLimb, ANIMATE_ROLL, 0.25, 1 * PI / 4, false, 0.0);
+	}
+	else
+	{
+		weaponLimb->roll = weaponArmLimb->roll;
+		if ( isPlayer )
+		{
+			if ( (weaponLimb->sprite >= 50 && weaponLimb->sprite < 58)
+			     || weaponLimb->sprite == 795 )
+			{
+				weaponLimb->roll += (PI / 2); // potion sprites rotated
+				isPotion = true;
+			}
+			else if ( weaponLimb->sprite == items[BOOMERANG].index )
+			{
+				weaponLimb->roll += (PI / 2); // sprite rotated
+				weaponLimb->pitch -= PI / 8;
+				weaponLimb->pitch += .25 * (myAttack != 0); // add 0.25 if attacking
+			}
+			else if ( weaponLimb->sprite == items[FOOD_CREAMPIE].index )
+			{
+				weaponLimb->roll += (PI / 2); // sprite rotated
+			}
+		}
+	}
+
+	bool armBended = (!isPlayer && this->monsterArmbended) || (isPlayer && this->skill[11]);
+	weaponLimb->scalex = 1.f;
+	weaponLimb->scaley = 1.f;
+	weaponLimb->scalez = 1.f;
+	if ( weaponLimb->sprite == items[TOOL_WHIP].index || weaponLimb->sprite == items[TOOL_WHIP].index + 1 )
+	{
+		if ( myAttack != 2 )
+		{
+			weaponLimb->pitch -= PI / 8;
+			if ( weaponLimb->sprite == items[TOOL_WHIP].index + 1 )
+			{
+				weaponLimb->pitch -= PI / 8;
+			}
+		}
+		if ( myAttack == 1 )
+		{
+			if ( weaponArmLimb->skill[1] == 1 && armBended )
+			{
+				if ( weaponArmLimb->pitch >= 3 * PI / 2 )
+				{
+					if ( weaponLimb->sprite == items[TOOL_WHIP].index )
+					{
+						weaponLimb->sprite += 1;
+					}
+				}
+				else if ( weaponArmLimb->pitch >= PI / 10 )
+				{
+					if ( weaponLimb->sprite == items[TOOL_WHIP].index + 1 )
+					{
+						weaponLimb->sprite = items[TOOL_WHIP].index;
+					}
+				}
+			}
+			else
+			{
+				weaponLimb->sprite = items[TOOL_WHIP].index;
+			}
+		}
+		else
+		{
+			weaponLimb->sprite = items[TOOL_WHIP].index;
+		}
+	}
+	else if ( weaponLimb->sprite == items[TOOL_DECOY].index || weaponLimb->sprite == items[TOOL_DUMMYBOT].index )
+	{
+		weaponLimb->scalex = 0.8;
+		weaponLimb->scaley = 0.8;
+		weaponLimb->scalez = 0.8;
+	}
+
+	if ( isPlayer && monsterType == CREATURE_IMP )
+	{
+		weaponLimb->focalx = limbs[monsterType][9][0];
+		weaponLimb->focaly = limbs[monsterType][9][1];
+		weaponLimb->focalz = limbs[monsterType][9][2];
+		weaponLimb->pitch += .5 + limbs[monsterType][10][0];
+	}
+	else if ( !armBended )
+	{
+		weaponLimb->focalx = limbs[monsterType][6][0]; // 2.5
+		weaponLimb->focaly = limbs[monsterType][6][1]; // 0
+		if ( weaponLimb->sprite == items[CROSSBOW].index || weaponLimb->sprite == items[HEAVY_CROSSBOW].index )
+		{
+			weaponLimb->focalx += 2.1;
+			weaponLimb->focaly -= 0.1;
+		}
+		weaponLimb->focalz = limbs[monsterType][6][2]; // -.5
+		if ( isPlayer && isPotion )
+		{
+			weaponLimb->focalz += 1;
+			if ( monsterType == INCUBUS || monsterType == SUCCUBUS )
+			{
+				weaponLimb->focaly += 1;
+				weaponLimb->focalz -= 1.5;
+			}
+		}
+		else if ( weaponLimb->sprite == items[BOOMERANG].index )
+		{
+			weaponLimb->focalx += 2;
+			weaponLimb->focaly += 0.25;
+			weaponLimb->focalz += 0;
+			weaponLimb->x += -1.2 * cos(weaponArmLimb->yaw + PI / 2) + -.6 * cos(weaponArmLimb->yaw);
+			weaponLimb->y += -1.2 * sin(weaponArmLimb->yaw + PI / 2) + -.6 * sin(weaponArmLimb->yaw);
+			weaponLimb->z += 0.25;
+			switch ( monsterType )
+			{
+				case SKELETON:
+				case AUTOMATON:
+				case GOATMAN:
+				case INSECTOID:
+				case GOBLIN:
+					weaponLimb->x += 0.5 * cos(weaponArmLimb->yaw + PI / 2);
+					weaponLimb->y += 0.5 * sin(weaponArmLimb->yaw + PI / 2);
+					break;
+				case INCUBUS:
+				case SUCCUBUS:
+					weaponLimb->x += 1.75 * cos(weaponArmLimb->yaw + PI / 2) + 0.25 * cos(weaponArmLimb->yaw);
+					weaponLimb->y += 1.75 * sin(weaponArmLimb->yaw + PI / 2) + 0.25 * sin(weaponArmLimb->yaw);
+					weaponLimb->z += 0;
+
+					weaponLimb->focalx += -0.75;
+					weaponLimb->focaly += 1;
+					weaponLimb->focalz += 0;
+					break;
+				default:
+					break;
+			}
+		}
+		else if ( weaponLimb->sprite == items[TOOL_WHIP].index || weaponLimb->sprite == items[TOOL_WHIP].index + 1 )
+		{
+			weaponLimb->focalx += 1;
+			weaponLimb->focalz += 1.5;
+		}
+		else if ( weaponLimb->sprite == items[TOOL_GYROBOT].index )
+		{
+			weaponLimb->focalz += 1;
+		}
+		else if ( weaponLimb->sprite >= items[TOOL_BOMB].index && weaponLimb->sprite <= items[TOOL_TELEPORT_BOMB].index )
+		{
+			weaponLimb->focalz += 2;
+			if ( monsterType == SKELETON )
+			{
+				weaponLimb->focalx -= 0.25;
+				weaponLimb->focaly += 0.1;
+			}
+			else if ( monsterType == AUTOMATON )
+			{
+				weaponLimb->focaly += 0.5;
+				weaponLimb->focalz -= 1;
+			}
+		}
+		else if ( weaponLimb->sprite == items[SHORTBOW].index || weaponLimb->sprite == items[ARTIFACT_BOW].index
+		          || weaponLimb->sprite == items[LONGBOW].index || weaponLimb->sprite == items[COMPOUND_BOW].index )
+		{
+			if ( weaponLimb->sprite == items[SHORTBOW].index )
+			{
+				switch ( monsterType )
+				{
+					case HUMAN:
+					case VAMPIRE:
+					case SHOPKEEPER:
+						weaponLimb->x += -.1 * cos(weaponArmLimb->yaw + PI / 2) + 0.25 * cos(weaponArmLimb->yaw);
+						weaponLimb->y += -.1 * sin(weaponArmLimb->yaw + PI / 2) + 0.25 * sin(weaponArmLimb->yaw);
+						weaponLimb->z += -1.25;
+						weaponLimb->focalx += -0.5;
+						weaponLimb->focaly += 0;
+						weaponLimb->focalz += 1.75;
+						break;
+					case GOBLIN:
+					case GOATMAN:
+					case INSECTOID:
+					case SUCCUBUS:
+					case INCUBUS:
+						weaponLimb->x += -.1 * cos(weaponArmLimb->yaw + PI / 2) + 0.25 * cos(weaponArmLimb->yaw);
+						weaponLimb->y += -.1 * sin(weaponArmLimb->yaw + PI / 2) + 0.25 * sin(weaponArmLimb->yaw);
+						weaponLimb->z += -1;
+						weaponLimb->focalx += 0;
+						weaponLimb->focaly += 0;
+						weaponLimb->focalz += 1.25;
+						break;
+					case SKELETON:
+					case AUTOMATON:
+						weaponLimb->x += -.1 * cos(weaponArmLimb->yaw + PI / 2) + 0.5 * cos(weaponArmLimb->yaw);
+						weaponLimb->y += -.1 * sin(weaponArmLimb->yaw + PI / 2) + 0.5 * sin(weaponArmLimb->yaw);
+						weaponLimb->z += -1;
+						weaponLimb->focalx += -0.5;
+						weaponLimb->focaly += 0;
+						weaponLimb->focalz += 1;
+						break;
+					default:
+						break;
+				}
+			}
+			else if ( weaponLimb->sprite == items[ARTIFACT_BOW].index
+			          || weaponLimb->sprite == items[LONGBOW].index )
+			{
+				switch ( monsterType )
+				{
+					case HUMAN:
+					case VAMPIRE:
+					case SHOPKEEPER:
+						weaponLimb->x += -.1 * cos(weaponArmLimb->yaw + PI / 2) + 0.75 * cos(weaponArmLimb->yaw);
+						weaponLimb->y += -.1 * sin(weaponArmLimb->yaw + PI / 2) + 0.75 * sin(weaponArmLimb->yaw);
+						weaponLimb->z += -1.25;
+						weaponLimb->focalx += -0.5;
+						weaponLimb->focaly += 0;
+						weaponLimb->focalz += 1.75;
+						if ( weaponLimb->sprite == items[LONGBOW].index )
+						{
+							weaponLimb->x += -0.25 * cos(weaponArmLimb->yaw);
+							weaponLimb->y += -0.25 * sin(weaponArmLimb->yaw);
+							weaponLimb->z += 0.25;
+							weaponLimb->focalx += 0.5;
+							weaponLimb->focaly += 0;
+							weaponLimb->focalz += -0.5;
+						}
+						break;
+					case GOBLIN:
+					case GOATMAN:
+					case INSECTOID:
+						weaponLimb->x += -.1 * cos(weaponArmLimb->yaw + PI / 2) + 0.5 * cos(weaponArmLimb->yaw);
+						weaponLimb->y += -.1 * sin(weaponArmLimb->yaw + PI / 2) + 0.5 * sin(weaponArmLimb->yaw);
+						weaponLimb->z += -1;
+						weaponLimb->focalx += 0;
+						weaponLimb->focaly += 0;
+						weaponLimb->focalz += 1.25;
+						break;
+					case SUCCUBUS:
+					case INCUBUS:
+						weaponLimb->x += -.1 * cos(weaponArmLimb->yaw + PI / 2) + 0.25 * cos(weaponArmLimb->yaw);
+						weaponLimb->y += -.1 * sin(weaponArmLimb->yaw + PI / 2) + 0.25 * sin(weaponArmLimb->yaw);
+						weaponLimb->z += -1;
+						weaponLimb->focalx += 0;
+						weaponLimb->focaly += 0;
+						weaponLimb->focalz += 1.25;
+						break;
+					case SKELETON:
+					case AUTOMATON:
+						weaponLimb->x += -.1 * cos(weaponArmLimb->yaw + PI / 2) + 0.25 * cos(weaponArmLimb->yaw);
+						weaponLimb->y += -.1 * sin(weaponArmLimb->yaw + PI / 2) + 0.25 * sin(weaponArmLimb->yaw);
+						weaponLimb->z += -1.25;
+						weaponLimb->focalx += 0;
+						weaponLimb->focaly += 0;
+						weaponLimb->focalz += 1.25;
+						break;
+					default:
+						break;
+				}
+				if ( weaponLimb->sprite == items[LONGBOW].index )
+				{
+					// this applies to all offsets for all monsters.
+					weaponLimb->x += -.1 * cos(weaponArmLimb->yaw + PI / 2) + 0.75 * cos(weaponArmLimb->yaw);
+					weaponLimb->y += -.1 * sin(weaponArmLimb->yaw + PI / 2) + 0.75 * sin(weaponArmLimb->yaw);
+					weaponLimb->z += 0.25;
+					weaponLimb->focalx += -.75;
+					weaponLimb->focaly += 0;
+					weaponLimb->focalz += 0;
+				}
+			}
+			else if ( weaponLimb->sprite == items[COMPOUND_BOW].index )
+			{
+				switch ( monsterType )
+				{
+					case HUMAN:
+					case VAMPIRE:
+					case SHOPKEEPER:
+						weaponLimb->x += -.1 * cos(weaponArmLimb->yaw + PI / 2) + 0.f * cos(weaponArmLimb->yaw);
+						weaponLimb->y += -.1 * sin(weaponArmLimb->yaw + PI / 2) + 0.f * sin(weaponArmLimb->yaw);
+						weaponLimb->z += -1.25;
+						weaponLimb->focalx += 0;
+						weaponLimb->focaly += 0;
+						weaponLimb->focalz += 1.75;
+						break;
+					case GOBLIN:
+					case GOATMAN:
+					case INSECTOID:
+						weaponLimb->x += -.1 * cos(weaponArmLimb->yaw + PI / 2) + 0.5 * cos(weaponArmLimb->yaw);
+						weaponLimb->y += -.1 * sin(weaponArmLimb->yaw + PI / 2) + 0.5 * sin(weaponArmLimb->yaw);
+						weaponLimb->z += -1;
+						weaponLimb->focalx += 0;
+						weaponLimb->focaly += 0;
+						weaponLimb->focalz += 1.25;
+						break;
+					case SUCCUBUS:
+					case INCUBUS:
+						weaponLimb->x += -.1 * cos(weaponArmLimb->yaw + PI / 2) + 0.25 * cos(weaponArmLimb->yaw);
+						weaponLimb->y += -.1 * sin(weaponArmLimb->yaw + PI / 2) + 0.25 * sin(weaponArmLimb->yaw);
+						weaponLimb->z += -1;
+						weaponLimb->focalx += 0;
+						weaponLimb->focaly += 0;
+						weaponLimb->focalz += 1.25;
+						break;
+					case SKELETON:
+					case AUTOMATON:
+						weaponLimb->x += -.1 * cos(weaponArmLimb->yaw + PI / 2) + 0.25 * cos(weaponArmLimb->yaw);
+						weaponLimb->y += -.1 * sin(weaponArmLimb->yaw + PI / 2) + 0.25 * sin(weaponArmLimb->yaw);
+						weaponLimb->z += -1.25;
+						weaponLimb->focalx += 0;
+						weaponLimb->focaly += 0;
+						weaponLimb->focalz += 1.25;
+						break;
+					default:
+						break;
+				}
+			}
+			/*weaponLimb->x += limbs[HUMAN][12][0] * cos(weaponArmLimb->yaw + PI / 2) + limbs[HUMAN][12][1] * cos(weaponArmLimb->yaw);
+			weaponLimb->y += limbs[HUMAN][12][0] * sin(weaponArmLimb->yaw + PI / 2) + limbs[HUMAN][12][1] * sin(weaponArmLimb->yaw);
+			weaponLimb->z += limbs[HUMAN][12][2];
+			weaponLimb->focalx += limbs[HUMAN][11][0];
+			weaponLimb->focaly += limbs[HUMAN][11][1];
+			weaponLimb->focalz += limbs[HUMAN][11][2];*/
+		}
+		else
+		{
+			switch ( monsterType )
+			{
+				case SUCCUBUS:
+				case INCUBUS:
+				case HUMAN:
+				case VAMPIRE:
+				case AUTOMATON:
+				case INSECTOID:
+				case GOBLIN:
+					weaponLimb->focaly -= 0.05; // minor z-fighting fix.
+					break;
+				default:
+					break;
+			}
+		}
+	}
+	else
+	{
+		if ( monsterType == INCUBUS || monsterType == SUCCUBUS )
+		{
+			weaponLimb->focalx = limbs[monsterType][6][0] + 2; // 3.5
+			weaponLimb->focaly = limbs[monsterType][6][1]; // 0
+			weaponLimb->focalz = limbs[monsterType][6][2] - 3.5; // -2.5
+			if ( isPlayer && isPotion )
+			{
+				weaponLimb->focalz += 4.5;
+			}
+		}
+		else if ( isPlayer && monsterType == HUMAN )
+		{
+			weaponLimb->focalx = limbs[monsterType][6][0] + 1.5;
+			weaponLimb->focaly = limbs[monsterType][6][1];
+			weaponLimb->focalz = limbs[monsterType][6][2] - 2;
+			if ( isPlayer && isPotion )
+			{
+				weaponLimb->focalz += 3;
+			}
+		}
+		else
+		{
+			weaponLimb->focalx = limbs[monsterType][6][0] + 1; // 3.5
+			weaponLimb->focaly = limbs[monsterType][6][1]; // 0
+			weaponLimb->focalz = limbs[monsterType][6][2] - 2; // -2.5
+			if ( isPlayer && isPotion )
+			{
+				weaponLimb->focalz += 3;
+			}
+		}
+
+		if ( weaponLimb->sprite == items[BOOMERANG].index )
+		{
+			weaponLimb->focalx += 2;
+			weaponLimb->focaly += 0.25;
+			weaponLimb->focalz += 2;
+			weaponLimb->x += -1.2 * cos(weaponArmLimb->yaw + PI / 2) + -.1 * cos(weaponArmLimb->yaw);
+			weaponLimb->y += -1.2 * sin(weaponArmLimb->yaw + PI / 2) + -.1 * sin(weaponArmLimb->yaw);
+			weaponLimb->z += 0.25;
+			switch ( monsterType )
+			{
+				case SKELETON:
+				case AUTOMATON:
+				case GOATMAN:
+				case INSECTOID:
+				case GOBLIN:
+					weaponLimb->x += 0.5 * cos(weaponArmLimb->yaw + PI / 2);
+					weaponLimb->y += 0.5 * sin(weaponArmLimb->yaw + PI / 2);
+					break;
+				case INCUBUS:
+				case SUCCUBUS:
+					weaponLimb->x += 1.75 * cos(weaponArmLimb->yaw + PI / 2) + 0.25 * cos(weaponArmLimb->yaw);
+					weaponLimb->y += 1.75 * sin(weaponArmLimb->yaw + PI / 2) + 0.25 * sin(weaponArmLimb->yaw);
+					weaponLimb->z += 0;
+
+					weaponLimb->focalx += -0.75;
+					weaponLimb->focaly += 1;
+					weaponLimb->focalz += 1.5;
+					break;
+				default:
+					break;
+			}
+		}
+		else if ( weaponLimb->sprite == items[TOOL_WHIP].index + 1 )
+		{
+			weaponLimb->focalx += 5.5;
+			weaponLimb->focalz += 3.5;
+		}
+		else if ( weaponLimb->sprite == items[TOOL_WHIP].index )
+		{
+			weaponLimb->focalx += 1.5;
+			weaponLimb->focalz += 2.5;
+		}
+		else if ( weaponLimb->sprite == items[TOOL_GYROBOT].index )
+		{
+			weaponLimb->focalz += 1;
+		}
+		else if ( weaponLimb->sprite >= items[TOOL_BOMB].index && weaponLimb->sprite <= items[TOOL_TELEPORT_BOMB].index )
+		{
+			weaponLimb->focalz += 2;
+		}
+
+		weaponLimb->yaw -= sin(weaponArmLimb->roll) * PI / 2;
+		weaponLimb->pitch += cos(weaponArmLimb->roll) * PI / 2;
+	}
+
+	return;
+}
+
 int32_t Entity::playerInsectoidHungerValueOfManaPoint(Stat& myStats)
 {
 	float manaPointPercentage = 1 / static_cast<float>(myStats.MAXMP);
@@ -7102,6 +7526,734 @@ void Entity::setHelmetLimbOffsetWithMask(Entity* helm, Entity* mask)
 			}
 			break;
 		case SKELETON:
+			break;
+		default:
+			break;
+	}
+}
+
+/*-------------------------------------------------------------------------------
+
+setHelmetLimbOffset
+Adjusts helmet offsets for all monsters, depending on the type of headwear.
+
+-------------------------------------------------------------------------------*/
+
+void Entity::setHelmetLimbOffset(Entity* helm)
+{
+	helm->scalex = 1.01;
+	helm->scaley = 1.01;
+	helm->scalez = 1.01;
+	// for non-armor helmets, they are rotated so focaly acts as up/down postion.
+	int monster = getMonsterTypeFromSprite();
+	if ( helm->sprite == items[HAT_PHRYGIAN].index )
+	{
+		switch ( monster )
+		{
+			case AUTOMATON:
+			case SKELETON:
+				helm->focalx = limbs[monster][9][0] - .5;
+				helm->focaly = limbs[monster][9][1] - 3.25;
+				helm->focalz = limbs[monster][9][2] + 2.25;
+				break;
+			case HUMAN:
+			case SHOPKEEPER:
+			case VAMPIRE:
+				helm->focalx = limbs[monster][9][0] - .5;
+				helm->focaly = limbs[monster][9][1] - 3.25;
+				helm->focalz = limbs[monster][9][2] + 2.25;
+				break;
+			case INSECTOID:
+				helm->focalx = limbs[monster][9][0] - .5;
+				helm->focaly = limbs[monster][9][1] - 3.05;
+				helm->focalz = limbs[monster][9][2] + 2.25;
+				break;
+			case GOBLIN:
+			case SHADOW:
+				helm->focalx = limbs[monster][9][0] - .5;
+				helm->focaly = limbs[monster][9][1] - 3.55;
+				helm->focalz = limbs[monster][9][2] + 2.5;
+				break;
+			case GOATMAN:
+				helm->focalx = limbs[monster][9][0] - .5;
+				helm->focaly = limbs[monster][9][1] - 3.55;
+				helm->focalz = limbs[monster][9][2] + 2.75;
+				break;
+			case INCUBUS:
+			case SUCCUBUS:
+				helm->focalx = limbs[monster][9][0] - .5;
+				helm->focaly = limbs[monster][9][1] - 3.2;
+				helm->focalz = limbs[monster][9][2] + 2.5;
+				break;
+			default:
+				break;
+		}
+		helm->roll = PI / 2;
+	}
+	else if ( (helm->sprite >= items[HAT_HOOD].index && helm->sprite < items[HAT_HOOD].index + items[HAT_HOOD].variations)
+	          || helm->sprite == items[HAT_HOOD_RED].index || helm->sprite == items[HAT_HOOD_SILVER].index
+	          || helm->sprite == items[PUNISHER_HOOD].index )
+	{
+		switch ( monster )
+		{
+			case AUTOMATON:
+			case SKELETON:
+				helm->focalx = limbs[monster][9][0] - .5;
+				helm->focaly = limbs[monster][9][1] - 2.5;
+				helm->focalz = limbs[monster][9][2] + 2.25;
+				if ( helm->sprite == (items[HAT_HOOD].index + 2) )
+				{
+					helm->focaly += 0.5; // black hood
+				}
+				else if ( helm->sprite == (items[HAT_HOOD].index + 3) )
+				{
+					helm->focaly -= 0.5; // purple hood
+				}
+				else if ( helm->sprite == items[PUNISHER_HOOD].index )
+				{
+					helm->focalx += 0.25;
+					helm->focaly += 0.5;
+				}
+				break;
+			case INCUBUS:
+			case SUCCUBUS:
+				helm->focalx = limbs[monster][9][0] - .5;
+				helm->focaly = limbs[monster][9][1] - 2.5;
+				helm->focalz = limbs[monster][9][2] + 2.5;
+				if ( helm->sprite == (items[HAT_HOOD].index + 3) )
+				{
+					helm->focaly -= 0.5; // purple hood
+				}
+				else if ( helm->sprite == items[PUNISHER_HOOD].index )
+				{
+					if ( monster == INCUBUS )
+					{
+						helm->focalx += 0.25;
+						helm->focaly += 0.25;
+					}
+				}
+				break;
+			case VAMPIRE:
+			case SHOPKEEPER:
+			case HUMAN:
+				helm->focalx = limbs[monster][9][0] - .5;
+				helm->focaly = limbs[monster][9][1] - 2.5;
+				helm->focalz = limbs[monster][9][2] + 2.25;
+				if ( helm->sprite == items[PUNISHER_HOOD].index )
+				{
+					helm->focaly += 0.25;
+				}
+				break;
+			case GOATMAN:
+				helm->focalx = limbs[monster][9][0] - .5;
+				helm->focaly = limbs[monster][9][1] - 2.75;
+				helm->focalz = limbs[monster][9][2] + 2.75;
+				if ( helm->sprite == (items[HAT_HOOD].index + 2) )
+				{
+					helm->focaly -= 0.25; // black hood
+				}
+				else if ( helm->sprite == (items[HAT_HOOD].index + 3) )
+				{
+					helm->focaly -= 0.5; // purple hood
+				}
+				break;
+			case INSECTOID:
+				helm->focalx = limbs[monster][9][0] - .5;
+				helm->focaly = limbs[monster][9][1] - 2.15;
+				helm->focalz = limbs[monster][9][2] + 2.25;
+				if ( helm->sprite == (items[HAT_HOOD].index + 2) )
+				{
+					helm->focaly += 0.25; // black hood
+				}
+				else if ( helm->sprite == (items[HAT_HOOD].index + 3) )
+				{
+					helm->focaly -= 0.5; // purple hood
+				}
+				else if ( helm->sprite == items[PUNISHER_HOOD].index )
+				{
+					helm->focalx += 0.5;
+					helm->focaly += 0.15;
+				}
+				break;
+			case GOBLIN:
+			case SHADOW:
+				helm->focalx = limbs[monster][9][0] - .5;
+				helm->focaly = limbs[monster][9][1] - 2.75;
+				helm->focalz = limbs[monster][9][2] + 2.5;
+				if ( monster == GOBLIN && (this->sprite == 752 || this->sprite == 1039) ) // special female offset.
+				{
+					if ( helm->sprite == (items[HAT_HOOD].index + 3) )
+					{
+						helm->focaly -= 0.5; // purple hood
+					}
+				}
+				if ( helm->sprite == items[PUNISHER_HOOD].index )
+				{
+					helm->focaly += 0.25;
+				}
+				break;
+			default:
+				break;
+		}
+		/*helm->focalx += limbs[HUMAN][12][0];
+		helm->focaly += limbs[HUMAN][12][1];
+		helm->focalz += limbs[HUMAN][12][2];*/
+		helm->roll = PI / 2;
+	}
+	else if ( helm->sprite == items[HAT_WIZARD].index || helm->sprite == items[HAT_JESTER].index )
+	{
+		switch ( monster )
+		{
+			case AUTOMATON:
+			case SKELETON:
+				helm->focalx = limbs[monster][9][0];
+				helm->focaly = limbs[monster][9][1] - 4.5;
+				helm->focalz = limbs[monster][9][2] + 2.25;
+				break;
+			case INCUBUS:
+			case SUCCUBUS:
+				helm->focalx = limbs[monster][9][0];
+				helm->focaly = limbs[monster][9][1] - 4.75;
+				helm->focalz = limbs[monster][9][2] + 2.5;
+				break;
+			case VAMPIRE:
+			case SHOPKEEPER:
+			case HUMAN:
+				helm->focalx = limbs[monster][9][0];
+				helm->focaly = limbs[monster][9][1] - 4.75;
+				helm->focalz = limbs[monster][9][2] + 2.25;
+				break;
+			case GOATMAN:
+				helm->focalx = limbs[monster][9][0];
+				helm->focaly = limbs[monster][9][1] - 5.1;
+				helm->focalz = limbs[monster][9][2] + 2.75;
+				break;
+			case INSECTOID:
+				helm->focalx = limbs[monster][9][0];
+				helm->focaly = limbs[monster][9][1] - 4.75;
+				helm->focalz = limbs[monster][9][2] + 2.25;
+				break;
+			case GOBLIN:
+			case SHADOW:
+				helm->focalx = limbs[monster][9][0];
+				helm->focaly = limbs[monster][9][1] - 5;
+				helm->focalz = limbs[monster][9][2] + 2.5;
+				break;
+			default:
+				break;
+		}
+		helm->roll = PI / 2;
+	}
+	else if ( helm->sprite == items[HAT_FEZ].index )
+	{
+		switch ( monster )
+		{
+			case AUTOMATON:
+			case SKELETON:
+				helm->focalx = limbs[monster][9][0];
+				helm->focaly = limbs[monster][9][1] - 4.f;
+				helm->focalz = limbs[monster][9][2] + 2.25;
+				break;
+			case INCUBUS:
+			case SUCCUBUS:
+				helm->focalx = limbs[monster][9][0];
+				helm->focaly = limbs[monster][9][1] - 4.0;
+				helm->focalz = limbs[monster][9][2] + 2.5;
+				break;
+			case VAMPIRE:
+			case SHOPKEEPER:
+			case HUMAN:
+				helm->focalx = limbs[monster][9][0];
+				helm->focaly = limbs[monster][9][1] - 4.35;
+				helm->focalz = limbs[monster][9][2] + 2.25;
+				break;
+			case GOATMAN:
+				helm->focalx = limbs[monster][9][0];
+				helm->focaly = limbs[monster][9][1] - 4.5;
+				helm->focalz = limbs[monster][9][2] + 2.75;
+				break;
+			case INSECTOID:
+				helm->focalx = limbs[monster][9][0];
+				helm->focaly = limbs[monster][9][1] - 4;
+				helm->focalz = limbs[monster][9][2] + 2.25;
+				break;
+			case GOBLIN:
+			case SHADOW:
+				helm->focalx = limbs[monster][9][0];
+				helm->focaly = limbs[monster][9][1] - 4.5;
+				helm->focalz = limbs[monster][9][2] + 2.5;
+				if ( monster == GOBLIN && (this->sprite == 752 || this->sprite == 1039) ) // special female offset.
+				{
+					helm->focaly -= 0.25;
+				}
+				break;
+			default:
+				break;
+		}
+		helm->roll = PI / 2;
+	}
+	else if ( helm->sprite == items[MASK_SHAMAN].index )
+	{
+		switch ( monster )
+		{
+			case AUTOMATON:
+				helm->focalx = limbs[monster][10][0] + 1.f;
+				helm->focaly = limbs[monster][10][1] - 0.5;
+				helm->focalz = limbs[monster][10][2] - 1.5;
+				break;
+			case SKELETON:
+				helm->focalx = limbs[monster][10][0] + 0.5;
+				helm->focaly = limbs[monster][10][1] - 0.5;
+				helm->focalz = limbs[monster][10][2] - 1.7;
+				break;
+			case INCUBUS:
+				helm->focalx = limbs[monster][10][0] + 0.5;
+				helm->focaly = limbs[monster][10][1] - 0.25;
+				helm->focalz = limbs[monster][10][2] - 2;
+				break;
+			case SUCCUBUS:
+				helm->focalx = limbs[monster][10][0] + 0.5;
+				helm->focaly = limbs[monster][10][1] - 0;
+				helm->focalz = limbs[monster][10][2] - 2.25;
+				break;
+			case VAMPIRE:
+			case SHOPKEEPER:
+			case HUMAN:
+				helm->focalx = limbs[monster][10][0] + 0.75;
+				helm->focaly = limbs[monster][10][1] - 0;
+				helm->focalz = limbs[monster][10][2] - 2;
+				break;
+			case GOATMAN:
+				helm->focalx = limbs[monster][10][0] + 0.7;
+				helm->focaly = limbs[monster][10][1] + 0.25;
+				helm->focalz = limbs[monster][10][2] - 2.55;
+				break;
+			case INSECTOID:
+				helm->focalx = limbs[monster][10][0] + 1.03;
+				helm->focaly = limbs[monster][10][1] - 0.25;
+				helm->focalz = limbs[monster][10][2] - 1.5;
+				break;
+			case GOBLIN:
+				helm->focalx = limbs[monster][10][0] + 0.7;
+				helm->focaly = limbs[monster][10][1] + 0;
+				helm->focalz = limbs[monster][10][2] - 2.25;
+				//if ( monster == GOBLIN && (this->sprite == 752 || this->sprite == 1039) ) // special female offset.
+				//{
+				//	helm->focaly -= 0.25;
+				//}
+				break;
+			case SHADOW:
+			default:
+				break;
+		}
+	}
+	else
+	{
+		if ( monster == GOBLIN && (this->sprite == 752 || this->sprite == 1039) ) // special female offset.
+		{
+			helm->focalz = limbs[monster][9][2] - 0.25; // all non-hat helms
+		}
+	}
+}
+
+void Entity::setHumanoidLimbOffset(Entity* limb, Monster race, int limbType)
+{
+	if ( !limb )
+	{
+		return;
+	}
+	if ( limbType == LIMB_HUMANOID_TORSO )
+	{
+		limb->scalez = 1.f; // reset this scale incase something modifies this.
+	}
+	switch ( race )
+	{
+		case CREATURE_IMP:
+			if ( limbType == LIMB_HUMANOID_TORSO )
+			{
+				limb->x -= 2 * cos(this->yaw);
+				limb->y -= 2 * sin(this->yaw);
+				limb->z += 2.75;
+				limb->focalz -= 0.25;
+			}
+			else if ( limbType == LIMB_HUMANOID_RIGHTLEG )
+			{
+				limb->x += 1 * cos(this->yaw + PI / 2);
+				limb->y += 1 * sin(this->yaw + PI / 2);
+				limb->z += 6;
+			}
+			else if ( limbType == LIMB_HUMANOID_LEFTLEG )
+			{
+				limb->x -= 1 * cos(this->yaw + PI / 2);
+				limb->y -= 1 * sin(this->yaw + PI / 2);
+				limb->z += 6;
+			}
+			else if ( limbType == LIMB_HUMANOID_RIGHTARM )
+			{
+				limb->x += 3 * cos(this->yaw + PI / 2) - 1 * cos(this->yaw);
+				limb->y += 3 * sin(this->yaw + PI / 2) - 1 * sin(this->yaw);
+				limb->z += 1;
+			}
+			else if ( limbType == LIMB_HUMANOID_LEFTARM )
+			{
+				limb->x -= 3 * cos(this->yaw + PI / 2) + 1 * cos(this->yaw);
+				limb->y -= 3 * sin(this->yaw + PI / 2) + 1 * sin(this->yaw);
+				limb->z += 1;
+			}
+			break;
+		case HUMAN:
+		case VAMPIRE:
+			if ( limbType == LIMB_HUMANOID_TORSO )
+			{
+				limb->x -= .25 * cos(this->yaw);
+				limb->y -= .25 * sin(this->yaw);
+				limb->z += 2.5;
+			}
+			else if ( limbType == LIMB_HUMANOID_RIGHTLEG )
+			{
+				limb->x += 1 * cos(this->yaw + PI / 2) + .25 * cos(this->yaw);
+				limb->y += 1 * sin(this->yaw + PI / 2) + .25 * sin(this->yaw);
+				limb->z += 5;
+				if ( this->z >= 1.4 && this->z <= 1.6 )
+				{
+					limb->yaw += PI / 8;
+					limb->pitch = -PI / 2;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_LEFTLEG )
+			{
+				limb->x -= 1 * cos(this->yaw + PI / 2) - .25 * cos(this->yaw);
+				limb->y -= 1 * sin(this->yaw + PI / 2) - .25 * sin(this->yaw);
+				limb->z += 5;
+				if ( this->z >= 1.4 && this->z <= 1.6 )
+				{
+					limb->yaw -= PI / 8;
+					limb->pitch = -PI / 2;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_RIGHTARM )
+			{
+				limb->x += 2.5 * cos(this->yaw + PI / 2) - .20 * cos(this->yaw);
+				limb->y += 2.5 * sin(this->yaw + PI / 2) - .20 * sin(this->yaw);
+				limb->z += 1.5;
+				if ( this->z >= 1.4 && this->z <= 1.6 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_LEFTARM )
+			{
+				limb->x -= 2.5 * cos(this->yaw + PI / 2) + .20 * cos(this->yaw);
+				limb->y -= 2.5 * sin(this->yaw + PI / 2) + .20 * sin(this->yaw);
+				limb->z += 1.5;
+				if ( this->z >= 1.4 && this->z <= 1.6 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			break;
+		case TROLL:
+			if ( limbType == LIMB_HUMANOID_TORSO )
+			{
+				limb->x -= .5 * cos(this->yaw);
+				limb->y -= .5 * sin(this->yaw);
+				limb->z += 2.25;
+			}
+			else if ( limbType == LIMB_HUMANOID_RIGHTLEG )
+			{
+				limb->x += 2 * cos(this->yaw + PI / 2) - 0.75 * cos(this->yaw);
+				limb->y += 2 * sin(this->yaw + PI / 2) - 0.75 * sin(this->yaw);
+				limb->z += 5;
+				if ( this->z >= 1.4 && this->z <= 1.6 )
+				{
+					limb->yaw += PI / 8;
+					limb->pitch = -PI / 2;
+				}
+				else if ( limb->pitch <= -PI / 3 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_LEFTLEG )
+			{
+				limb->x -= 2 * cos(this->yaw + PI / 2) + 0.75 * cos(this->yaw);
+				limb->y -= 2 * sin(this->yaw + PI / 2) + 0.75 * sin(this->yaw);
+				limb->z += 5;
+				if ( this->z >= 1.4 && this->z <= 1.6 )
+				{
+					limb->yaw -= PI / 8;
+					limb->pitch = -PI / 2;
+				}
+				else if ( limb->pitch <= -PI / 3 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_RIGHTARM )
+			{
+				limb->x += 3.5 * cos(this->yaw + PI / 2) - 1 * cos(this->yaw);
+				limb->y += 3.5 * sin(this->yaw + PI / 2) - 1 * sin(this->yaw);
+				limb->z += .1;
+				//limb->yaw += MONSTER_WEAPONYAW;
+				if ( this->z >= 1.4 && this->z <= 1.6 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_LEFTARM )
+			{
+				limb->x -= 3.5 * cos(this->yaw + PI / 2) + 1 * cos(this->yaw);
+				limb->y -= 3.5 * sin(this->yaw + PI / 2) + 1 * sin(this->yaw);
+				limb->z += .1;
+				if ( this->z >= 1.4 && this->z <= 1.6 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			break;
+		case SKELETON:
+		case AUTOMATON:
+			if ( limbType == LIMB_HUMANOID_TORSO )
+			{
+				limb->x -= .25 * cos(this->yaw);
+				limb->y -= .25 * sin(this->yaw);
+				limb->z += 2;
+				if ( limb->sprite == items[WIZARD_DOUBLET].index
+				     || limb->sprite == items[HEALER_DOUBLET].index
+				     || limb->sprite == items[TUNIC].index
+				     || limb->sprite == items[TUNIC].index + 1 )
+				{
+					limb->z += 0.15;
+					limb->scalez = 0.9;
+					limb->x += .1 * cos(this->yaw);
+					limb->y += .1 * sin(this->yaw);
+				}
+				else
+				{
+					limb->scalez = 1.f;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_RIGHTLEG )
+			{
+				limb->x += 1 * cos(this->yaw + PI / 2) + .25 * cos(this->yaw);
+				limb->y += 1 * sin(this->yaw + PI / 2) + .25 * sin(this->yaw);
+				limb->z += 4;
+				if ( this->z >= 1.9 && this->z <= 2.1 )
+				{
+					limb->yaw += PI / 8;
+					limb->pitch = -PI / 2;
+				}
+				else if ( limb->pitch <= -PI / 3 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_LEFTLEG )
+			{
+				limb->x -= 1 * cos(this->yaw + PI / 2) - .25 * cos(this->yaw);
+				limb->y -= 1 * sin(this->yaw + PI / 2) - .25 * sin(this->yaw);
+				limb->z += 4;
+				if ( this->z >= 1.9 && this->z <= 2.1 )
+				{
+					limb->yaw -= PI / 8;
+					limb->pitch = -PI / 2;
+				}
+				else if ( limb->pitch <= -PI / 3 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_RIGHTARM )
+			{
+				if ( limb->sprite != 689 && limb->sprite != 691
+				     && limb->sprite != 1046 && limb->sprite != 1048
+				     && limb->sprite != 233 && limb->sprite != 234
+				     && limb->sprite != 745 && limb->sprite != 747
+				     && limb->sprite != 471 && limb->sprite != 472 )
+				{
+					// wearing gloves (not default arms), position tighter to body.
+					limb->x += 1.75 * cos(this->yaw + PI / 2) - .20 * cos(this->yaw);
+					limb->y += 1.75 * sin(this->yaw + PI / 2) - .20 * sin(this->yaw);
+				}
+				else
+				{
+					limb->x += 2.f * cos(this->yaw + PI / 2) - .20 * cos(this->yaw);
+					limb->y += 2.f * sin(this->yaw + PI / 2) - .20 * sin(this->yaw);
+				}
+				limb->z += .6;
+				if ( this->z >= 1.9 && this->z <= 2.1 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_LEFTARM )
+			{
+				if ( limb->sprite != 688 && limb->sprite != 690
+				     && limb->sprite != 1045 && limb->sprite != 1047
+				     && limb->sprite != 231 && limb->sprite != 232
+				     && limb->sprite != 744 && limb->sprite != 746
+				     && limb->sprite != 469 && limb->sprite != 470 )
+				{
+					// wearing gloves (not default arms), position tighter to body.
+					limb->x -= 1.75 * cos(this->yaw + PI / 2) + .20 * cos(this->yaw);
+					limb->y -= 1.75 * sin(this->yaw + PI / 2) + .20 * sin(this->yaw);
+				}
+				else
+				{
+					limb->x -= 2.f * cos(this->yaw + PI / 2) + .20 * cos(this->yaw);
+					limb->y -= 2.f * sin(this->yaw + PI / 2) + .20 * sin(this->yaw);
+				}
+				limb->z += .6;
+				if ( this->z >= 1.9 && this->z <= 2.1 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			break;
+		case GOBLIN:
+		case GOATMAN:
+		case INSECTOID:
+			if ( limbType == LIMB_HUMANOID_TORSO )
+			{
+				limb->x -= .25 * cos(this->yaw);
+				limb->y -= .25 * sin(this->yaw);
+				limb->z += 2;
+				if ( race == INSECTOID )
+				{
+					if ( limb->sprite != 727 && limb->sprite != 458
+					     && limb->sprite != 761
+					     && limb->sprite != 1060 )
+					{
+						// wearing armor, offset by 1.
+						limb->z -= 1;
+					}
+				}
+
+				/*if ( limb->sprite == items[WIZARD_DOUBLET].index
+					|| limb->sprite == items[HEALER_DOUBLET].index
+					|| limb->sprite == items[TUNIC].index
+					|| limb->sprite == items[TUNIC].index + 1 )
+				{
+					limb->z += 0.25;
+				}*/
+			}
+			else if ( limbType == LIMB_HUMANOID_RIGHTLEG )
+			{
+				limb->x += 1 * cos(this->yaw + PI / 2) + .25 * cos(this->yaw);
+				limb->y += 1 * sin(this->yaw + PI / 2) + .25 * sin(this->yaw);
+				limb->z += 4;
+				if ( this->z >= 2.4 && this->z <= 2.6 )
+				{
+					limb->yaw += PI / 8;
+					limb->pitch = -PI / 2;
+				}
+				else if ( limb->pitch <= -PI / 3 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_LEFTLEG )
+			{
+				limb->x -= 1 * cos(this->yaw + PI / 2) - .25 * cos(this->yaw);
+				limb->y -= 1 * sin(this->yaw + PI / 2) - .25 * sin(this->yaw);
+				limb->z += 4;
+				if ( this->z >= 2.4 && this->z <= 2.6 )
+				{
+					limb->yaw -= PI / 8;
+					limb->pitch = -PI / 2;
+				}
+				else if ( limb->pitch <= -PI / 3 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_RIGHTARM )
+			{
+				limb->x += 2.5 * cos(this->yaw + PI / 2) - .20 * cos(this->yaw);
+				limb->y += 2.5 * sin(this->yaw + PI / 2) - .20 * sin(this->yaw);
+				limb->z += .5;
+				if ( this->z >= 2.4 && this->z <= 2.6 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_LEFTARM )
+			{
+				limb->x -= 2.5 * cos(this->yaw + PI / 2) + .20 * cos(this->yaw);
+				limb->y -= 2.5 * sin(this->yaw + PI / 2) + .20 * sin(this->yaw);
+				limb->z += .5;
+				if ( this->z >= 2.4 && this->z <= 2.6 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			break;
+		case INCUBUS:
+		case SUCCUBUS:
+			if ( limbType == LIMB_HUMANOID_TORSO )
+			{
+				limb->x -= .5 * cos(this->yaw);
+				limb->y -= .5 * sin(this->yaw);
+				limb->z += 2.5;
+
+				if ( limb->sprite == items[WIZARD_DOUBLET].index
+				     || limb->sprite == items[HEALER_DOUBLET].index
+				     || limb->sprite == items[TUNIC].index
+				     || limb->sprite == items[TUNIC].index + 1 )
+				{
+					limb->z += 0.5;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_RIGHTLEG )
+			{
+				limb->x += 1 * cos(this->yaw + PI / 2) - .75 * cos(this->yaw);
+				limb->y += 1 * sin(this->yaw + PI / 2) - .75 * sin(this->yaw);
+				limb->z += 5;
+				if ( this->z >= 1.4 && this->z <= 1.6 )
+				{
+					limb->yaw += PI / 8;
+					limb->pitch = -PI / 2;
+				}
+				else if ( limb->pitch <= -PI / 3 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_LEFTLEG )
+			{
+				limb->x -= 1 * cos(this->yaw + PI / 2) + .75 * cos(this->yaw);
+				limb->y -= 1 * sin(this->yaw + PI / 2) + .75 * sin(this->yaw);
+				limb->z += 5;
+				if ( this->z >= 1.4 && this->z <= 1.6 )
+				{
+					limb->yaw -= PI / 8;
+					limb->pitch = -PI / 2;
+				}
+				else if ( limb->pitch <= -PI / 3 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_RIGHTARM )
+			{
+				limb->x += 2.5 * cos(this->yaw + PI / 2) - .20 * cos(this->yaw);
+				limb->y += 2.5 * sin(this->yaw + PI / 2) - .20 * sin(this->yaw);
+				limb->z += .5;
+				if ( this->z >= 1.4 && this->z <= 1.6 )
+				{
+					limb->pitch = 0;
+				}
+			}
+			else if ( limbType == LIMB_HUMANOID_LEFTARM )
+			{
+				limb->x -= 2.5 * cos(this->yaw + PI / 2) + .20 * cos(this->yaw);
+				limb->y -= 2.5 * sin(this->yaw + PI / 2) + .20 * sin(this->yaw);
+				limb->z += .5;
+				if ( this->z >= 1.4 && this->z <= 1.6 )
+				{
+					limb->pitch = 0;
+				}
+			}
 			break;
 		default:
 			break;
@@ -7543,6 +8695,171 @@ void Entity::handleWeaponArmAttack(Entity* weaponarm)
 				else
 				{
                     ((Creature*)this)->attack(1, 0, nullptr);
+				}
+			}
+		}
+	}
+
+	return;
+}
+
+void Entity::humanoidAnimateWalk(Entity* limb, node_t* bodypartNode, int bodypart, double walkSpeed, double dist, double distForFootstepSound)
+{
+	if ( bodypart == LIMB_HUMANOID_RIGHTLEG || bodypart == LIMB_HUMANOID_LEFTARM )
+	{
+		Entity* rightbody = nullptr;
+		// set rightbody to left leg.
+		node_t* rightbodyNode = list_Node(&this->children, LIMB_HUMANOID_LEFTLEG);
+		if ( rightbodyNode )
+		{
+			rightbody = (Entity*)rightbodyNode->element;
+		}
+		else
+		{
+			return;
+		}
+
+		node_t* shieldNode = list_Node(&this->children, 8);
+		if ( shieldNode )
+		{
+			Entity* shield = (Entity*)shieldNode->element;
+			if ( dist > 0.1 && (bodypart != LIMB_HUMANOID_LEFTARM || shield->sprite == 0) )
+			{
+				// walking to destination
+				if ( !rightbody->skill[0] )
+				{
+					limb->pitch -= dist * walkSpeed;
+					if ( limb->pitch < -PI / 4.0 )
+					{
+						limb->pitch = -PI / 4.0;
+						if ( bodypart == LIMB_HUMANOID_RIGHTLEG )
+						{
+							if ( dist > distForFootstepSound )
+							{
+								if ( limb->skill[0] == 0 ) // fix for waking up on sleep to reduce repeated sound bytes in race condition.
+								{
+									if ( ((Creature*)this) && ((Creature*)this)->monsterFootstepType == MONSTER_FOOTSTEP_USE_BOOTS )
+									{
+										node_t* tempNode = list_Node(&this->children, 3);
+										if ( tempNode )
+										{
+											Entity* foot = (Entity*)tempNode->element;
+											playSoundEntityLocal(this, getMonsterFootstepSound( ((Creature*)this)->monsterFootstepType, foot->sprite), 32);
+										}
+									}
+									else
+									{
+										playSoundEntityLocal(this, getMonsterFootstepSound( ((Creature*)this)->monsterFootstepType, 0), 32);
+									}
+									limb->skill[0] = 1;
+								}
+							}
+						}
+					}
+				}
+				else
+				{
+					limb->pitch += dist * walkSpeed;
+					if ( limb->pitch > PI / 4.0 )
+					{
+						limb->pitch = PI / 4.0;
+						if ( bodypart == LIMB_HUMANOID_RIGHTLEG )
+						{
+							if ( dist > distForFootstepSound )
+							{
+								if ( limb->skill[0] == 1 ) // fix for waking up on sleep to reduce repeated sound bytes in race condition.
+								{
+									if ( ((Creature*)this)->monsterFootstepType == MONSTER_FOOTSTEP_USE_BOOTS )
+									{
+										node_t* tempNode = list_Node(&this->children, 3);
+										if ( tempNode )
+										{
+											Entity* foot = (Entity*)tempNode->element;
+											playSoundEntityLocal(this, getMonsterFootstepSound(((Creature*)this)->monsterFootstepType, foot->sprite), 32);
+										}
+									}
+									else
+									{
+										playSoundEntityLocal(this, getMonsterFootstepSound(((Creature*)this)->monsterFootstepType, 0), 32);
+									}
+									limb->skill[0] = 0;
+								}
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				// coming to a stop
+				if ( limb->pitch < 0 || (limb->pitch > PI && limb->pitch < 2 * PI) )
+				{
+					limb->pitch += 1 / fmax(dist * .1, 10.0);
+					if ( limb->pitch > 0 )
+					{
+						limb->pitch = 0;
+					}
+				}
+				else if ( limb->pitch > 0 )
+				{
+					limb->pitch -= 1 / fmax(dist * .1, 10.0);
+					if ( limb->pitch < 0 )
+					{
+						limb->pitch = 0;
+					}
+				}
+			}
+		}
+	}
+	else if ( bodypart == LIMB_HUMANOID_LEFTLEG || bodypart == LIMB_HUMANOID_RIGHTARM || bodypart == LIMB_HUMANOID_CLOAK )
+	{
+		if ( bodypart != LIMB_HUMANOID_RIGHTARM || (this->monsterAttack == 0 && this->monsterAttackTime == 0) )
+		{
+			if ( dist > 0.1 )
+			{
+				double armMoveSpeed = 1.0;
+				if ( bodypart == LIMB_HUMANOID_RIGHTARM && this->hasRangedWeapon() && ((Creature*)this) && ((Creature*)this)->monsterState == MONSTER_STATE_ATTACK )
+				{
+					// don't move ranged weapons so far if ready to attack
+					armMoveSpeed = 0.5;
+				}
+
+				if ( limb->skill[0] )
+				{
+					limb->pitch -= dist * walkSpeed * armMoveSpeed;
+					if ( limb->pitch < -PI * armMoveSpeed / 4.0 )
+					{
+						limb->skill[0] = 0;
+						limb->pitch = -PI * armMoveSpeed / 4.0;
+					}
+				}
+				else
+				{
+					limb->pitch += dist * walkSpeed * armMoveSpeed;
+					if ( limb->pitch > PI * armMoveSpeed / 4.0 )
+					{
+						limb->skill[0] = 1;
+						limb->pitch = PI * armMoveSpeed / 4.0;
+					}
+				}
+			}
+			else
+			{
+				if ( limb->pitch < 0 )
+				{
+					limb->pitch += 1 / fmax(dist * .1, 10.0);
+					if ( limb->pitch > 0 )
+					{
+						limb->pitch = 0;
+					}
+				}
+				else if ( limb->pitch > 0 )
+				{
+					limb->pitch -= 1 / fmax(dist * .1, 10.0);
+					if ( limb->pitch < 0 )
+					{
+						limb->pitch = 0;
+					}
 				}
 			}
 		}

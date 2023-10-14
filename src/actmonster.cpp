@@ -1159,14 +1159,14 @@ void summonManyMonster(Monster creature)
 
 -------------------------------------------------------------------------------*/
 
-bool monsterMoveAside(Creature* my, Entity* entity, bool ignoreMonsterState)
+bool monsterMoveAside(Entity* my, Entity* entity, bool ignoreMonsterState)
 {
 	if ( !my || !entity )
 	{
 		return false;
 	}
 
-	if ( !ignoreMonsterState && my->monsterState != MONSTER_STATE_WAIT )
+	if ( !ignoreMonsterState && (!(Creature*)my || ((Creature*)my)->monsterState != MONSTER_STATE_WAIT) )
 	{
 		return false;
 	}
@@ -1226,13 +1226,14 @@ bool monsterMoveAside(Creature* my, Entity* entity, bool ignoreMonsterState)
 	}
 
 	// move away
-	if ( x != 0 || y != 0 )
+	if ( Creature* myCrtr = (Creature*)my; myCrtr
+		 && (x != 0 || y != 0) )
 	{
-		my->monsterState = MONSTER_STATE_PATH;
-		my->monsterReleaseAttackTarget();
-		my->monsterTargetX = my->x + x;
-		my->monsterTargetY = my->y + y;
-		serverUpdateEntitySkill(my, 0);
+		myCrtr->monsterState = MONSTER_STATE_PATH;
+		myCrtr->monsterReleaseAttackTarget();
+		myCrtr->monsterTargetX = myCrtr->x + x;
+		myCrtr->monsterTargetY = myCrtr->y + y;
+		serverUpdateEntitySkill(myCrtr, 0);
 		return true;
 	}
 	return false;

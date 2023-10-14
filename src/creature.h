@@ -18,7 +18,7 @@ class Creature : public Entity {
 
 public:
     Creature(Sint32 in_sprite, Uint32 pos, list_t* entlist, list_t* creaturelist);
-    ~Creature();
+    ~Creature() override {};
     void initMonster(int mySprite);
 
 //--PUBLIC MONSTER SKILLS--
@@ -98,7 +98,6 @@ public:
 
     void (*behavior)(class Creature* my);
 
-
 	//Lets monsters swap out weapons.
 	void inline chooseWeapon(const Entity* target, double dist)
 	{
@@ -166,8 +165,8 @@ public:
 
     void lichIceTeleport();
 
-// automaton specific function
-void automatonRecycleItem();
+	// automaton specific function
+	void automatonRecycleItem();
 
     void shadowSpecialAbility(bool initialMimic);
 
@@ -183,8 +182,8 @@ void automatonRecycleItem();
 
     bool insectoidCanWieldItem(const Item& item) const;
 
-// incubus teleport spells
-void incubusTeleportToTarget(const Entity* target);
+	// incubus teleport spells
+	void incubusTeleportToTarget(const Entity* target);
 
     void insectoidChooseWeapon(const Entity* target, double dist);
 
@@ -192,8 +191,8 @@ void incubusTeleportToTarget(const Entity* target);
 
     void incubusTeleportRandom();
 
-//Shadow teleport spells.
-void shadowTeleportToTarget(const Entity* target, int range);
+	//Shadow teleport spells.
+	void shadowTeleportToTarget(const Entity* target, int range);
 
     void shadowChooseWeapon(const Entity* target, double dist);
 
@@ -203,8 +202,8 @@ void shadowTeleportToTarget(const Entity* target, int range);
 
     void humanSetLimbsClient(int bodypart);
 
-//--*CheckBetterEquipment functions--
-void checkBetterEquipment(Stat* myStats);
+	//--*CheckBetterEquipment functions--
+	void checkBetterEquipment(Stat* myStats);
 
     static void monsterRollLevelUpStats(int increasestat[3]);
 
@@ -289,16 +288,16 @@ void checkBetterEquipment(Stat* myStats);
     // degrade chosen armor piece by 1 on entity, update clients.
     void degradeArmor(Stat& hitstats, Item& armor, int armornum);
 
-// check stats if monster should "retreat" in actMonster
-bool shouldRetreat(Stat& myStats);
+	// check stats if monster should "retreat" in actMonster
+	bool shouldRetreat(Stat& myStats);
 
-// check if monster should retreat or stand still when less than given distance
-bool backupWithRangedWeapon(Stat& myStats, int dist, int hasrangedweapon);
+	// check if monster should retreat or stand still when less than given distance
+	bool backupWithRangedWeapon(Stat& myStats, int dist, int hasrangedweapon);
 
     void createPathBoundariesNPC(int maxTileDistance = -1);
 
-//bool monsterKnowsSpell(int spellID); //TODO: Should monsters use the spell item instead of spellbooks?
-node_t* chooseAttackSpellbookFromInventory();
+	//bool monsterKnowsSpell(int spellID); //TODO: Should monsters use the spell item instead of spellbooks?
+	node_t* chooseAttackSpellbookFromInventory();
 
     void handleHumanoidShieldLimb(Entity* shieldLimb, Entity* shieldArmLimb);
 
@@ -316,12 +315,14 @@ node_t* chooseAttackSpellbookFromInventory();
     void humanoidAnimateWalk(Entity* limb, node_t* bodypartNode, int bodypart, double walkSpeed, double dist,
                              double distForFootstepSound);
 
-    void setHelmetLimbOffset(Entity* helm);
-
-    void setHumanoidLimbOffset(Entity* limb, Monster race, int limbType);
-
     void handleMonsterAttack(Stat* myStats, Entity* target, double dist);
 
 
 	bool monsterAllyEquipmentInClass(const Item& item) const;
+
+	void setMP(int amount, bool updateClients = true);
+
+	void modMP(int amount, bool updateClients = true);
+
+	bool safeConsumeMP(int amount);
 };
