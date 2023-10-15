@@ -548,6 +548,9 @@ Entity::~Entity()
 	{
 		delete clientStats;
 	}
+
+	printlog("ENTITY DECON: %i", uid);
+
 }
 
 /*-------------------------------------------------------------------------------

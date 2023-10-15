@@ -12232,10 +12232,9 @@ bool Creature::safeConsumeMP(int amount)
 	return false;
 }
 
-Creature::~Creature() {
-
-	printlog("CREATURE DECON");
-//	Entity::~Entity();
+Creature::~Creature()
+{
+	printlog("CREATURE DECON: %i", uid);
 }
 
 Stat* Creature::getStats() const

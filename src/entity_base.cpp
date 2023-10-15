@@ -15,4 +15,8 @@ Entity_Base::Entity_Base(Sint32 &interactedByMonster, real_t &highlightForUi, re
     highlightForUIGlow(highlightForUiGlow),
     grayscaleGLRender(grayscaleGlRender) {}
 
-Entity_Base::~Entity_Base() = default;
+Entity_Base::~Entity_Base()
+{
+	printlog("EBase DECON: %i", uid);
+	printlog("----------");
+};
