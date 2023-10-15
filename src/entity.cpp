@@ -1052,25 +1052,7 @@ Returns a pointer to a Stat instance given a pointer to an entity
 
 Stat* Entity::getStats() const
 {
-	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actMonster ) // monsters
-	{
-		if ( multiplayer == CLIENT && clientStats )
-		{
-			return clientStats;
-		}
-		if ( this->children.first != nullptr )
-		{
-			if ( this->children.first->next != nullptr )
-			{
-				return (Stat*)this->children.first->next->element;
-			}
-		}
-	}
-	else if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer ) // players
-	{
-		return stats[this->skill[2]];
-	}
-	else if ( this->behavior == &actPlayerLimb ) // player bodyparts
+	if ( this->behavior == &actPlayerLimb ) // player bodyparts
 	{
 		return stats[this->skill[2]];
 	}

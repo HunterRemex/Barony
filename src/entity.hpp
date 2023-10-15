@@ -463,12 +463,10 @@ public:
 	int entityLightAfterReductions(Stat& myStats, Entity* observer);
 
 	static int getHungerTickRate(Stat* myStats, bool isPlayer, bool checkItemsEffects);
-	void handleEffectsClient();
 
-	void effectTimes();
 	virtual void increaseSkill(int skill, bool notify = true);
 
-	Stat* getStats() const;
+	virtual Stat* getStats() const;
 
 	void setHP(int amount);
 	void modHP(int amount); //Adds amount to HP.
@@ -486,7 +484,7 @@ public:
 	Sint32 getRangedAttack();
 	Sint32 getThrownAttack();
 	bool isBlind();
-	
+
 	bool isInvisible() const;
 
     // teleport entity to fixed position with appropriate sounds, for actTeleporter.
@@ -672,7 +670,7 @@ public:
 	// special magic functions/trickery
 	void castFallingMagicMissile(int spellID, real_t distFromCaster, real_t angleFromCasterDirection, int heightDelay);
 	Entity* castOrbitingMagicMissile(int spellID, real_t distFromCaster, real_t angleFromCasterDirection, int duration);
-	Entity* castStationaryOrbitingMagicMissile(Entity* parent, int spellID, real_t centerx, real_t centery, 
+	Entity* castStationaryOrbitingMagicMissile(Entity* parent, int spellID, real_t centerx, real_t centery,
 		real_t distFromCenter, real_t angleFromCenterDirection, int duration);
 
     // monster tries to move backwards in a cross shaped area if stuck against an entity.
@@ -722,7 +720,6 @@ public:
 
     Sint32& monsterAllyIndex;
 
-
     static Monster getMonsterTypeFromSprite(const int sprite);
 
     //void entityAwardXP(Entity *dest, Entity *src, bool share, bool root);
@@ -738,15 +735,11 @@ public:
 
     Sint32& monsterEntityRenderAsTelepath;
 
-
-    // monster attack pose, return the animation to use based on weapon.
-    int getAttackPose() const;
-
     // weapon arm animation attacks
     void handleWeaponArmAttack(Entity* weaponarm);
 
     // handle walking movement for arms and legs
-    void humanoidAnimateWalk(Entity* limb, node_t* bodypartNode, int bodypart, double walkSpeed, double dist, double distForFootstepSound);
+    virtalvoid humanoidAnimateWalk(Entity* limb, node_t* bodypartNode, int bodypart, double walkSpeed, double dist, double distForFootstepSound);
 
     // handle humanoid weapon arm animation/sprite offsets
     void handleHumanoidWeaponLimb(Entity* weaponLimb, Entity* weaponArmLimb);

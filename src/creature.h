@@ -18,7 +18,7 @@ class Creature : public Entity {
 
 public:
     Creature(Sint32 in_sprite, Uint32 pos, list_t* entlist, list_t* creaturelist);
-    ~Creature() override {};
+    ~Creature();
     void initMonster(int mySprite);
 
 //--PUBLIC MONSTER SKILLS--
@@ -95,6 +95,8 @@ public:
     bool goblinCanWieldItem(const Item& item) const;
 
     void increaseSkill(int skill, bool notify = true) override;
+
+	Stat* getStats() const override;
 
     void (*behavior)(class Creature* my);
 
@@ -310,10 +312,11 @@ public:
 
     static int getHealthRegenInterval(Entity* my, Stat& myStats, bool isPlayer);
 
+	// monster attack pose, return the animation to use based on weapon.
     int getAttackPose() const;
 
     void humanoidAnimateWalk(Entity* limb, node_t* bodypartNode, int bodypart, double walkSpeed, double dist,
-                             double distForFootstepSound);
+                             double distForFootstepSound) override;
 
     void handleMonsterAttack(Stat* myStats, Entity* target, double dist);
 

@@ -12231,3 +12231,35 @@ bool Creature::safeConsumeMP(int amount)
 
 	return false;
 }
+
+Creature::~Creature() {
+
+	printlog("CREATURE DECON");
+//	Entity::~Entity();
+}
+
+Stat* Creature::getStats() const
+{
+	if ( this->behavior == &actMonster ) // monsters
+	{
+		if ( multiplayer == CLIENT && clientStats )
+		{
+			return clientStats;
+		}
+		if ( this->children.first != nullptr )
+		{
+			if ( this->children.first->next != nullptr )
+			{
+				return (Stat*)this->children.first->next->element;
+			}
+		}
+	}
+	else if ( this->behavior == &actPlayer ) // players
+	{
+		return stats[this->skill[2]];
+	}
+	else
+	{
+		return Entity::getStats();
+	}
+}
