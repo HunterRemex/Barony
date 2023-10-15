@@ -739,7 +739,7 @@ public:
     void handleWeaponArmAttack(Entity* weaponarm);
 
     // handle walking movement for arms and legs
-    virtalvoid humanoidAnimateWalk(Entity* limb, node_t* bodypartNode, int bodypart, double walkSpeed, double dist, double distForFootstepSound);
+    virtual void humanoidAnimateWalk(Entity* limb, node_t* bodypartNode, int bodypart, double walkSpeed, double dist, double distForFootstepSound);
 
     // handle humanoid weapon arm animation/sprite offsets
     void handleHumanoidWeaponLimb(Entity* weaponLimb, Entity* weaponArmLimb);
