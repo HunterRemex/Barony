@@ -91,6 +91,8 @@ Creature::Creature(Sint32 in_sprite, Uint32 pos, list_t *entlist, list_t *creatu
         monsterHitTime(skill[7]),
         playerStartDir(skill[1])
 {
+	mynode->deconstructor = &creatureDeconstructor;
+	mynode->size = sizeof(Creature);
 }
 
 //void Creature::actMonsterLimb(bool processLight)

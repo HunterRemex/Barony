@@ -41,7 +41,8 @@ public:
 
     virtual ~Entity_Base();
 
-    Uint32 getUID() const {return uid;}
+    [[nodiscard]]
+	Uint32 getUID() const {return uid;}
     virtual void setUID(Uint32 new_uid);
 
     Uint32 ticks{};                      // duration of the entity's existence

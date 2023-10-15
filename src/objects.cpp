@@ -93,6 +93,30 @@ void entityDeconstructor(void* data)
 
 /*-------------------------------------------------------------------------------
 
+	creatureDeconstructor
+
+	Frees the memory occupied by a node pointing to an entity
+
+-------------------------------------------------------------------------------*/
+
+void creatureDeconstructor(void* data)
+{
+	Creature* creature;
+
+	if ( data != nullptr )
+	{
+		creature = (Creature*)data;
+
+		//TODO: If I am part of the creaturelist, remove my node from that list.)
+
+		list_RemoveNode(creature->myCreatureListNode);
+		//free(data);
+		delete creature;
+	}
+}
+
+/*-------------------------------------------------------------------------------
+
 statDeconstructor
 
 Frees the memory occupied by a node pointing to stat
