@@ -1279,7 +1279,7 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 			subRoomMap->entities = (list_t*)malloc(sizeof(list_t));
 			subRoomMap->entities->first = nullptr;
 			subRoomMap->entities->last = nullptr;
-			subRoomMap->creatures = new list_t;
+			subRoomMap->creatures = (list_t*)malloc(sizeof(list_t));//new list_t;
 			subRoomMap->creatures->first = nullptr;
 			subRoomMap->creatures->last = nullptr;
 			subRoomMap->worldUI = nullptr;
@@ -2131,8 +2131,14 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 			for ( node = tempMap->entities->first; node != nullptr; node = node->next )
 			{
 				entity = (Entity*)node->element;
-                Creature* entityCrtr = (Creature*)entity;
-				childEntity = newEntity(entity->sprite, 1, map.entities, nullptr);
+                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+				if ( entityCrtr )
+				{
+					childEntity = newCreature(entity->sprite, 1, map.entities, map.creatures);
+				} else
+				{
+					childEntity = newEntity(entity->sprite, 1, map.entities, nullptr);
+				}
 
 				// entity will return nullptr on getStats called in setSpriteAttributes as behaviour &actmonster is not set.
 				// check if the monster sprite is correct and set the behaviour manually for getStats.

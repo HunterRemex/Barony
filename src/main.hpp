@@ -845,6 +845,7 @@ node_t* list_Node(list_t* list, int index);
 void defaultDeconstructor(void* data);
 void emptyDeconstructor(void* data);
 void entityDeconstructor(void* data);
+void creatureDeconstructor(void* data);
 void statDeconstructor(void* data);
 void lightDeconstructor(void* data);
 void mapDeconstructor(void* data);
