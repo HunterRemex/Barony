@@ -1274,6 +1274,33 @@ void gameLogic(void)
 						nextnode = node->next;
 					}
 				}
+				else if ((((Creature*)entity)->behavior) != nullptr)
+				{
+					(*((Creature*)entity)->behavior)((Creature*)entity);
+					if (entitiesdeleted.first != nullptr)
+					{
+						entitydeletedself = false;
+						for (node2 = entitiesdeleted.first; node2 != nullptr; node2 = node2->next)
+						{
+							if (entity == (Entity*) node2->element)
+							{
+								entitydeletedself = true;
+								break;
+							}
+						}
+						if (entitydeletedself == false)
+						{
+							entity->ranbehavior = true;
+						}
+						nextnode = map.entities->first;
+						list_FreeAll(&entitiesdeleted);
+					}
+					else
+					{
+						entity->ranbehavior = true;
+						nextnode = node->next;
+					}
+				}
 			}
 		}
 		for ( node = map.entities->first; node != nullptr; node = node->next )
