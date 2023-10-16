@@ -2166,8 +2166,14 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 				for ( subRoomNode = subRoomMap->entities->first; subRoomNode != nullptr; subRoomNode = subRoomNode->next )
 				{
 					entity = (Entity*)subRoomNode->element;
-                    Creature* entityCrtr = (Creature*)entity;
-					childEntity = newEntity(entity->sprite, 1, map.entities, nullptr);
+					Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+					if ( entityCrtr )
+					{
+						childEntity = newCreature(entity->sprite, 1, map.entities, map.creatures);
+					} else
+					{
+						childEntity = newEntity(entity->sprite, 1, map.entities, nullptr);
+					}
 
 					// entity will return nullptr on getStats called in setSpriteAttributes as behaviour &actmonster is not set.
 					// check if the monster sprite is correct and set the behaviour manually for getStats.
