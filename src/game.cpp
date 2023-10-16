@@ -1705,6 +1705,7 @@ void gameLogic(void)
 				nextnode = node->next;
 				entity = (Entity*)node->element;
                 Creature* entityCrtr = (Creature*)entity;
+				bool isCreature = entity->behavior == nullptr && ((((Creature*)entity)->behavior) != nullptr);
 
 				if ( entity && !entity->ranbehavior )
 				{
@@ -1712,7 +1713,7 @@ void gameLogic(void)
 					{
 						++entity->ticks;
 					}
-					if ( entity->behavior != nullptr )
+					if ( entity->behavior != nullptr || isCreature)
 					{
 						if ( gameloopFreezeEntities 
 							&& (!entityCrtr || entityCrtr->behavior != &actPlayer)
@@ -1741,15 +1742,14 @@ void gameLogic(void)
 								TileEntityList.addEntity(*entity);
 							}
 
-							/*if ( entity->getUID() >= 0 && entity->behavior != &actFlame && !entity->flags[INVISIBLE]
-								&& entity->behavior != &actDoor && entity->behavior != &actDoorFrame
-								&& entity->behavior != &actGate && entity->behavior != &actTorch
-								&& entity->behavior != &actSprite && !entity->flags[SPRITE]
-								&& entity->skill[28] == 0 )
+							if ( isCreature )
 							{
-								printlog("DEBUG: Starting Entity sprite: %d", entity->sprite);
-							}*/
-							(*entity->behavior)(entity);
+								(*((Creature*) entity)->behavior)((Creature*) entity);
+							}
+							else
+							{
+								(*entity->behavior)(entity);
+							}
 						}
 						if ( entitiesdeleted.first != nullptr )
 						{
