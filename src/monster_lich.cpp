@@ -223,15 +223,15 @@ void lichDie(Entity* my)
 	for ( node = map.creatures->first; node != nullptr; node = nextnode ) //Only searching for monsters, so don't search full map.entities.
 	{
 		nextnode = node->next;
-		Creature* entity = (Creature*)node->element;
-		if ( entity == my )
+		Creature* creature = (Creature*)node->element;
+		if ( creature == my )
 		{
 			continue;
 		}
-		if ( entity->behavior == &actMonster && !entity->monsterAllyGetPlayerLeader() )
+		if ( creature->behavior == &actMonster && !creature->monsterAllyGetPlayerLeader() )
 		{
-			spawnExplosion(entity->x, entity->y, entity->z);
-			Stat* stats = entity->getStats();
+			spawnExplosion(creature->x, creature->y, creature->z);
+			Stat* stats = creature->getStats();
 			if ( stats )
 			{
 				if ( stats->type != HUMAN )
@@ -426,14 +426,14 @@ void lichAnimate(Entity* my, double dist)
 				Entity* playertotrack = nullptr;
 				for ( tempNode = map.creatures->first; tempNode != nullptr; tempNode = tempNode->next ) //Only searching for players, so don't search full map.entities.
 				{
-					Creature* tempEntity = (Creature*)tempNode->element;
+					Creature* tempCreature = (Creature*)tempNode->element;
 					double lowestdist = 5000;
-					if ( tempEntity->behavior == &actPlayer )
+					if ( tempCreature->behavior == &actPlayer )
 					{
-						double disttoplayer = entityDist(my, tempEntity);
+						double disttoplayer = entityDist(my, tempCreature);
 						if ( disttoplayer < lowestdist )
 						{
-							playertotrack = tempEntity;
+							playertotrack = tempCreature;
 						}
 					}
 				}

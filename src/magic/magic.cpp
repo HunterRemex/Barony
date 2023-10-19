@@ -1551,13 +1551,13 @@ void spellEffectCharmMonster(Entity& my, spellElement_t& element, Entity* parent
 						hitEntityCrtr->monsterReleaseAttackTarget();
 						for ( node_t* node = map.creatures->first; node != nullptr; node = node->next )
 						{
-							Creature* entity = (Creature*)node->element;
-							if ( !entity ) { continue; }
-							if ( entity->behavior == &actMonster && entity != hit.entity )
+							Creature* creature = (Creature*)node->element;
+							if ( !creature ) { continue; }
+							if ( creature->behavior == &actMonster && creature != hit.entity )
 							{
-								if ( entity->monsterAllyGetPlayerLeader() && ((Uint32)entity->monsterTarget == hit.entity->getUID()) )
+								if ( creature->monsterAllyGetPlayerLeader() && ((Uint32)creature->monsterTarget == hit.entity->getUID()) )
 								{
-									entity->monsterReleaseAttackTarget(); // player allies stop attacking this target
+									creature->monsterReleaseAttackTarget(); // player allies stop attacking this target
 								}
 							}
 						}

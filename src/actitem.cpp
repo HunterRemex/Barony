@@ -83,12 +83,12 @@ void actItem(Entity* my)
 					node_t* node;
 					for ( node = map.creatures->first; node != nullptr; node = node->next )
 					{
-						Creature* crtrEntity = (Creature*)node->element;
-						if ( crtrEntity && crtrEntity->behavior == &actPlayer || crtrEntity->behavior == &actMonster )
+						Creature* creature = (Creature*)node->element;
+						if ( creature && creature->behavior == &actPlayer || creature->behavior == &actMonster )
 						{
-							if ( entityInsideEntity(my, crtrEntity) )
+							if ( entityInsideEntity(my, creature) )
 							{
-								my->parent = crtrEntity->getUID();
+								my->parent = creature->getUID();
 								break;
 							}
 						}
@@ -100,12 +100,12 @@ void actItem(Entity* my)
 				node_t* node;
 				for ( node = map.creatures->first; node != nullptr; node = node->next )
 				{
-					Creature* entity = (Creature*)node->element;
-					if ( entity && (entity->behavior == &actPlayer || entity->behavior == &actMonster ) )
+					Creature* creature = (Creature*)node->element;
+					if ( creature && (creature->behavior == &actPlayer || creature->behavior == &actMonster ) )
 					{
-						if ( entityInsideEntity(my, entity) )
+						if ( entityInsideEntity(my, creature) )
 						{
-							my->parent = entity->getUID();
+							my->parent = creature->getUID();
 							break;
 						}
 					}

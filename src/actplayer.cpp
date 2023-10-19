@@ -2596,8 +2596,8 @@ void actPlayer(Creature* my)
 				bool foundherx = false;
 				for ( node = map.creatures->first; node != nullptr; node = node->next ) //Herx is in the creature list, so only search that.
 				{
-					Entity* entity = (Entity*)node->element;
-					if ( entity->sprite == 274 )
+					Creature* creature = (Creature*)node->element;
+					if ( creature->sprite == 274 )
 					{
 						foundherx = true;
 						break;

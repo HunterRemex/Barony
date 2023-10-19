@@ -34932,7 +34932,7 @@ void Player::HUD_t::updateMinotaurWarning()
 			{
 				for ( node_t* mapNode = map.creatures->first; mapNode != nullptr; mapNode = mapNode->next )
 				{
-					Entity* monster = (Entity*)mapNode->element;
+					Creature* monster = (Creature*)mapNode->element;
 					if ( monster && monster->getMonsterTypeFromSprite() == MINOTAUR )
 					{
 						m.minotaurSpawned = true;

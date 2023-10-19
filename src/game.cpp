@@ -1704,8 +1704,8 @@ void gameLogic(void)
 			{
 				nextnode = node->next;
 				entity = (Entity*)node->element;
-                Creature* entityCrtr = (Creature*)entity;
-				bool isCreature = entity->behavior == nullptr && ((((Creature*)entity)->behavior) != nullptr);
+                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+				bool isCreature = entityCrtr != nullptr;
 
 				if ( entity && !entity->ranbehavior )
 				{

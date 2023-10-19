@@ -81,12 +81,12 @@ void actThrown(Entity* my)
 					node_t* node;
 					for ( node = map.creatures->first; node != nullptr; node = node->next ) //Since searching for players and monsters, don't search full map.entities.
 					{
-						Creature* entity = (Creature*)node->element;
-						if ( entity->behavior == &actPlayer || entity->behavior == &actMonster )
+						Creature* creature = (Creature*)node->element;
+						if ( creature->behavior == &actPlayer || creature->behavior == &actMonster )
 						{
-							if ( entityInsideEntity(my, entity) )
+							if ( entityInsideEntity(my, creature) )
 							{
-								my->parent = entity->getUID();
+								my->parent = creature->getUID();
 								break;
 							}
 						}

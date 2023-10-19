@@ -6083,17 +6083,17 @@ void Entity::awardXP(Entity* src, bool share, bool root)
 		node_t * node;
 		for ( node = map.creatures->first; node != nullptr; node = node->next ) //Since only looking at players, this should just iterate over players[]
 		{
-			Creature* entity = (Creature*)node->element;
-			if ( entity == this )
+			Creature* creature = (Creature*)node->element;
+			if ( creature == this )
 			{
 				continue;
 			}
-			if ( entity && entity->behavior == &actPlayer )
+			if ( creature && creature->behavior == &actPlayer )
 			{
-				if ( entityDist(this, entity) < shareRange )
+				if ( entityDist(this, creature) < shareRange )
 				{
 					++numshares;
-					shares[numshares] = entity;
+					shares[numshares] = creature;
 					if ( numshares == MAXPLAYERS - 1 )
 					{
 						break;

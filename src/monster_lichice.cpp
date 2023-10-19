@@ -248,17 +248,17 @@ void lichIceDie(Creature* my)
 	for ( node = map.creatures->first; my->monsterLichAllyStatus == LICH_ALLY_DEAD && node != NULL; node = nextnode )
 	{
 		nextnode = node->next;
-		Creature* entity = (Creature*)node->element;
-		if ( entity )
+		Creature* creature = (Creature*)node->element;
+		if ( creature )
 		{
-			if ( entity == my || entity->sprite == 646 )
+			if ( creature == my || creature->sprite == 646 )
 			{
 				continue;
 			}
-			if ( entity->behavior == &actMonster )
+			if ( creature->behavior == &actMonster )
 			{
-				spawnExplosion(entity->x, entity->y, entity->z);
-				Stat* stats = entity->getStats();
+				spawnExplosion(creature->x, creature->y, creature->z);
+				Stat* stats = creature->getStats();
 				if ( stats )
 				{
 					if ( stats->type != HUMAN )

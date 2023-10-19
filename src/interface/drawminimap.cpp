@@ -735,29 +735,29 @@ void drawMinimap(const int player, SDL_Rect rect, bool drawingSharedMap)
 	{
 		for ( node_t* node = map.creatures->first; node != nullptr; node = node->next )
 		{
-			Creature* entity = (Creature*)node->element;
+			Creature* creature = (Creature*)node->element;
 			int drawMonsterAlly = -1;
 			int foundplayer = -1;
-			if ( c == 1 && entity->behavior != &actPlayer )
+			if ( c == 1 && creature->behavior != &actPlayer )
 			{
 				continue; // render nothing but players on second pass
 			}
-			else if ( c == 0 && entity->behavior == &actPlayer )
+			else if ( c == 0 && creature->behavior == &actPlayer )
 			{
 				continue; // render anything *but* players on first pass
 			}
-			else if ( entity->behavior == &actPlayer )
+			else if ( creature->behavior == &actPlayer )
 			{
-				foundplayer = entity->skill[2];
+				foundplayer = creature->skill[2];
 			}
-			else if ( entity->behavior == &actMonster )
+			else if ( creature->behavior == &actMonster )
 			{
-				if ( entity->monsterAllyIndex >= 0 )
+				if ( creature->monsterAllyIndex >= 0 )
 				{
-					drawMonsterAlly = entity->monsterAllyIndex;
+					drawMonsterAlly = creature->monsterAllyIndex;
 				}
 			}
-			if ( drawMonsterAlly >= 0 || foundplayer >= 0 || entity->sprite == 239)
+			if ( drawMonsterAlly >= 0 || foundplayer >= 0 || creature->sprite == 239)
 			{
 				Uint32 color = 0;
 				Uint32 color_edge = 0;
@@ -770,7 +770,7 @@ void drawMinimap(const int player, SDL_Rect rect, bool drawingSharedMap)
 						for ( int i = 0; i < MAXPLAYERS; ++i )
 						{
 							if ( players[i] && players[i]->entity
-								&& players[i]->entity->creatureShadowTaggedThisUid == entity->getUID() )
+								&& players[i]->entity->creatureShadowTaggedThisUid == creature->getUID() )
 							{
 								foundShadowTaggedEntity = true;
 								break;
@@ -780,7 +780,7 @@ void drawMinimap(const int player, SDL_Rect rect, bool drawingSharedMap)
 					else
 					{
 						if ( players[player] && players[player]->entity
-							&& players[player]->entity->creatureShadowTaggedThisUid == entity->getUID() )
+							&& players[player]->entity->creatureShadowTaggedThisUid == creature->getUID() )
 						{
 							foundShadowTaggedEntity = true;
 						}
@@ -790,11 +790,11 @@ void drawMinimap(const int player, SDL_Rect rect, bool drawingSharedMap)
 					} else {
 						color = playerColor(foundplayer, colorblind_lobby, false);
 					}
-				} else if ( entity->sprite == 239 ) { // minotaur
+				} else if (creature->sprite == 239 ) { // minotaur
 					color_edge = uint32ColorBlack;
 					if ( !splitscreen )
 					{
-						if (!players[player] /*|| !players[player]->entity*/) {
+						if (!players[player] /*|| !players[player]->creature*/) {
 							continue;
 						}
 					}
@@ -817,7 +817,7 @@ void drawMinimap(const int player, SDL_Rect rect, bool drawingSharedMap)
 						for ( int i = 0; i < MAXPLAYERS; ++i )
 						{
 							if ( players[i] && players[i]->entity
-								&& players[i]->entity->creatureShadowTaggedThisUid == entity->getUID() )
+								&& players[i]->entity->creatureShadowTaggedThisUid == creature->getUID() )
 							{
 								foundShadowTaggedEntity = true;
 								break;
@@ -827,7 +827,7 @@ void drawMinimap(const int player, SDL_Rect rect, bool drawingSharedMap)
 					else
 					{
 						if ( players[player] && players[player]->entity
-							&& players[player]->entity->creatureShadowTaggedThisUid == entity->getUID() )
+							&& players[player]->entity->creatureShadowTaggedThisUid == creature->getUID() )
 						{
 							foundShadowTaggedEntity = true;
 						}
@@ -893,10 +893,10 @@ void drawMinimap(const int player, SDL_Rect rect, bool drawingSharedMap)
                     triangle_mesh.draw();
 				};
 
-				const real_t size = entity->sprite == 239 ? 2.0 : 1.0;
-				const real_t x = entity->x / 16.0;
-				const real_t y = entity->y / 16.0;
-				const real_t ang = entity->yaw;
+				const real_t size = creature->sprite == 239 ? 2.0 : 1.0;
+				const real_t x = creature->x / 16.0;
+				const real_t y = creature->y / 16.0;
+				const real_t ang = creature->yaw;
 				if (*cvar_outlineTriangles) {
             		drawTriangle(x, y, ang, size, rect, color_edge);
             		drawTriangle(x, y, ang, size - 0.25, rect, color);

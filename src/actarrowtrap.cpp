@@ -155,10 +155,10 @@ void actArrowTrap(Entity* my)
 			// misfire from a lockpick, try to find a nearby target.
 			for ( node_t* node = map.creatures->first; node != nullptr; node = node->next )
 			{
-				Creature* entity = (Creature*)node->element;
-				if ( entity && entity->behavior == &actPlayer && entityDist(my, (Entity*)entity) < TOUCHRANGE )
+				Creature* creature = (Creature*)node->element;
+				if ( creature && creature->behavior == &actPlayer && entityDist(my, (Entity*)creature) < TOUCHRANGE )
 				{
-					targetToAutoHit = (Entity*)entity;
+					targetToAutoHit = (Entity*)creature;
 					break;
 				}
 			}

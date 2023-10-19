@@ -11841,35 +11841,35 @@ void Creature::alertAlliesOnBeingHit(Creature *attacker, std::unordered_set<Enti
 	Entity* ohitentity = hit.entity;
 	for (node_t * node = map.creatures->first; node != nullptr; node = node->next ) //Only searching for monsters, so don't iterate full map.entities.
 	{
-		Creature* entity = (Creature*)node->element;
-		if ( !entity ) { continue; }
-		if ( skipEntitiesToAlert && (skipEntitiesToAlert->find(entity) != skipEntitiesToAlert->end()) )
+		Creature* creature = (Creature*)node->element;
+		if ( !creature ) { continue; }
+		if ( skipEntitiesToAlert && (skipEntitiesToAlert->find(creature) != skipEntitiesToAlert->end()) )
 		{
 			continue;
 		}
-		if ( entity->behavior == &actMonster && entity != this )
+		if ( creature->behavior == &actMonster && creature != this )
 		{
-			Stat* buddystats = entity->getStats();
+			Stat* buddystats = creature->getStats();
 			if ( buddystats != nullptr )
 			{
 				if ( buddystats->type == SHOPKEEPER && hitstats->type != SHOPKEEPER )
 				{
 					continue; // shopkeepers don't care about hitting humans/robots etc.
 				}
-				if ( hitstats->type == SHOPKEEPER && entity->monsterAllyGetPlayerLeader() )
+				if ( hitstats->type == SHOPKEEPER && creature->monsterAllyGetPlayerLeader() )
 				{
 					continue; // hitting a shopkeeper, player followers won't retaliate against player
 				}
-				if ( entity->checkFriend(this) )
+				if ( creature->checkFriend(this) )
 				{
-					if ( entity->monsterState == MONSTER_STATE_WAIT )
+					if ( creature->monsterState == MONSTER_STATE_WAIT )
 					{
-						if ( infightingStop && entity->checkFriend(attacker) )
+						if (infightingStop && creature->checkFriend(attacker) )
 						{
 							if ( attacker->behavior == &actPlayer )
 							{
 								if ( (monsterAllyGetPlayerLeader() == nullptr)
-									!= (entity->monsterAllyGetPlayerLeader() == nullptr) )
+									!= (creature->monsterAllyGetPlayerLeader() == nullptr) )
 								{
 									// if the fight is between player allies, outside mobs do not interfere
 									//messagePlayer(0, MESSAGE_DEBUG, "Stopped an ally infight 1.");
@@ -11879,7 +11879,7 @@ void Creature::alertAlliesOnBeingHit(Creature *attacker, std::unordered_set<Enti
 							else if ( behavior == &actPlayer )
 							{
 								if ( (attacker->monsterAllyGetPlayerLeader() == nullptr)
-									!= (entity->monsterAllyGetPlayerLeader() == nullptr) )
+									!= (creature->monsterAllyGetPlayerLeader() == nullptr) )
 								{
 									// if the fight is between player allies, outside mobs do not interfere
 									//messagePlayer(0, MESSAGE_DEBUG, "Stopped an ally infight 2.");
@@ -11892,11 +11892,11 @@ void Creature::alertAlliesOnBeingHit(Creature *attacker, std::unordered_set<Enti
 								continue;
 							}
 						}
-						double tangent = atan2(entity->y - this->y, entity->x - this->x);
+						double tangent = atan2(creature->y - this->y, creature->x - this->x);
 						lineTrace(this, this->x, this->y, tangent, 1024, 0, false);
-						if ( hit.entity == entity )
+						if ( hit.entity == creature )
 						{
-							entity->monsterAcquireAttackTarget(*attacker, MONSTER_STATE_PATH);
+							creature->monsterAcquireAttackTarget(*attacker, MONSTER_STATE_PATH);
 						}
 					}
 				}

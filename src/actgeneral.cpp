@@ -2139,18 +2139,17 @@ void TextSourceScript::handleTextSourceScript(Entity& src, std::string input)
 				{
                     for ( node_t* node = map.creatures->first; node; node = node->next )
 					{
-                        Entity* entity = (Entity*)node->element;
-                        Creature* entityCrtr = (Creature*)entity;
-                        if (entityCrtr && entityCrtr->behavior == &actMonster && !entityCrtr->monsterAllyGetPlayerLeader() )
+                        Creature* creature = (Creature*)node->element;
+                        if ( creature && creature->behavior == &actMonster && !creature->monsterAllyGetPlayerLeader() )
                         {
-							int findx = static_cast<int>(entityCrtr->x) >> 4;
-							int findy = static_cast<int>(entityCrtr->y) >> 4;
+							int findx = static_cast<int>(creature->x) >> 4;
+							int findy = static_cast<int>(creature->y) >> 4;
 							if ( findx >= x1 && findx <= x2 && findy >= y1 && findy <= y2 )
 							{
-								if ( entityCrtr->getStats() )
+								if ( creature->getStats() )
 								{
-                                    entityCrtr->getStats()->monsterForceAllegiance = Stat::MONSTER_FORCE_PLAYER_ENEMY;
-									serverUpdateEntityStatFlag(entityCrtr, 20);
+									creature->getStats()->monsterForceAllegiance = Stat::MONSTER_FORCE_PLAYER_ENEMY;
+									serverUpdateEntityStatFlag(creature, 20);
 								}
 							}
 						}

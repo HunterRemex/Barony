@@ -424,10 +424,10 @@ void actWinningPortal(Entity* my)
 			node_t* node;
 			for ( node = map.creatures->first; node != nullptr; node = node->next )
 			{
-				Creature* entity = (Creature*)node->element;
-				if ( entity->behavior == &actMonster )
+				Creature* creature = (Creature*)node->element;
+				if ( creature->behavior == &actMonster )
 				{
-					Stat* stats = entity->getStats();
+					Stat* stats = creature->getStats();
 					if ( stats )
 					{
 						if ( stats->type == LICH || stats->type == DEVIL )

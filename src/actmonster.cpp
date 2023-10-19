@@ -3497,21 +3497,21 @@ void actMonster(Creature* my)
 	{
 		for ( node = map.creatures->first; node != nullptr; node = node->next ) //Only creatures can wear rings, so don't search map.entities.
 		{
-			Entity* tempentity = (Entity*)node->element;
-			if ( tempentity != nullptr && tempentity != my )
+			Creature* tempCreature = (Creature*)node->element;
+			if ( tempCreature != nullptr && tempCreature != my )
 			{
-				Stat* tempstats = tempentity->getStats();
+				Stat* tempstats = tempCreature->getStats();
 				if ( tempstats && tempstats->ring && tempstats->ring->type == RING_CONFLICT )
 				{
 					int conflictRange = 5 * TOUCHRANGE;
-					if ( sqrt(pow(my->x - tempentity->x, 2) + pow(my->y - tempentity->y, 2)) < conflictRange )
+					if ( sqrt(pow(my->x - tempCreature->x, 2) + pow(my->y - tempCreature->y, 2)) < conflictRange )
 					{
-						tangent = atan2(tempentity->y - my->y, tempentity->x - my->x);
+						tangent = atan2(tempCreature->y - my->y, tempCreature->x - my->x);
 						lineTrace(my, my->x, my->y, tangent, conflictRange, 0, false);
 						ringconflict = true;
-						if ( hit.entity == tempentity )
+						if ( hit.entity == tempCreature )
 						{
-							ringConflictHolder = tempentity;
+							ringConflictHolder = tempCreature;
 						}
 						break;
 					}
@@ -4346,7 +4346,7 @@ void actMonster(Creature* my)
 									for ( node = map.creatures->first; node != nullptr; node = node->next )
 									{
 										entity = (Entity*)node->element;
-                                        auto* crtrEntity = (Creature*)entity;
+                                        Creature* crtrEntity = (Creature*)entity;
 										if ( crtrEntity && crtrEntity->behavior == &actMonster && crtrEntity != my )
 										{
 											Stat* buddystats = entity->getStats();
@@ -7150,14 +7150,14 @@ timeToGoAgain:
 					node_t* node;
 					for ( node = map.creatures->first; node != nullptr; node = node->next ) //Since it only looks at entities that have stats, only creatures can have stats; don't iterate map.entities.
 					{
-						Entity* entity = (Entity*)node->element;
-						if ( entity == my )
+						Creature* creature = (Creature*)node->element;
+						if ( creature == my )
 						{
 							continue;
 						}
-						if ( entityInsideEntity(my, entity) )
+						if ( entityInsideEntity(my, creature) )
 						{
-							Stat* stats = entity->getStats();
+							Stat* stats = creature->getStats();
 							if ( stats )
 							{
 								if ( stats->HP > 0 )
@@ -7346,14 +7346,14 @@ timeToGoAgain:
 				Entity* playertotrack = nullptr;
 				for ( tempNode = map.creatures->first; tempNode != nullptr; tempNode = tempNode->next ) //Only inspects players, so don't iterate map.entities. Technically, only needs to iterate through the players[] array, eh?
 				{
-					Creature* tempEntity = (Creature*)tempNode->element;
+					Creature* tempCreature = (Creature*)tempNode->element;
 					double lowestdist = 5000;
-					if ( tempEntity->behavior == &actPlayer )
+					if ( tempCreature->behavior == &actPlayer )
 					{
-						double disttoplayer = entityDist(my, tempEntity);
+						double disttoplayer = entityDist(my, tempCreature);
 						if ( disttoplayer < lowestdist )
 						{
-							playertotrack = tempEntity;
+							playertotrack = tempCreature;
 						}
 					}
 				}

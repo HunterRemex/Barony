@@ -118,50 +118,50 @@ void actSpearTrap(Entity* my)
 				node_t* node;
 				for ( node = map.creatures->first; node != nullptr; node = node->next ) //Searching explicitly for players and monsters, so search only creature list, not map.entities.
 				{
-					Creature* entity = (Creature*)node->element;
-					if ( entity->behavior == &actPlayer || entity->behavior == &actMonster )
+					Creature* creature = (Creature*)node->element;
+					if ( creature->behavior == &actPlayer || creature->behavior == &actMonster )
 					{
-						Stat* stats = entity->getStats();
+						Stat* stats = creature->getStats();
 						if ( stats )
 						{
-							if ( !entity->flags[PASSABLE] && entityInsideEntity(my, entity) )
+							if ( !creature->flags[PASSABLE] && entityInsideEntity(my, creature) )
 							{
 								// do damage!
-								if ( entity->behavior == &actPlayer )
+								if ( creature->behavior == &actPlayer )
 								{
 									Uint32 color = makeColorRGB(255, 0, 0);
-									messagePlayerColor(entity->skill[2], MESSAGE_STATUS, color, Language::get(586));
-									if ( players[entity->skill[2]]->isLocalPlayer() )
+									messagePlayerColor(creature->skill[2], MESSAGE_STATUS, color, Language::get(586));
+									if ( players[creature->skill[2]]->isLocalPlayer() )
 									{
-										cameravars[entity->skill[2]].shakex += .1;
-										cameravars[entity->skill[2]].shakey += 10;
+										cameravars[creature->skill[2]].shakex += .1;
+										cameravars[creature->skill[2]].shakey += 10;
 									}
 									else
 									{
-										if ( entity->skill[2] > 0 && !players[entity->skill[2]]->isLocalPlayer() )
+										if ( creature->skill[2] > 0 && !players[creature->skill[2]]->isLocalPlayer() )
 										{
 											strcpy((char*)net_packet->data, "SHAK");
 											net_packet->data[4] = 10; // turns into .1
 											net_packet->data[5] = 10;
-											net_packet->address.host = net_clients[entity->skill[2] - 1].host;
-											net_packet->address.port = net_clients[entity->skill[2] - 1].port;
+											net_packet->address.host = net_clients[creature->skill[2] - 1].host;
+											net_packet->address.port = net_clients[creature->skill[2] - 1].port;
 											net_packet->len = 6;
-											sendPacketSafe(net_sock, -1, net_packet, entity->skill[2] - 1);
+											sendPacketSafe(net_sock, -1, net_packet, creature->skill[2] - 1);
 										}
 									}
 								}
-								playSoundEntity(entity, 28, 64);
-								spawnGib(entity);
-								entity->modHP(-50);
+								playSoundEntity(creature, 28, 64);
+								spawnGib(creature);
+								creature->modHP(-50);
 								if ( stats->HP <= 0 )
 								{
 									if ( stats->type == AUTOMATON )
 									{
-										entity->playerAutomatonDeathCounter = TICKS_PER_SECOND * 5; // set the death timer to immediately pop for players.
+										creature->playerAutomatonDeathCounter = TICKS_PER_SECOND * 5; // set the death timer to immediately pop for players.
 									}
 								}
 								// set obituary
-								entity->setObituary(Language::get(1507));
+								creature->setObituary(Language::get(1507));
 						        stats->killer = KilledBy::TRAP_SPIKE;
 							}
 						}

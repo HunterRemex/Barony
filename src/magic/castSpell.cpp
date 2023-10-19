@@ -1222,24 +1222,24 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 					messagePlayerColor(i, MESSAGE_HINT, color, Language::get(3490));
 					for ( node = map.creatures->first; node; node = node->next )
 					{
-						Creature* entity = (Creature*)(node->element);
-						if ( !entity || entity == caster )
+						Creature* creature = (Creature*)(node->element);
+						if ( !creature || creature == caster )
 						{
 							continue;
 						}
-						if ( entity->behavior != &actPlayer && entity->behavior != &actMonster )
+						if ( creature->behavior != &actPlayer && creature->behavior != &actMonster )
 						{
 							continue;
 						}
 
-						if ( entityDist(entity, caster) <= HEAL_RADIUS && entity->checkFriend(caster) )
+						if ( entityDist(creature, caster) <= HEAL_RADIUS && creature->checkFriend(caster) )
 						{
-							entity->setEffect(EFF_TROLLS_BLOOD, true, amount, true);
-							playSoundEntity(entity, 168, 128);
-							spawnMagicEffectParticles(entity->x, entity->y, entity->z, 169);
-							if ( entity->behavior == &actPlayer )
+							creature->setEffect(EFF_TROLLS_BLOOD, true, amount, true);
+							playSoundEntity(creature, 168, 128);
+							spawnMagicEffectParticles(creature->x, creature->y, creature->z, 169);
+							if ( creature->behavior == &actPlayer )
 							{
-								messagePlayerColor(entity->skill[2], MESSAGE_HINT, color, Language::get(3490));
+								messagePlayerColor(creature->skill[2], MESSAGE_HINT, color, Language::get(3490));
 							}
 						}
 					}
@@ -1348,24 +1348,24 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 					messagePlayerColor(i, MESSAGE_STATUS, uint32ColorGreen, Language::get(768));
 					for ( node = map.creatures->first; node; node = node->next )
 					{
-						Creature* entity = (Creature*)(node->element);
-						if ( !entity || entity == caster )
+						Creature* creature = (Creature*)(node->element);
+						if ( !creature || creature == caster )
 						{
 							continue;
 						}
-						if ( entity->behavior != &actPlayer && entity->behavior != &actMonster )
+						if ( creature->behavior != &actPlayer && creature->behavior != &actMonster )
 						{
 							continue;
 						}
 
-						if ( entityDist(entity, caster) <= HEAL_RADIUS && entity->checkFriend(caster) )
+						if ( entityDist(creature, caster) <= HEAL_RADIUS && creature->checkFriend(caster) )
 						{
-							entity->setEffect(EFF_FAST, true, duration, true);
-							playSoundEntity(entity, 178, 128);
-							spawnMagicEffectParticles(entity->x, entity->y, entity->z, 174);
-							if ( entity->behavior == &actPlayer )
+							creature->setEffect(EFF_FAST, true, duration, true);
+							playSoundEntity(creature, 178, 128);
+							spawnMagicEffectParticles(creature->x, creature->y, creature->z, 174);
+							if ( creature->behavior == &actPlayer )
 							{
-								messagePlayerColor(entity->skill[2], MESSAGE_STATUS, uint32ColorGreen, Language::get(768));
+								messagePlayerColor(creature->skill[2], MESSAGE_STATUS, uint32ColorGreen, Language::get(768));
 							}
 						}
 					}
@@ -1426,28 +1426,28 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 
 					for ( node = map.creatures->first; node; node = node->next )
 					{
-						Creature* entity = (Creature*)(node->element);
-						if ( !entity ||  entity == caster )
+						Creature* creature = (Creature*)(node->element);
+						if ( !creature || creature == caster )
 						{
 							continue;
 						}
-						if ( entity->behavior != &actPlayer && entity->behavior != &actMonster )
+						if ( creature->behavior != &actPlayer && creature->behavior != &actMonster )
 						{
 							continue;
 						}
 
-						if ( entityDist(entity, caster) <= HEAL_RADIUS && entity->checkFriend(caster) )
+						if ( entityDist(creature, caster) <= HEAL_RADIUS && creature->checkFriend(caster) )
 						{
-							oldHP = entity->getHP();
-							spell_changeHealth(entity, amount);
-							int heal = std::max(entity->getHP() - oldHP, 0);
+							oldHP = creature->getHP();
+							spell_changeHealth(creature, amount);
+							int heal = std::max(creature->getHP() - oldHP, 0);
 							totalHeal += heal;
 							if ( heal > 0 )
 							{
-								spawnDamageGib(entity, -heal, DamageGib::DMG_HEAL);
+								spawnDamageGib(creature, -heal, DamageGib::DMG_HEAL);
 							}
-							playSoundEntity(entity, 168, 128);
-							spawnMagicEffectParticles(entity->x, entity->y, entity->z, 169);
+							playSoundEntity(creature, 168, 128);
+							spawnMagicEffectParticles(creature->x, creature->y, creature->z, 169);
 						}
 					}
 					if ( totalHeal > 0 )
@@ -1502,22 +1502,22 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 
 				for ( node = map.creatures->first; node && stat; node = node->next )
 				{
-					Creature* entity = (Creature*)(node->element);
-					if ( !entity || entity == caster )
+					Creature* creature = (Creature*)(node->element);
+					if ( !creature || creature == caster )
 					{
 						continue;
 					}
-					if ( entity->behavior != &actMonster )
+					if ( creature->behavior != &actMonster )
 					{
 						continue;
 					}
-					if ( entity->monsterTarget == caster->getUID() && entity->checkEnemy(caster) )
+					if ( creature->monsterTarget == caster->getUID() && creature->checkEnemy(caster) )
 					{
 						Monster oldType = stat->type;
 						stat->type = type;
-						if ( !entity->checkEnemy(caster) ) // we're now friendly.
+						if ( !creature->checkEnemy(caster) ) // we're now friendly.
 						{
-							entity->monsterReleaseAttackTarget();
+							creature->monsterReleaseAttackTarget();
 						}
 						stat->type = oldType;
 					}
@@ -1630,24 +1630,24 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 					int numAlliesEffectsCured = 0;
 					for ( node = map.creatures->first; node; node = node->next )
 					{
-						Creature* entity = (Creature*)(node->element);
-						if ( !entity || entity == caster )
+						Creature* creature = (Creature*)(node->element);
+						if ( !creature || creature == caster )
 						{
 							continue;
 						}
-						if ( entity->behavior != &actPlayer && entity->behavior != &actMonster )
+						if ( creature->behavior != &actPlayer && creature->behavior != &actMonster )
 						{
 							continue;
 						}
 						int entityEffectsCured = 0;
-						Stat* target_stat = entity->getStats();
+						Stat* target_stat = creature->getStats();
 						if ( target_stat )
 						{
-							if (entityDist(entity, caster) <= HEAL_RADIUS && entity->checkFriend(caster))
+							if (entityDist(creature, caster) <= HEAL_RADIUS && creature->checkFriend(caster))
 							{
 								for (c = 0; c < NUMEFFECTS; ++c)   //This does a whole lot more than just cure ailments.
 								{
-									if ( target_stat->statusEffectRemovedByCureAilment(c, entity) )
+									if ( target_stat->statusEffectRemovedByCureAilment(c, creature) )
 									{
 										if ( target_stat->EFFECTS[c] )
 										{
@@ -1665,29 +1665,29 @@ Entity* castSpell(Uint32 caster_uid, spell_t* spell, bool using_magicstaff, bool
 								{
 									++numAlliesEffectsCured;
 									++entityEffectsCured;
-									entity->setEffect(EFF_WITHDRAWAL, false, EFFECT_WITHDRAWAL_BASE_TIME, true);
+									creature->setEffect(EFF_WITHDRAWAL, false, EFFECT_WITHDRAWAL_BASE_TIME, true);
 									serverUpdatePlayerGameplayStats(i, STATISTICS_FUNCTIONAL, 1);
 								}
 								if ( regenEffect )
 								{
 									int bonus = 10 * ((spellBookBonusPercent * 4) / 100.f); // 25% = 10 seconds, 50% = 20 seconds.
-									entity->setEffect(EFF_HP_REGEN, true, std::max(target_stat->EFFECTS_TIMERS[EFF_HP_REGEN], bonus * TICKS_PER_SECOND), true);
+									creature->setEffect(EFF_HP_REGEN, true, std::max(target_stat->EFFECTS_TIMERS[EFF_HP_REGEN], bonus * TICKS_PER_SECOND), true);
 								}
-								if ( entity->flags[BURNING] )
+								if ( creature->flags[BURNING] )
 								{
 									++numAlliesEffectsCured;
 									++entityEffectsCured;
-									entity->flags[BURNING] = false;
-									serverUpdateEntityFlag(entity, BURNING);
+									creature->flags[BURNING] = false;
+									serverUpdateEntityFlag(creature, BURNING);
 								}
-								if ( entity->behavior == &actPlayer && (entityEffectsCured > 0 || regenEffect) )
+								if ( creature->behavior == &actPlayer && (entityEffectsCured > 0 || regenEffect) )
 								{
-									serverUpdateEffects(entity->skill[2]);
-									messagePlayerColor(entity->skill[2], MESSAGE_STATUS, makeColorRGB(0, 255, 0), Language::get(411));
+									serverUpdateEffects(creature->skill[2]);
+									messagePlayerColor(creature->skill[2], MESSAGE_STATUS, makeColorRGB(0, 255, 0), Language::get(411));
 								}
 
-								playSoundEntity(entity, 168, 128);
-								spawnMagicEffectParticles(entity->x, entity->y, entity->z, 169);
+								playSoundEntity(creature, 168, 128);
+								spawnMagicEffectParticles(creature->x, creature->y, creature->z, 169);
 							}
 						}
 					}

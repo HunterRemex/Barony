@@ -2614,10 +2614,10 @@ namespace ConsoleCommands {
 		}
 		for (node_t* node = map.creatures->first; node != nullptr; node = node->next)
 		{
-			Creature* entity = (Creature*)node->element;
-			if (entity && entity->behavior == &actMonster && entity->monsterAllySummonRank != 0)
+			Creature* creature = (Creature*)node->element;
+			if (creature && creature->behavior == &actMonster && creature->monsterAllySummonRank != 0)
 			{
-				Stat* entityStats = entity->getStats();
+				Stat* entityStats = creature->getStats();
 				if (entityStats)
 				{
 					entityStats->EXP += 100;
