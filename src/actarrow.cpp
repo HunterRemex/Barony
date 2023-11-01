@@ -394,8 +394,8 @@ void actArrow(Entity* my)
 			if ( hit.entity != NULL )
 			{
 				Entity* parent = uidToEntity(my->parent);
-                Creature* parentCrtr = (Creature*)parent;
-                Creature* hitEntityCreature = (Creature*)hit.entity;
+				Creature* parentCrtr = (Creature*)parent;
+				Creature* hitEntityCreature = (Creature*)hit.entity;
 				Stat* hitstats = hit.entity->getStats();
 				playSoundEntity(my, 72 + local_rng.rand() % 3, 64);
 				if ( hitstats != NULL && hit.entity != parent )
@@ -558,7 +558,7 @@ void actArrow(Entity* my)
 
 						if ( hitEntityCreature && hitEntityCreature->behavior == &actMonster && parentCrtr && parentCrtr->behavior == &actPlayer )
 						{
-							if ( damage >= 80 && hitstats->type != HUMAN && (!parentCrtr || !parentCrtr->checkFriend(hit.entity)) )
+							if ( damage >= 80 && hitstats->type != HUMAN && !parentCrtr->checkFriend(hit.entity) )
 							{
 								achievementObserver.awardAchievement(parent->skill[2], AchievementObserver::BARONY_ACH_FELL_BEAST);
 							}
@@ -575,7 +575,7 @@ void actArrow(Entity* my)
 						Entity* gib = spawnGib(hit.entity);
 						serverSpawnGibForClient(gib);
 						playSoundEntity(hit.entity, 28, 64);
-						if ( hitEntityCreature && hitEntityCreature->behavior == &actPlayer )
+						if ( hitEntityCreature->behavior == &actPlayer )
 						{
 							if ( players[hit.entity->skill[2]]->isLocalPlayer() )
 							{
@@ -609,7 +609,7 @@ void actArrow(Entity* my)
 								doSkillIncrease = false; // no skill for killing/hurting other turrets.
 							}
 						}
-						if ( hitEntityCreature && hitEntityCreature->behavior == &actPlayer && parentCrtr && parentCrtr->behavior == &actPlayer )
+						if ( hitEntityCreature->behavior == &actPlayer && parentCrtr && parentCrtr->behavior == &actPlayer )
 						{
 							doSkillIncrease = false; // no skill for killing/hurting players
 						}
@@ -626,7 +626,7 @@ void actArrow(Entity* my)
 					else
 					{
 						// playSoundEntity(hit.entity, 66, 64); //*tink*
-						if ( hitEntityCreature && hitEntityCreature->behavior == &actPlayer )
+						if ( hitEntityCreature->behavior == &actPlayer )
 						{
 							if ( players[hit.entity->skill[2]]->isLocalPlayer() )
 							{
@@ -652,17 +652,14 @@ void actArrow(Entity* my)
 					if ( hitstats->HP <= 0 && parent)
 					{
 						parent->awardXP( hit.entity, true, true );
-                        if ( hitEntityCreature )
-                        {
-                            spawnBloodVialOnMonsterDeath(hitEntityCreature, hitstats);
-                        }
+						spawnBloodVialOnMonsterDeath(hitEntityCreature, hitstats);
 					}
 
 					// alert the monster
-					if ( hitEntityCreature && hitEntityCreature->behavior == &actMonster && parent != nullptr )
+					if ( hitEntityCreature->behavior == &actMonster && parent != nullptr )
 					{
 						bool alertTarget = true;
-						if ( parentCrtr && parentCrtr->behavior == &actMonster && parent->monsterAllyIndex != -1 )
+						if ( parentCrtr->behavior == &actMonster && parent->monsterAllyIndex != -1 )
 						{
 							if ( hitEntityCreature->behavior == &actMonster && hit.entity->monsterAllyIndex != -1 )
 							{
@@ -671,13 +668,13 @@ void actArrow(Entity* my)
 							}
 						}
 
-						if ( alertTarget && hitEntityCreature->monsterState != MONSTER_STATE_ATTACK && (hitstats->type < LICH || hitstats->type >= SHOPKEEPER) )
+						if ( alertTarget && hitEntityCreature && hitEntityCreature->monsterState != MONSTER_STATE_ATTACK && (hitstats->type < LICH || hitstats->type >= SHOPKEEPER) )
 						{
 							hitEntityCreature->monsterAcquireAttackTarget(*parent, MONSTER_STATE_PATH, true);
 						}
 
 						bool alertAllies = true;
-						if ( parentCrtr && parentCrtr->behavior == &actPlayer || parent->monsterAllyIndex != -1 )
+						if ( parentCrtr->behavior == &actPlayer || parent->monsterAllyIndex != -1 )
 						{
 							if ( hitEntityCreature->behavior == &actPlayer || (hitEntityCreature->behavior == &actMonster && hit.entity->monsterAllyIndex != -1) )
 							{
@@ -687,12 +684,12 @@ void actArrow(Entity* my)
 						}
 
 						// alert other monsters too
-						if ( alertAllies && parentCrtr )
+						if ( alertAllies && parentCrtr && hitEntityCreature )
 						{
 							hitEntityCreature->alertAlliesOnBeingHit(parentCrtr);
 						}
 						hit.entity->updateEntityOnHit(parent, alertTarget);
-						if ( parentCrtr && parentCrtr->behavior == &actPlayer )
+						if ( parentCrtr->behavior == &actPlayer )
 						{
 							Uint32 color = makeColorRGB(0, 255, 0);
 							if ( huntingDamage )

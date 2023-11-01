@@ -160,6 +160,8 @@ private:
     unsigned int numVertices = 0; // number of vertices
 };
 
+#include "shader.hpp"
+
 struct framebuffer {
     unsigned int fbo = 0;
     unsigned int fbo_color = 0;

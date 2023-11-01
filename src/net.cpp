@@ -567,7 +567,7 @@ void sendMapTCP(int c)
 void serverUpdateBodypartIDs(Entity* entity)
 {
 	int c;
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if ( multiplayer != SERVER )
 	{
 		return;
@@ -1617,7 +1617,7 @@ NetworkingLobbyJoinRequestResult lobbyPlayerJoinRequest(int& outResult, bool loc
 Entity* receiveEntity(Entity* entity)
 {
 	bool newentity = false;
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	int c;
 
 	//TODO: Find out if this is needed.
@@ -1762,7 +1762,7 @@ Entity* receiveEntity(Entity* entity)
 void clientActions(Entity* entity)
 {
 	int playernum;
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 
 	// this code assigns behaviors based on the sprite (model) number
 	switch ( entity->sprite )
@@ -1899,10 +1899,10 @@ void clientActions(Entity* entity)
 			switch ( c )
 			{
 				case -4:
-                    if ( entityCrtr )
-                    {
-                        entityCrtr->behavior = &actMonster;
-                    }
+					if ( entityCrtr )
+					{
+						entityCrtr->behavior = &actMonster;
+					}
 					break;
 				case -5:
 					entity->behavior = &actItem;
@@ -2268,7 +2268,7 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 	{'ENTU', [](){
 		client_keepalive[0] = ticks; // don't timeout
 		Entity *entity = uidToEntity((int)SDLNet_Read32(&net_packet->data[4]));
-        Creature* entityCrtr = (Creature*)entity;
+		Creature* entityCrtr = (Creature*)entity;
 		if ( entity )
 		{
 			if ( (Uint32)SDLNet_Read32(&net_packet->data[36]) < (Uint32)entity->lastupdateserver )
@@ -2338,7 +2338,7 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 		Uint32 uid = static_cast<int>(SDLNet_Read32(&net_packet->data[4]));
 
 		Entity* entity = uidToEntity(uid);
-        Creature* entityCrtr = (Creature*)entity;
+		Creature* entityCrtr = (Creature*)entity;
 
 		if ( entity )
 		{
@@ -2410,7 +2410,7 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 	// bodypart ids
 	{'BDYI', [](){
 		Entity *entity = uidToEntity((int)SDLNet_Read32(&net_packet->data[4]));
-        Creature* entityCrtr = (Creature*)entity;
+		Creature* entityCrtr = (Creature*)entity;
 		if ( entity )
 		{
 			node_t* childNode;
@@ -2443,7 +2443,7 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 		if ( entity )
 		{
 			entity->flags[net_packet->data[8]] = net_packet->data[9];
-            Creature* entityCrtr = (Creature*)entity;
+			Creature* entityCrtr = (Creature*)entity;
 			if ( entityCrtr && entityCrtr->behavior == &actMonster && net_packet->data[8] == USERFLAG2 )
 			{
 				// we should update the flags for all bodyparts (except for human and automaton heads, don't update the other bodyparts).
@@ -2593,7 +2593,7 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 	// spawn misc particle effect 
 	{'SPPE', [](){
 		Entity *entity = uidToEntity((int)SDLNet_Read32(&net_packet->data[4]));
-        Creature* entityCrtr = (Creature*)entity;
+		Creature* entityCrtr = (Creature*)entity;
 		if ( entity )
 		{
 			int particleType = static_cast<int>(net_packet->data[8]);
@@ -3176,7 +3176,7 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 	// play sound entity local
 	{'SNEL', [](){
 		Entity* tmp = uidToEntity(SDLNet_Read32(&net_packet->data[6]));
-        Creature* tmpCrtr = (Creature*)tmp;
+		Creature* tmpCrtr = (Creature*)tmp;
 		int sfx = SDLNet_Read16(&net_packet->data[4]);
 		if ( tmp )
 		{
@@ -5374,7 +5374,7 @@ static std::unordered_map<Uint32, void(*)()> serverPacketHandlers = {
 		Uint32 uidnum = (Uint32)SDLNet_Read32(&net_packet->data[4]);
 		const int client = std::min(net_packet->data[29], (Uint8)(MAXPLAYERS - 1));
 		Entity* entity = uidToEntity(uidnum);
-        Creature* entityCrtr = (Creature*)entity;
+		Creature* entityCrtr = (Creature*)entity;
 		if ( !entity )
 		{
 			printlog("[Shops]: warning: client %d bought item from non-existent shop! (uid=%d)\n", client, uidnum);

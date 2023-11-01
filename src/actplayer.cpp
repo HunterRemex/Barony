@@ -1518,7 +1518,7 @@ void doStatueEditor(int player)
 	if ( ticks % 5 == 0 )
 	{
 		Entity* underMouse = nullptr;
-        Creature* underMouseCrtr = (Creature*)underMouse;
+		Creature* underMouseCrtr = (Creature*)underMouse;
 		Uint32 uidnum = 0;
 		if ( !shootmode )
 		{
@@ -1543,7 +1543,7 @@ void doStatueEditor(int player)
 			{
 				underMouse = players[underMouse->skill[2]]->entity;
 			}
-  			if ( underMouseCrtr && underMouseCrtr->behavior == &actPlayer )
+			if ( underMouseCrtr && underMouseCrtr->behavior == &actPlayer )
 			{
 				StatueManager.editingPlayerUid = underMouse->getUID();
 				StatueManager.lastEntityUnderMouse = uidnum;
@@ -1642,11 +1642,11 @@ void doStatueEditor(int player)
 				keystatus[SDLK_F1] = 0;
 
 				++stats->playerRace;
-				if (playerCreature->getMonsterFromPlayerRace(stats->playerRace) == HUMAN && stats->playerRace > 0 )
+				if ( playerCreature->getMonsterFromPlayerRace(stats->playerRace) == HUMAN && stats->playerRace > 0 )
 				{
 					stats->playerRace = RACE_HUMAN;
 				}
-				if (playerCreature->getMonsterFromPlayerRace(stats->playerRace) != HUMAN )
+				if ( playerCreature->getMonsterFromPlayerRace(stats->playerRace) != HUMAN )
 				{
 					stats->appearance = 0;
 				}
@@ -4054,7 +4054,7 @@ void actPlayer(Creature* my)
 			if ( followerMenu.optionSelected == ALLY_CMD_ATTACK_SELECT )
 			{
 				Entity* underMouse = nullptr;
-                Creature* underMouseCrtr = (Creature*)underMouse;
+				Creature* underMouseCrtr = (Creature*)underMouse;
 				if ( followerMenu.optionSelected == ALLY_CMD_ATTACK_SELECT && ticks % 10 == 0 )
 				{
 					if ( !players[PLAYER_NUM]->worldUI.isEnabled() )
@@ -4241,13 +4241,13 @@ void actPlayer(Creature* my)
 						{
 							// we're selecting a target for the ally.
 							Entity* target = entityClicked(nullptr, false, PLAYER_NUM, EntityClickType::ENTITY_CLICK_FOLLOWER_INTERACT);
-                            Creature* targetCrtr = (Creature*)target;
+							Creature* targetCrtr = (Creature*)target;
 							input.consumeBinaryToggle("Use");
 							//input.consumeBindingsSharedWithBinding("Use");
 							if ( target && followerMenu.followerToCommand )
 							{
 								Entity* parent = uidToEntity(target->skill[2]);
-                                Creature* parentCrtr = (Creature*)parent;
+								Creature* parentCrtr = (Creature*)parent;
 								if ( targetCrtr && targetCrtr->behavior == &actMonster || (parentCrtr && parentCrtr->behavior == &actMonster) )
 								{
 									// see if we selected a limb
@@ -4380,7 +4380,7 @@ void actPlayer(Creature* my)
 			{
 				followerMenu.followerToCommand = nullptr;
 				Entity* parent = uidToEntity(selectedEntity[PLAYER_NUM]->skill[2]);
-                Creature* parentCrtr = (Creature*)parent;
+				Creature* parentCrtr = (Creature*)parent;
 				if ( ((Creature*)(selectedEntity[PLAYER_NUM]))->behavior == &actMonster || (parentCrtr && parentCrtr->behavior == &actMonster) )
 				{
 					// see if we selected a follower to process right click menu.
@@ -4471,10 +4471,10 @@ void actPlayer(Creature* my)
 						else
 						{
 							Entity* tempEntity = uidToEntity(selectedEntity[PLAYER_NUM]->skill[2]);
-                            Creature* tempCreature = (Creature*)tempEntity;
+							Creature* tempCreature = (Creature*)tempEntity;
 							if (tempEntity)
 							{
-								if (tempCreature && tempCreature->behavior == &actMonster)
+								if ( tempCreature && tempCreature->behavior == &actMonster )
 								{
 									SDLNet_Write32((Uint32)tempEntity->getUID(), &net_packet->data[5]);
 								}
@@ -4586,7 +4586,7 @@ void actPlayer(Creature* my)
             }
             else if (players[PLAYER_NUM]->isLocalPlayer()) {
                 ambientLight = true;
-                
+
                 // carrying no light source
                 if (playerRace == RAT) {
 					if ( stats[PLAYER_NUM]->sneaking )
@@ -5086,7 +5086,7 @@ void actPlayer(Creature* my)
 							{
 								my->x = ((int)(my->x / 16)) * 16 + 8;
 								my->y = ((int)(my->y / 16)) * 16 + 8;
-                                
+
                                 Item* items[] = {
                                     stats[PLAYER_NUM]->helmet,
                                     stats[PLAYER_NUM]->breastplate,
@@ -5211,7 +5211,7 @@ void actPlayer(Creature* my)
 			// bumping into monsters disturbs them
 			if ( hit.entity && !intro && multiplayer != CLIENT )
 			{
-                Creature* hitEntityCrtr = (Creature*)hit.entity;
+				Creature* hitEntityCrtr = (Creature*)hit.entity;
 				if ( !everybodyfriendly && hitEntityCrtr && hitEntityCrtr->behavior == &actMonster )
 				{
 					bool enemy = my->checkEnemy(hit.entity);
@@ -5263,25 +5263,25 @@ void actPlayer(Creature* my)
 			// bumping into monsters disturbs them
 			if ( hit.entity && !intro )
 			{
-                Creature* hitEntityCrtr = (Creature*)hit.entity;
-                if ( !everybodyfriendly && hitEntityCrtr && hitEntityCrtr->behavior == &actMonster )
-                {
-                    bool enemy = my->checkEnemy(hit.entity);
-                    if ( enemy )
-                    {
-                        if ( hitEntityCrtr->monsterState == MONSTER_STATE_WAIT || (hitEntityCrtr->monsterState == MONSTER_STATE_HUNT && hitEntityCrtr->monsterTarget == 0) )
-                        {
-                            double tangent = atan2( my->y - hit.entity->y, my->x - hit.entity->x );
-                            hit.entity->skill[4] = 1;
-                            hit.entity->skill[6] = local_rng.rand() % 10 + 1;
-                            hit.entity->fskill[4] = tangent;
-                        }
-                    }
-                }
-                else if ( stats[PLAYER_NUM]->EFFECTS[EFF_DASH] && hit.entity->behavior == &actDoor )
-                {
-                    hit.entity->doorHealth = 0;
-                }
+				Creature* hitEntityCrtr = (Creature*)hit.entity;
+				if ( !everybodyfriendly && hitEntityCrtr && hitEntityCrtr->behavior == &actMonster )
+				{
+					bool enemy = my->checkEnemy(hit.entity);
+					if ( enemy )
+					{
+						if ( hitEntityCrtr->monsterState == MONSTER_STATE_WAIT || (hitEntityCrtr->monsterState == MONSTER_STATE_HUNT && hitEntityCrtr->monsterTarget == 0) )
+						{
+							double tangent = atan2( my->y - hit.entity->y, my->x - hit.entity->x );
+							hit.entity->skill[4] = 1;
+							hit.entity->skill[6] = local_rng.rand() % 10 + 1;
+							hit.entity->fskill[4] = tangent;
+						}
+					}
+				}
+				else if ( stats[PLAYER_NUM]->EFFECTS[EFF_DASH] && hit.entity->behavior == &actDoor )
+				{
+					hit.entity->doorHealth = 0;
+				}
 			}
 		}
 		else

@@ -70,7 +70,7 @@ void Item::applySkeletonKey(int player, Entity& entity)
 void Item::applyLockpick(int player, Entity& entity)
 {
 	bool capstoneUnlocked = (stats[player]->PROFICIENCIES[PRO_LOCKPICKING] >= CAPSTONE_LOCKPICKING_UNLOCK);
-    Creature& entityCrtr = (Creature&)entity;
+	Creature& entityCrtr = (Creature&)entity;
 	if ( entity.behavior == &actBomb )
 	{
 		Entity* gyrobotUsing = nullptr;
@@ -503,7 +503,7 @@ void Item::applyLockpick(int player, Entity& entity)
 
 void Item::applyOrb(int player, ItemType type, Entity& entity)
 {
-    Creature& entityCrtr = (Creature&)entity;
+	Creature& entityCrtr = (Creature&)entity;
 
 	if ( entity.behavior == &actPedestalBase && entity.pedestalHasOrb == 0 )
 	{
@@ -955,7 +955,7 @@ void Item::applyEmptyPotion(int player, Entity& entity)
 
 void Item::applyBomb(Entity* parent, ItemType type, ItemBombPlacement placement, ItemBombFacingDirection dir, Entity* thrown, Entity* onEntity)
 {
-    Creature* parentCrtr = (Creature*)parent;
+	Creature* parentCrtr = (Creature*)parent;
 	if ( multiplayer == CLIENT )
 	{
 		return;
@@ -983,7 +983,7 @@ void Item::applyBomb(Entity* parent, ItemType type, ItemBombPlacement placement,
 			if ( parent )
 			{
 				entity->parent = parent->getUID();
-				if ( parentCrtr && parentCrtr->behavior == &actPlayer )
+				if ( parentCrtr->behavior == &actPlayer )
 				{
 					entity->skill[17] = parent->skill[2];
 				}
@@ -1106,7 +1106,7 @@ void Item::applyBomb(Entity* parent, ItemType type, ItemBombPlacement placement,
 			if ( parent )
 			{
 				entity->parent = parent->getUID();
-				if ( parentCrtr && parentCrtr->behavior == &actPlayer )
+				if ( parentCrtr->behavior == &actPlayer )
 				{
 					entity->skill[17] = parent->skill[2];
 				}
@@ -1277,7 +1277,7 @@ void Item::applyBomb(Entity* parent, ItemType type, ItemBombPlacement placement,
 			if ( parent )
 			{
 				entity->parent = parent->getUID();
-				if ( parentCrtr && parentCrtr->behavior == &actPlayer )
+				if ( parentCrtr->behavior == &actPlayer )
 				{
 					entity->skill[17] = parent->skill[2];
 				}
@@ -1315,7 +1315,7 @@ void Item::applyBomb(Entity* parent, ItemType type, ItemBombPlacement placement,
 
 void Item::applyTinkeringCreation(Entity* parent, Entity* thrown)
 {
-    Creature* parentCrtr = (Creature*)parent;
+	Creature* parentCrtr = (Creature*)parent;
 	if ( !thrown )
 	{
 		return;
@@ -1405,7 +1405,7 @@ void Item::applyTinkeringCreation(Entity* parent, Entity* thrown)
 				{
 					summon->setHP(monsterTinkeringConvertAppearanceToHP(summonedStats, this->appearance));
 				}
-				if ( parentCrtr && forceFollower(*parentCrtr, *summon) )
+				if ( forceFollower(*parentCrtr, *summon) )
 				{
 					if ( parentCrtr->behavior == &actPlayer )
 					{

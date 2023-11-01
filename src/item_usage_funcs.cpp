@@ -29,8 +29,8 @@
 
 bool item_PotionWater(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = (Creature*)entity;
-    if ( !entity )
+	Creature* entityCrtr = (Creature*)entity;
+	if ( !entity )
 	{
 		return false;
 	}
@@ -404,7 +404,7 @@ bool item_PotionWater(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionBooze(Item*& item, Entity* entity, Creature* usedBy, bool shouldConsumeItem)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -556,7 +556,7 @@ bool item_PotionBooze(Item*& item, Entity* entity, Creature* usedBy, bool should
 
 bool item_PotionJuice(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -742,7 +742,7 @@ bool item_PotionJuice(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionSickness(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -852,7 +852,7 @@ bool item_PotionSickness(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionConfusion(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -921,7 +921,8 @@ bool item_PotionConfusion(Item*& item, Entity* entity, Creature* usedBy)
 	}
 	if ( entity->setEffect(EFF_CONFUSED, true, duration, false) )
 	{
-		if ( Creature* crtrEntity = (Creature*)entity; crtrEntity && crtrEntity->behavior == &actMonster )
+		if ( Creature* crtrEntity = (Creature*)entity;
+			crtrEntity->behavior == &actMonster )
 		{
 			crtrEntity->monsterTarget = 0; // monsters forget what they're doing
 		}
@@ -948,7 +949,7 @@ bool item_PotionConfusion(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionCureAilment(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -968,7 +969,7 @@ bool item_PotionCureAilment(Item*& item, Entity* entity, Creature* usedBy)
 	Stat* stats;
 	int c;
 
-	if ( entityCrtr && entityCrtr->behavior == &actPlayer )
+	if ( entityCrtr->behavior == &actPlayer )
 	{
 		player = entity->skill[2];
 	}
@@ -1022,7 +1023,7 @@ bool item_PotionCureAilment(Item*& item, Entity* entity, Creature* usedBy)
 
 	for ( c = 0; c < NUMEFFECTS; c++ )   //This does a whole lot more than just cure ailments.
 	{
-		if ( entityCrtr && stats->statusEffectRemovedByCureAilment(c, entityCrtr) )
+		if ( stats->statusEffectRemovedByCureAilment(c, entityCrtr) )
 		{
 			if ( stats->EFFECTS[c] )
 			{
@@ -1079,7 +1080,7 @@ bool item_PotionCureAilment(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionBlindness(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -1098,7 +1099,7 @@ bool item_PotionBlindness(Item*& item, Entity* entity, Creature* usedBy)
 	int player = -1;
 	Stat* stats;
 
-	if ( entityCrtr && entityCrtr->behavior == &actPlayer )
+	if ( entityCrtr->behavior == &actPlayer )
 	{
 		player = entity->skill[2];
 	}
@@ -1136,7 +1137,8 @@ bool item_PotionBlindness(Item*& item, Entity* entity, Creature* usedBy)
 		return true;
 	}
 
-	if ( Creature* crtrEntity = (Creature*)entity; crtrEntity && crtrEntity->behavior == &actMonster && !entity->isBossMonster() )
+	if ( Creature* crtrEntity = (Creature*)entity;
+		crtrEntity->behavior == &actMonster && !entity->isBossMonster() )
 	{
 		crtrEntity->monsterReleaseAttackTarget();
 	}
@@ -1161,7 +1163,7 @@ bool item_PotionBlindness(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionInvisibility(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -1180,7 +1182,7 @@ bool item_PotionInvisibility(Item*& item, Entity* entity, Creature* usedBy)
 	int player = -1;
 	Stat* stats;
 
-	if ( entityCrtr && entityCrtr->behavior == &actPlayer )
+	if ( entityCrtr->behavior == &actPlayer )
 	{
 		player = entity->skill[2];
 	}
@@ -1253,7 +1255,7 @@ bool item_PotionInvisibility(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionLevitation(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -1272,7 +1274,7 @@ bool item_PotionLevitation(Item*& item, Entity* entity, Creature* usedBy)
 	int player = -1;
 	Stat* stats;
 
-	if ( entityCrtr && entityCrtr->behavior == &actPlayer )
+	if ( entityCrtr->behavior == &actPlayer )
 	{
 		player = entity->skill[2];
 	}
@@ -1334,7 +1336,7 @@ bool item_PotionLevitation(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionSpeed(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -1353,7 +1355,7 @@ bool item_PotionSpeed(Item*& item, Entity* entity, Creature* usedBy)
 	int player = -1;
 	Stat* stats;
 
-	if ( entityCrtr && entityCrtr->behavior == &actPlayer )
+	if ( entityCrtr->behavior == &actPlayer )
 	{
 		player = entity->skill[2];
 	}
@@ -1434,7 +1436,7 @@ bool item_PotionSpeed(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionStrength(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if ( !entity )
 	{
 		return false;
@@ -1453,7 +1455,7 @@ bool item_PotionStrength(Item*& item, Entity* entity, Creature* usedBy)
 	int player = -1;
 	Stat* stats;
 
-	if ( entityCrtr && entityCrtr->behavior == &actPlayer )
+	if ( entityCrtr->behavior == &actPlayer )
 	{
 		player = entity->skill[2];
 	}
@@ -1524,7 +1526,7 @@ bool item_PotionStrength(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionAcid(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -1543,7 +1545,7 @@ bool item_PotionAcid(Item*& item, Entity* entity, Creature* usedBy)
 	int player = -1;
 	Stat* stats;
 
-	if ( entityCrtr && entityCrtr->behavior == &actPlayer )
+	if ( entityCrtr->behavior == &actPlayer )
 	{
 		player = entity->skill[2];
 	}
@@ -1619,7 +1621,7 @@ bool item_PotionAcid(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionUnstableStorm(Item*& item, Entity* entity, Creature* usedBy, Entity* thrownPotion)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if ( !entity )
 	{
 		return false;
@@ -1638,7 +1640,7 @@ bool item_PotionUnstableStorm(Item*& item, Entity* entity, Creature* usedBy, Ent
 	int player = -1;
 	Stat* stats;
 
-	if ( entityCrtr && entityCrtr->behavior == &actPlayer )
+	if ( entityCrtr->behavior == &actPlayer )
 	{
 		player = entity->skill[2];
 	}
@@ -1776,7 +1778,7 @@ bool item_PotionUnstableStorm(Item*& item, Entity* entity, Creature* usedBy, Ent
 
 bool item_PotionParalysis(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -1795,7 +1797,7 @@ bool item_PotionParalysis(Item*& item, Entity* entity, Creature* usedBy)
 	int player = -1;
 	Stat* stats;
 
-	if ( entityCrtr && entityCrtr->behavior == &actPlayer )
+	if ( entityCrtr->behavior == &actPlayer )
 	{
 		player = entity->skill[2];
 	}
@@ -1860,7 +1862,7 @@ bool item_PotionParalysis(Item*& item, Entity* entity, Creature* usedBy)
 
 bool item_PotionHealing(Item*& item, Entity* entity, Creature* usedBy, bool shouldConsumeItem)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -1879,7 +1881,7 @@ bool item_PotionHealing(Item*& item, Entity* entity, Creature* usedBy, bool shou
 	int player = -1;
 	Stat* stats;
 
-	if ( entityCrtr && entityCrtr->behavior == &actPlayer )
+	if ( entityCrtr->behavior == &actPlayer )
 	{
 		player = entity->skill[2];
 	}
@@ -1948,7 +1950,7 @@ bool item_PotionHealing(Item*& item, Entity* entity, Creature* usedBy, bool shou
 
 	int amount = item->potionGetEffectHealth(entity, stats);
 	
-	if ( stats->type == GOATMAN && entityCrtr && entityCrtr->behavior == &actMonster )
+	if ( stats->type == GOATMAN && entityCrtr->behavior == &actMonster )
 	{
 		amount *= GOATMAN_HEALINGPOTION_MOD; //Goatman special.
 		stats->EFFECTS[EFF_FAST] = true;
@@ -2009,7 +2011,7 @@ bool item_PotionHealing(Item*& item, Entity* entity, Creature* usedBy, bool shou
 
 bool item_PotionExtraHealing(Item*& item, Entity* entity, Creature* usedBy, bool shouldConsumeItem)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -2028,7 +2030,7 @@ bool item_PotionExtraHealing(Item*& item, Entity* entity, Creature* usedBy, bool
 	int player = -1;
 	Stat* stats;
 
-	if ( entityCrtr && entityCrtr->behavior == &actPlayer )
+	if ( entityCrtr->behavior == &actPlayer )
 	{
 		player = entity->skill[2];
 	}
@@ -2097,7 +2099,7 @@ bool item_PotionExtraHealing(Item*& item, Entity* entity, Creature* usedBy, bool
 
 	int amount = item->potionGetEffectHealth(entity, stats);
 
-	if ( stats->type == GOATMAN && entityCrtr && entityCrtr->behavior == &actMonster )
+	if ( stats->type == GOATMAN && entityCrtr->behavior == &actMonster )
 	{
 		amount *= GOATMAN_HEALINGPOTION_MOD; //Goatman special.
 		stats->EFFECTS[EFF_FAST] = true;
@@ -2157,7 +2159,7 @@ bool item_PotionExtraHealing(Item*& item, Entity* entity, Creature* usedBy, bool
 
 bool item_PotionRestoreMagic(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if (!entity)
 	{
 		return false;
@@ -2176,7 +2178,7 @@ bool item_PotionRestoreMagic(Item*& item, Entity* entity, Creature* usedBy)
 	int player = -1;
 	Stat* stats;
 
-	if ( entityCrtr && entityCrtr->behavior == &actPlayer )
+	if ( entityCrtr->behavior == &actPlayer )
 	{
 		player = entity->skill[2];
 	}
@@ -2254,11 +2256,7 @@ bool item_PotionRestoreMagic(Item*& item, Entity* entity, Creature* usedBy)
 	{
 		messagePlayer(player, MESSAGE_HINT, Language::get(774));
 	}
-
-	if ( entityCrtr )
-	{
-		entityCrtr->modMP(amount);
-	}
+	entityCrtr->modMP(amount);
 
 	if ( svFlags & SV_FLAG_HUNGER )
 	{
@@ -2267,7 +2265,7 @@ bool item_PotionRestoreMagic(Item*& item, Entity* entity, Creature* usedBy)
 			Sint32 hungerPointPerMana = entityCrtr->playerInsectoidHungerValueOfManaPoint(*stats);
 			stats->HUNGER += amount * hungerPointPerMana;
 			stats->HUNGER = std::min(999, stats->HUNGER);
-			if ( entityCrtr && entityCrtr->behavior == &actPlayer && stats->type != SKELETON && stats->type != AUTOMATON )
+			if ( entityCrtr->behavior == &actPlayer && stats->type != SKELETON && stats->type != AUTOMATON )
 			{
 				updateHungerMessages(entityCrtr, stats, item);
 			}
@@ -2287,7 +2285,7 @@ bool item_PotionRestoreMagic(Item*& item, Entity* entity, Creature* usedBy)
 
 Entity* item_PotionPolymorph(Item*& item, Entity* entity, Creature* usedBy)
 {
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if ( !entity )
 	{
 		return nullptr;
@@ -2306,7 +2304,7 @@ Entity* item_PotionPolymorph(Item*& item, Entity* entity, Creature* usedBy)
 	int player = -1;
 	Stat* stats;
 
-	if ( entityCrtr && entityCrtr->behavior == &actPlayer )
+	if ( entityCrtr->behavior == &actPlayer )
 	{
 		player = entity->skill[2];
 	}
@@ -2355,7 +2353,7 @@ Entity* item_PotionPolymorph(Item*& item, Entity* entity, Creature* usedBy)
 	}
 	Entity* transformedEntity = nullptr;
 
-	if ( (entityCrtr && entityCrtr->behavior == &actMonster) || (entityCrtr && entityCrtr->behavior == &actPlayer) )
+	if ( entityCrtr->behavior == &actMonster || entityCrtr->behavior == &actPlayer )
 	{
 		transformedEntity = spellEffectPolymorph(entity, usedBy, false);
 	}
@@ -5605,12 +5603,12 @@ bool itemIsConsumableByAutomaton(const Item& item)
 
 void updateHungerMessages(Entity* my, Stat* myStats, Item* eaten)
 {
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	if ( !myStats || !eaten || !my)
 	{
 		return;
 	}
-	if ( !myCrtr && myCrtr->behavior != &actPlayer )
+	if ( myCrtr->behavior != &actPlayer )
 	{
 		return;
 	}

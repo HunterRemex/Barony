@@ -349,7 +349,7 @@ Entity* spawnGib(Entity* parentent, int customGibSprite)
 
 Entity* spawnDamageGib(Entity* parentent, Sint32 dmgAmount, int gibDmgType)
 {
-    Creature* parentCrtr = (Creature*)(*&parentent);
+	Creature* parentCrtr = (Creature*)(*&parentent);
 	if ( !parentent )
 	{
 		return nullptr;

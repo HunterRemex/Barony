@@ -269,7 +269,7 @@ void demonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	node_t* node;
 	Entity* entity = nullptr;
 	Entity* rightbody = nullptr;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	int bodypart;
 
 	// set invisibility //TODO: isInvisible()?

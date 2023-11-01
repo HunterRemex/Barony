@@ -385,7 +385,7 @@ void gnomeMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	int bodypart;
 	bool wearingring = false;
 

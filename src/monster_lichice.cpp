@@ -288,7 +288,7 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 	Entity* weaponarm = nullptr;
 	Entity* head = nullptr;
 	Entity* spellarm = nullptr;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	int bodypart;
 	bool wearingring = false;
 
@@ -1127,7 +1127,8 @@ void lichIceAnimate(Entity* my, Stat* myStats, double dist)
 				Entity* playertotrack = NULL;
 				double disttoplayer = 0.0;
 				Entity* target = uidToEntity(myCrtr->monsterTarget);
-				if ( Creature* entityCrtr = (Creature*)entity; entityCrtr && target && my->monsterAttack == 0 )
+				if ( Creature* entityCrtr = (Creature*)entity;
+					entityCrtr && target && my->monsterAttack == 0 )
 				{
 					entityCrtr->lookAtEntity(*target);
 					entityCrtr->monsterRotate();

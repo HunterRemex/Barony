@@ -888,7 +888,7 @@ void humanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr, *entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	int bodypart;
 	bool wearingring = false;
 
@@ -1557,12 +1557,12 @@ void humanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 					if ( entity->sprite <= 0 )
 					{
 						entity->flags[INVISIBLE] = true;
-					}
 				}
-                if ( myCrtr )
-                {
-                    myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
-                }
+				}
+				if ( myCrtr )
+				{
+					myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
+				}
 				break;
 			// cloak
 			case LIMB_HUMANOID_CLOAK:

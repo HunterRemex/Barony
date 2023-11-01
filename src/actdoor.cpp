@@ -322,7 +322,7 @@ void actDoorFrame(Entity* my)
 	}
 }
 
-void Entity::doorHandleDamageMagic(int damage, Entity &magicProjectile, Creature *caster)
+void Entity::doorHandleDamageMagic(int damage, Entity &magicProjectile, Creature* caster)
 {
 	doorHealth -= damage; //Decrease door health.
 	if ( caster )

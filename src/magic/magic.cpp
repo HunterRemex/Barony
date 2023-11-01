@@ -134,9 +134,9 @@ bool spellEffectDominate(Entity& my, spellElement_t& element, Entity& caster, En
 	{
 		return false;
 	}
-    Creature* hitEntityCrtr = (Creature*)hit.entity;
-    Creature* parentCrtr = (Creature*)parent;
-    Creature& casterCrtr = (Creature&)caster;
+	Creature* hitEntityCrtr = (Creature*)hit.entity;
+	Creature* parentCrtr = (Creature*)parent;
+	Creature& casterCrtr = (Creature&)caster;
 	if ( !hitEntityCrtr || hitEntityCrtr->behavior != &actMonster )
 	{
 		return false;
@@ -176,7 +176,7 @@ bool spellEffectDominate(Entity& my, spellElement_t& element, Entity& caster, En
 	if ( parent && dominated )
 	{
 		Uint32 color = makeColorRGB(0, 255, 0);
-		if ( parentCrtr && parentCrtr->behavior == &actPlayer )
+		if ( parentCrtr->behavior == &actPlayer )
 		{
 			messagePlayerMonsterEvent(parent->skill[2], color, *hitstats, Language::get(2428), Language::get(2427), MSG_COMBAT);
 		}
@@ -229,7 +229,7 @@ bool spellEffectDominate(Entity& my, spellElement_t& element, Entity& caster, En
 void spellEffectAcid(Entity& my, spellElement_t& element, Entity* parent, int resistance)
 {
 	playSoundEntity(&my, 173, 128);
-    Creature* hitEntityCrtr = (Creature*)hit.entity;
+	Creature* hitEntityCrtr = (Creature*)hit.entity;
 
 	if ( hit.entity )
 	{
@@ -299,7 +299,7 @@ void spellEffectAcid(Entity& my, spellElement_t& element, Entity* parent, int re
 			/*hitstats->EFFECTS[EFF_SLOW] = true;
 			hitstats->EFFECTS_TIMERS[EFF_SLOW] = (element->duration * (((element->mana) / static_cast<double>(element->base_mana)) * element->overload_multiplier));
 			hitstats->EFFECTS_TIMERS[EFF_SLOW] /= (1 + (int)resistance);*/
-			if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+			if ( hitEntityCrtr->behavior == &actPlayer )
 			{
 				serverUpdateEffects(hit.entity->skill[2]);
 			}
@@ -328,7 +328,7 @@ void spellEffectAcid(Entity& my, spellElement_t& element, Entity* parent, int re
 					false, DamageGib::DMG_TODO);
 			}
 
-			if ( oldHP > 0 && hitstats->HP <= 0 && parent && hitEntityCrtr )
+			if ( oldHP > 0 && hitstats->HP <= 0 && parent )
 			{
 				parent->awardXP(hit.entity, true, true);
 				spawnBloodVialOnMonsterDeath(hitEntityCrtr, hitstats);
@@ -337,7 +337,7 @@ void spellEffectAcid(Entity& my, spellElement_t& element, Entity* parent, int re
 			Uint32 color = makeColorRGB(255, 0, 0);
 
 			int player = -1;
-			if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+			if ( hitEntityCrtr->behavior == &actPlayer )
 			{
 				player = hit.entity->skill[2];
 			}
@@ -363,7 +363,7 @@ void spellEffectAcid(Entity& my, spellElement_t& element, Entity* parent, int re
 					armornum = hitstats->pickRandomEquippedItem(&armor, true, false, false, false);
 				}
 				//messagePlayer(0, "armornum: %d", armornum);
-				if ( armornum != -1 && armor != nullptr && hitEntityCrtr)
+				if ( armornum != -1 && armor != nullptr )
 				{
 					hitEntityCrtr->degradeArmor(*hitstats, *armor, armornum);
 					//messagePlayerColor(player, color, "Armor piece: %s", armor->getName());
@@ -389,7 +389,7 @@ void spellEffectAcid(Entity& my, spellElement_t& element, Entity* parent, int re
 void spellEffectPoison(Entity& my, spellElement_t& element, Entity* parent, int resistance)
 {
 	playSoundEntity(&my, 173, 128);
-    Creature* hitEntityCrtr = (Creature*)hit.entity;
+	Creature* hitEntityCrtr = (Creature*)hit.entity;
 	if ( hit.entity )
 	{
 		int damage = element.damage;
@@ -443,7 +443,7 @@ void spellEffectPoison(Entity& my, spellElement_t& element, Entity* parent, int 
 				hitstats->poisonKiller = my.parent;
 			}
 
-			if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+			if ( hitEntityCrtr->behavior == &actPlayer )
 			{
 				serverUpdateEffects(hit.entity->skill[2]);
 			}
@@ -469,7 +469,7 @@ void spellEffectPoison(Entity& my, spellElement_t& element, Entity* parent, int 
 					false, DamageGib::DMG_TODO);
 			}
 
-			if ( hitstats->HP <= 0 && parent && hitEntityCrtr )
+			if ( hitstats->HP <= 0 && parent )
 			{
 				parent->awardXP(hit.entity, true, true);
 				spawnBloodVialOnMonsterDeath(hitEntityCrtr, hitstats);
@@ -478,7 +478,7 @@ void spellEffectPoison(Entity& my, spellElement_t& element, Entity* parent, int 
 			Uint32 color = makeColorRGB(255, 0, 0);
 
 			int player = -1;
-			if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+			if ( hitEntityCrtr->behavior == &actPlayer )
 			{
 				player = hit.entity->skill[2];
 			}
@@ -505,7 +505,7 @@ void spellEffectPoison(Entity& my, spellElement_t& element, Entity* parent, int 
 
 bool spellEffectFear(Entity* my, spellElement_t& element, Entity* forceParent, Entity* target, int resistance)
 {
-    Creature* targetCrtr = (Creature*)target;
+	Creature* targetCrtr = (Creature*)target;
 	if ( !target )
 	{
 		//spawnMagicEffectParticles(my.x, my.y, my.z, 863);
@@ -541,7 +541,7 @@ bool spellEffectFear(Entity* my, spellElement_t& element, Entity* forceParent, E
 		{
 			playSoundEntity(target, 168, 128); // Healing.ogg
 			Uint32 color = 0;
-			if ( parent && targetCrtr )
+			if ( parent )
 			{
 				// update enemy bar for attacker
 				/*if ( !strcmp(hitstats->name, "") )
@@ -588,7 +588,7 @@ bool spellEffectFear(Entity* my, spellElement_t& element, Entity* forceParent, E
 		Uint32 color = makeColorRGB(255, 0, 0);
 
 		int player = -1;
-		if ( targetCrtr && targetCrtr->behavior == &actPlayer )
+		if ( targetCrtr->behavior == &actPlayer )
 		{
 			player = target->skill[2];
 		}
@@ -603,7 +603,7 @@ bool spellEffectFear(Entity* my, spellElement_t& element, Entity* forceParent, E
 
 void spellEffectSprayWeb(Entity& my, spellElement_t& element, Entity* parent, int resistance)
 {
-    Creature* hitEntityCrtr = (Creature*)hit.entity;
+	Creature* hitEntityCrtr = (Creature*)hit.entity;
 	if ( hit.entity )
 	{
 		if ( hitEntityCrtr )
@@ -639,7 +639,7 @@ void spellEffectSprayWeb(Entity& my, spellElement_t& element, Entity* parent, in
 					playSoundEntity(hit.entity, 396 + local_rng.rand() % 3, 64); // play sound only if not recently webbed. (triple shot makes many noise)
 				}
 				hit.entity->creatureWebbedSlowCount = std::min(3, hit.entity->creatureWebbedSlowCount + 1);
-				if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+				if ( hitEntityCrtr->behavior == &actPlayer )
 				{
 					serverUpdateEntitySkill(hit.entity, 52); // update player.
 				}
@@ -679,7 +679,7 @@ void spellEffectSprayWeb(Entity& my, spellElement_t& element, Entity* parent, in
 			Uint32 color = makeColorRGB(255, 0, 0);
 
 			int player = -1;
-			if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+			if ( hitEntityCrtr->behavior == &actPlayer )
 			{
 				player = hit.entity->skill[2];
 			}
@@ -701,7 +701,7 @@ void spellEffectSprayWeb(Entity& my, spellElement_t& element, Entity* parent, in
 
 void spellEffectStealWeapon(Entity& my, spellElement_t& element, Entity* parent, int resistance)
 {
-    Creature* hitEntityCrtr = (Creature*)hit.entity;
+	Creature* hitEntityCrtr = (Creature*)hit.entity;
 	if ( hit.entity )
 	{
 		if ( hitEntityCrtr )
@@ -727,7 +727,7 @@ void spellEffectStealWeapon(Entity& my, spellElement_t& element, Entity* parent,
 				return;
 			}
 
-			if ( hitEntityCrtr && hitEntityCrtr->behavior == &actMonster
+			if ( hitEntityCrtr->behavior == &actMonster
 				&& (hitEntityCrtr->monsterAllySummonRank != 0
 					|| (hitstats->type == INCUBUS && !strncmp(hitstats->name, "inner demon", strlen("inner demon"))))
 				)
@@ -748,7 +748,7 @@ void spellEffectStealWeapon(Entity& my, spellElement_t& element, Entity* parent,
 			Uint32 color = makeColorRGB(255, 0, 0);
 
 			int player = -1;
-			if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+			if ( hitEntityCrtr->behavior == &actPlayer )
 			{
 				player = hit.entity->skill[2];
 			}
@@ -792,12 +792,12 @@ void spellEffectStealWeapon(Entity& my, spellElement_t& element, Entity* parent,
 						}
 					}
 
-					if ( hitEntityCrtr && hitEntityCrtr->behavior == &actMonster && itemCategory(hitstats->weapon) != SPELLBOOK )
+					if ( hitEntityCrtr->behavior == &actMonster && itemCategory(hitstats->weapon) != SPELLBOOK )
 					{
 						free(hitstats->weapon);
 						hitstats->weapon = nullptr;
 					}
-					else if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+					else if ( hitEntityCrtr->behavior == &actPlayer )
 					{
 						// player.
 						Item* weapon = hitstats->weapon;
@@ -857,8 +857,8 @@ void spellEffectStealWeapon(Entity& my, spellElement_t& element, Entity* parent,
 
 void spellEffectDrainSoul(Entity& my, spellElement_t& element, Entity* parent, int resistance)
 {
-    Creature* hitEntityCrtr = (Creature*)hit.entity;
-    Creature* parentCrtr = (Creature*)parent;
+	Creature* hitEntityCrtr = (Creature*)hit.entity;
+	Creature* parentCrtr = (Creature*)parent;
 	if ( hit.entity )
 	{
 		if ( hitEntityCrtr )
@@ -931,12 +931,12 @@ void spellEffectDrainSoul(Entity& my, spellElement_t& element, Entity* parent, i
 			Uint32 color = makeColorRGB(255, 0, 0);
 
 			int player = -1;
-			if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+			if ( hitEntityCrtr->behavior == &actPlayer )
 			{
 				player = hit.entity->skill[2];
 			}
 
-			if ( hitstats->HP <= 0 && parent && hitEntityCrtr )
+			if ( hitstats->HP <= 0 && parent )
 			{
 				parent->awardXP(hit.entity, true, true);
 				spawnBloodVialOnMonsterDeath(hitEntityCrtr, hitstats);
@@ -1010,7 +1010,7 @@ void spellEffectDrainSoul(Entity& my, spellElement_t& element, Entity* parent, i
 					//damage += ((element->mana - element->base_mana) / static_cast<double>(element->overload_multiplier)) * element->damage;
 					damage /= (1 + (int)resistance);
 
-					hit.entity->colliderHandleDamageMagic(damage, my, (Creature*)parent);
+					hit.entity->colliderHandleDamageMagic(damage, my, parentCrtr);
 					if ( my.actmagicProjectileArc > 0 )
 					{
 						spawnMagicTower(parent, my.x, my.y, SPELL_DRAIN_SOUL, nullptr);
@@ -1047,7 +1047,7 @@ void spellEffectDrainSoul(Entity& my, spellElement_t& element, Entity* parent, i
 					hit.entity->furnitureHealth -= damage;
 					if ( parent )
 					{
-						if ( parentCrtr && parentCrtr->behavior == &actPlayer )
+						if ( parentCrtr->behavior == &actPlayer )
 						{
 							switch ( hit.entity->furnitureType )
 							{
@@ -1100,7 +1100,7 @@ void spellEffectDrainSoul(Entity& my, spellElement_t& element, Entity* parent, i
 
 spell_t* spellEffectVampiricAura(Entity* caster, spell_t* spell, int extramagic_to_use)
 {
-    Creature* casterCrtr = (Creature*)caster;
+	Creature* casterCrtr = (Creature*)caster;
 	if ( !caster )
 	{
 		return nullptr;
@@ -1123,7 +1123,7 @@ spell_t* spellEffectVampiricAura(Entity* caster, spell_t* spell, int extramagic_
 	}
 
 	bool newbie = false;
-	if ( casterCrtr && casterCrtr->behavior == &actPlayer )
+	if ( casterCrtr->behavior == &actPlayer )
 	{
 		newbie = isSpellcasterBeginner(caster->skill[2], caster);
 	}
@@ -1178,8 +1178,8 @@ spell_t* spellEffectVampiricAura(Entity* caster, spell_t* spell, int extramagic_
 
 void spellEffectCharmMonster(Entity& my, spellElement_t& element, Entity* parent, int resistance, bool magicstaff)
 {
-    Creature* hitEntityCrtr = (Creature*)hit.entity;
-    Creature* parentCrtr = (Creature*)parent;
+	Creature* hitEntityCrtr = (Creature*)hit.entity;
+	Creature* parentCrtr = (Creature*)parent;
 	if ( hit.entity )
 	{
 		if ( hitEntityCrtr )
@@ -1202,7 +1202,7 @@ void spellEffectCharmMonster(Entity& my, spellElement_t& element, Entity* parent
 			Uint32 color = makeColorRGB(0, 255, 0);
 
 			int player = -1;
-			if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+			if ( hitEntityCrtr->behavior == &actPlayer )
 			{
 				player = hit.entity->skill[2];
 			}
@@ -1284,7 +1284,7 @@ void spellEffectCharmMonster(Entity& my, spellElement_t& element, Entity* parent
 						chance += (parent->getINT() * 2);
 					}
 
-					if ( parentCrtr && parentCrtr->behavior == &actMonster )
+					if ( parentCrtr->behavior == &actMonster )
 					{
 						allowStealFollowers = true;
 						if ( casterStats->type == INCUBUS || casterStats->type == SUCCUBUS )
@@ -1305,7 +1305,7 @@ void spellEffectCharmMonster(Entity& my, spellElement_t& element, Entity* parent
 							chance = 60; // special base chance for monsters.
 						}
 					}
-					else if ( parentCrtr && parentCrtr->behavior == &actPlayer )
+					else if ( parentCrtr->behavior == &actPlayer )
 					{
 						// search followers for charmed.
 						for ( node_t* node = casterStats->FOLLOWERS.first; node != NULL; node = node->next )
@@ -1330,7 +1330,7 @@ void spellEffectCharmMonster(Entity& my, spellElement_t& element, Entity* parent
 					}
 				}
 			}
-			if ( hitEntityCrtr && hitEntityCrtr->monsterState == MONSTER_STATE_WAIT )
+			if ( hitEntityCrtr->monsterState == MONSTER_STATE_WAIT )
 			{
 				chance += 10;
 			}
@@ -1344,7 +1344,7 @@ void spellEffectCharmMonster(Entity& my, spellElement_t& element, Entity* parent
 			{
 				chance = 0;
 			}
-			else if ( hitEntityCrtr && hitEntityCrtr->behavior == &actMonster
+			else if ( hitEntityCrtr->behavior == &actMonster
 				&& (hitEntityCrtr->monsterAllySummonRank != 0
 					|| (hitstats->type == INCUBUS && !strncmp(hitstats->name, "inner demon", strlen("inner demon")))) 
 				)
@@ -1415,11 +1415,11 @@ void spellEffectCharmMonster(Entity& my, spellElement_t& element, Entity* parent
 				// does not affect shopkeepers
 				// succubus/incubus can steal followers from others, checking to see if they don't already follow them.
 				Creature* whoToFollow = parentCrtr;
-				if ( parentCrtr && parentCrtr->behavior == &actMonster && parent->monsterAllyGetPlayerLeader() )
+				if ( parentCrtr->behavior == &actMonster && parent->monsterAllyGetPlayerLeader() )
 				{
 					whoToFollow = parent->monsterAllyGetPlayerLeader();
 				}
-				else if ( parentCrtr && parentCrtr->behavior == &actMonster )
+				else if ( parentCrtr->behavior == &actMonster )
 				{
 					if (Creature* leaderOfTarget = uidToCreature(casterStats->leader_uid))
 					{
@@ -1454,7 +1454,7 @@ void spellEffectCharmMonster(Entity& my, spellElement_t& element, Entity* parent
 						{
 							serverUpdateEntitySkill(hit.entity, 42); // update monsterAllyIndex for clients.
 						}
-						if ( hitEntityCrtr && hitEntityCrtr->monsterTarget == whoToFollow->getUID() )
+						if ( hitEntityCrtr->monsterTarget == whoToFollow->getUID() )
 						{
 							hitEntityCrtr->monsterReleaseAttackTarget();
 						}
@@ -1593,8 +1593,8 @@ Entity* spellEffectPolymorph(Entity* target, Entity* parent, bool fromMagicSpell
 {
 	int effectDuration = 0;
 	effectDuration = TICKS_PER_SECOND * 60 * (4 + local_rng.rand() % 3); // 4-6 minutes
-    Creature* parentCrtr = (Creature*)parent;
-    Creature* targetCrtr = (Creature*)target;
+	Creature* parentCrtr = (Creature*)parent;
+	Creature* targetCrtr = (Creature*)target;
 	if ( customDuration > 0 )
 	{
 		effectDuration = customDuration;
@@ -1612,7 +1612,7 @@ Entity* spellEffectPolymorph(Entity* target, Entity* parent, bool fromMagicSpell
 
 	if ( targetStats->type == LICH || targetStats->type == SHOPKEEPER || targetStats->type == DEVIL
 		|| targetStats->type == MINOTAUR || targetStats->type == LICH_FIRE || targetStats->type == LICH_ICE
-		|| (targetCrtr && targetCrtr->behavior == &actMonster && targetCrtr->monsterAllySummonRank != 0)
+		|| (targetCrtr->behavior == &actMonster && targetCrtr->monsterAllySummonRank != 0)
 		|| (targetStats->type == INCUBUS && !strncmp(targetStats->name, "inner demon", strlen("inner demon")))
 		|| targetStats->type == SENTRYBOT || targetStats->type == SPELLBOT || targetStats->type == GYROBOT
 		|| targetStats->type == DUMMYBOT
@@ -1625,7 +1625,7 @@ Entity* spellEffectPolymorph(Entity* target, Entity* parent, bool fromMagicSpell
 		return nullptr;
 	}
 
-	if ( targetCrtr && targetCrtr->behavior == &actMonster )
+	if ( targetCrtr->behavior == &actMonster )
 	{
 		Monster monsterSummonType;
 
@@ -2174,7 +2174,7 @@ Entity* spellEffectPolymorph(Entity* target, Entity* parent, bool fromMagicSpell
 		target = nullptr;
 		return summonedEntity;
 	}
-	else if ( targetCrtr && targetCrtr->behavior == &actPlayer )
+	else if ( targetCrtr->behavior == &actPlayer )
 	{
 		if ( target->setEffect(EFF_POLYMORPH, true, effectDuration, true) )
 		{
@@ -2183,7 +2183,7 @@ Entity* spellEffectPolymorph(Entity* target, Entity* parent, bool fromMagicSpell
 			createParticleDropRising(target, 593, 1.f);
 			serverSpawnMiscParticles(target, PARTICLE_EFFECT_RISING_DROP, 593);
 
-			if ( targetStats->playerRace == RACE_HUMAN && targetCrtr )
+			if ( targetStats->playerRace == RACE_HUMAN )
 			{
 				int roll = (RACE_HUMAN + 1) + local_rng.rand() % 8;
 				if ( targetCrtr->effectPolymorph == 0 )
@@ -2256,8 +2256,8 @@ bool spellEffectTeleportPull(Entity* my, spellElement_t& element, Entity* parent
 	{
 		return false;
 	}
-    Creature* targetCrtr = (Creature*)target;
-    Creature* parentCrtr = (Creature*)parent;
+	Creature* targetCrtr = (Creature*)target;
+	Creature* parentCrtr = (Creature*)parent;
 	if ( target )
 	{
 		playSoundEntity(target, 173, 128);
@@ -2283,7 +2283,7 @@ bool spellEffectTeleportPull(Entity* my, spellElement_t& element, Entity* parent
 
 			if ( parent )
 			{
-				if ( targetCrtr && targetCrtr->behavior == &actPlayer )
+				if ( targetCrtr->behavior == &actPlayer )
 				{
 					if ( MFLAG_DISABLETELEPORT )
 					{
@@ -2297,9 +2297,9 @@ bool spellEffectTeleportPull(Entity* my, spellElement_t& element, Entity* parent
 						return false;
 					}
 				}
-				if ( targetCrtr && targetCrtr->behavior == &actMonster && target->isBossMonster() )
+				if ( targetCrtr->behavior == &actMonster && target->isBossMonster() )
 				{
-					if ( parentCrtr && parentCrtr->behavior == &actPlayer )
+					if ( parentCrtr->behavior == &actPlayer )
 					{
 						Uint32 color = makeColorRGB(255, 0, 0);
 						if ( hitstats )
@@ -2376,7 +2376,7 @@ bool spellEffectTeleportPull(Entity* my, spellElement_t& element, Entity* parent
 					}
 					if ( numlocations == 0 )
 					{
-						if ( parentCrtr && parentCrtr->behavior == &actPlayer )
+						if ( parentCrtr->behavior == &actPlayer )
 						{
 							// no room to teleport!
 							messagePlayer(parent->skill[2], MESSAGE_COMBAT, Language::get(3453));
@@ -2398,7 +2398,7 @@ bool spellEffectTeleportPull(Entity* my, spellElement_t& element, Entity* parent
 					}
 					else
 					{
-						if ( parentCrtr && parentCrtr->behavior == &actPlayer )
+						if ( parentCrtr->behavior == &actPlayer )
 						{
 							// no room to teleport!
 							messagePlayer(parent->skill[2], MESSAGE_COMBAT, Language::get(3453));
@@ -2441,7 +2441,7 @@ bool spellEffectTeleportPull(Entity* my, spellElement_t& element, Entity* parent
 				}
 
 				Uint32 color = makeColorRGB(0, 255, 0);
-				if ( parentCrtr && parentCrtr->behavior == &actPlayer )
+				if ( parentCrtr->behavior == &actPlayer )
 				{
 					// play a sound for the player to confirm the hit.
 					playSoundPlayer(parent->skill[2], 251, 128);
@@ -2476,8 +2476,8 @@ bool spellEffectTeleportPull(Entity* my, spellElement_t& element, Entity* parent
 
 void spellEffectShadowTag(Entity& my, spellElement_t& element, Entity* parent, int resistance)
 {
-    Creature* hitEntityCrtr = (Creature*)hit.entity;
-    Creature* parentCrtr = (Creature*)parent;
+	Creature* hitEntityCrtr = (Creature*)hit.entity;
+	Creature* parentCrtr = (Creature*)parent;
 	if ( hit.entity )
 	{
 		//int damage = element.damage;
@@ -2510,7 +2510,7 @@ void spellEffectShadowTag(Entity& my, spellElement_t& element, Entity* parent, i
 						}
 					}
 				}
-				if ( parentCrtr && parentCrtr->checkFriend(hit.entity) )
+				if ( parentCrtr->checkFriend(hit.entity) )
 				{
 					hit.entity->setEffect(EFF_SHADOW_TAGGED, true, 60 * TICKS_PER_SECOND, true);
 				}
@@ -2549,7 +2549,7 @@ void spellEffectShadowTag(Entity& my, spellElement_t& element, Entity* parent, i
 
 			Uint32 color = makeColorRGB(255, 0, 0);
 			int player = -1;
-			if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+			if ( hitEntityCrtr->behavior == &actPlayer )
 			{
 				player = hit.entity->skill[2];
 				if ( player >= 0 )
@@ -2568,8 +2568,8 @@ void spellEffectShadowTag(Entity& my, spellElement_t& element, Entity* parent, i
 
 bool spellEffectDemonIllusion(Entity& my, spellElement_t& element, Entity* parent, Entity* target, int resistance)
 {
-    Creature* targetCrtr = (Creature*)target;
-    Creature* parentCrtr = (Creature*)parent;
+	Creature* targetCrtr = (Creature*)target;
+	Creature* parentCrtr = (Creature*)parent;
 	if ( target )
 	{
 		//int damage = element.damage;
@@ -2647,7 +2647,7 @@ bool spellEffectDemonIllusion(Entity& my, spellElement_t& element, Entity* paren
 				}
 				if ( numlocations == 0 )
 				{
-					if ( parentCrtr && parentCrtr->behavior == &actPlayer )
+					if ( parentCrtr->behavior == &actPlayer )
 					{
 						// no room to spawn!
 						messagePlayer(parent->skill[2], MESSAGE_MISC, Language::get(3471));
@@ -2677,10 +2677,7 @@ bool spellEffectDemonIllusion(Entity& my, spellElement_t& element, Entity* paren
 						case MINOTAUR:
 							break;
 						default:
-                            if ( targetCrtr )
-                            {
-                                targetCrtr->monsterAcquireAttackTarget(*monster, MONSTER_STATE_PATH);
-                            }
+							targetCrtr->monsterAcquireAttackTarget(*monster, MONSTER_STATE_PATH);
 							break;
 					}
 					monster->lookAtEntity(*target);
@@ -2713,7 +2710,7 @@ bool spellEffectDemonIllusion(Entity& my, spellElement_t& element, Entity* paren
 					Stat* parentStats = parent->getStats();
 					if ( parentStats )
 					{
-						if ( parentCrtr && parentCrtr->behavior == &actPlayer )
+						if ( parentCrtr->behavior == &actPlayer )
 						{
 							Uint32 color = makeColorRGB(255, 255, 0);
 							messagePlayerColor(parent->skill[2], MESSAGE_STATUS, color, Language::get(621));
@@ -2735,7 +2732,7 @@ bool spellEffectDemonIllusion(Entity& my, spellElement_t& element, Entity* paren
 
 					// hit messages
 					Uint32 color = makeColorRGB(0, 255, 0);
-					if ( parentCrtr && parentCrtr->behavior == &actPlayer )
+					if ( parentCrtr->behavior == &actPlayer )
 					{
 						messagePlayerMonsterEvent(parent->skill[2], color, *hitstats, Language::get(3469), Language::get(3470), MSG_COMBAT);
 					}
@@ -2744,7 +2741,7 @@ bool spellEffectDemonIllusion(Entity& my, spellElement_t& element, Entity* paren
 
 			Uint32 color = makeColorRGB(255, 0, 0);
 			int player = -1;
-			if ( targetCrtr && targetCrtr->behavior == &actPlayer )
+			if ( targetCrtr->behavior == &actPlayer )
 			{
 				player = target->skill[2];
 				if ( player >= 0 )

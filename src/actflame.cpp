@@ -84,14 +84,14 @@ static ConsoleVariable<bool> cvar_flame_use_vismap("/flame_use_vismap", true);
 
 Entity* spawnFlame(Entity* parentent, Sint32 sprite )
 {
-    Creature* parentCrtr = (Creature*)parentent;
+	Creature* parentCrtr = (Creature*)parentent;
 	if ( !parentent )
 	{
 		return nullptr;
 	}
 	if ( *cvar_flame_use_vismap && !intro )
 	{
-		if ( (!parentCrtr || parentCrtr->behavior != actPlayer )
+		if ( parentCrtr->behavior != actPlayer
 			&& parentent->behavior != actPlayerLimb
 			&& !parentent->flags[OVERDRAW]
 			&& !parentent->flags[GENIUS] )

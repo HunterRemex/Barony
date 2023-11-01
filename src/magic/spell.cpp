@@ -624,7 +624,7 @@ bool spell_isChanneled(spell_t* spell)
 
 real_t getBonusFromCasterOfSpellElement(Entity* caster, Stat* casterStats, spellElement_t* spellElement)
 {
-    Creature* casterCrtr = (Creature*)caster;
+	Creature* casterCrtr = (Creature*)caster;
 	if ( caster && ( !casterCrtr || casterCrtr->behavior != &actPlayer ) )
 	{
 		return 0.0;

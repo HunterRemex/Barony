@@ -467,7 +467,7 @@ void vampireMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr, *entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	int bodypart;
 	bool wearingring = false;
 
@@ -1099,10 +1099,10 @@ void vampireMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						entity->flags[INVISIBLE] = true;
 					}
 				}
-                if ( myCrtr )
-                {
-                    myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
-                }
+				if ( myCrtr )
+				{
+					myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
+				}
 				break;
 				// cloak
 			case LIMB_HUMANOID_CLOAK:
@@ -1319,7 +1319,7 @@ void Creature::vampireChooseWeapon(const Entity* target, double dist)
 	}
 
 	Stat *myStats = getStats();
-    const Creature* targetCrtr = (const Creature*)target;
+	const Creature* targetCrtr = (const Creature*)target;
 	if ( !myStats )
 	{
 		return;

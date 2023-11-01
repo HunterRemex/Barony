@@ -1704,7 +1704,7 @@ void gameLogic(void)
 			{
 				nextnode = node->next;
 				entity = (Entity*)node->element;
-                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+				Creature* entityCrtr = (Creature*)entity;
 				bool isCreature = entityCrtr != nullptr;
 
 				if ( entity && !entity->ranbehavior )
@@ -1713,10 +1713,10 @@ void gameLogic(void)
 					{
 						++entity->ticks;
 					}
-					if ( entity->behavior != nullptr || isCreature)
+					if ( entity->behavior != nullptr || isCreature )
 					{
 						if ( gameloopFreezeEntities 
-							&& (!entityCrtr || entityCrtr->behavior != &actPlayer)
+							&& entityCrtr->behavior != &actPlayer
 							&& entity->behavior != &actPlayerLimb
 							&& entity->behavior != &actHudWeapon
 							&& entity->behavior != &actHudShield
@@ -1796,7 +1796,7 @@ void gameLogic(void)
 
 							entity->ranbehavior = true;
 							nextnode = node->next;
-                            Creature* entityCrtr = (Creature*)entity;
+							Creature* entityCrtr = (Creature*)entity;
 							if ( debugMonsterTimer && entityCrtr && entityCrtr->behavior == &actMonster )
 							{
 								auto t2 = std::chrono::high_resolution_clock::now();
@@ -3016,7 +3016,7 @@ void gameLogic(void)
 			{
 				nextnode = node->next;
 				entity = (Entity*)node->element;
-                Creature* entityCrtr = (Creature*)entity;
+				Creature* entityCrtr = (Creature*)entity;
 				if ( entity && !entity->ranbehavior )
 				{
 					if ( !gamePaused || (multiplayer && !client_disconnected[0]) )
@@ -3026,7 +3026,7 @@ void gameLogic(void)
 					if ( entity->behavior != nullptr )
 					{
 						if ( gameloopFreezeEntities
-							&& (!entityCrtr || entityCrtr->behavior != &actPlayer)
+							&& entityCrtr->behavior != &actPlayer
 							&& entity->behavior != &actPlayerLimb
 							&& entity->behavior != &actHudWeapon
 							&& entity->behavior != &actHudShield
@@ -3076,7 +3076,7 @@ void gameLogic(void)
 											double ox = 0, oy = 0, onewx = 0, onewy = 0;
 
 											// move the bodyparts of these otherwise the limbs will get left behind in this adjustment.
-											if ( entityCrtr )
+											if ( entityCrtr->behavior == &actPlayer || entityCrtr->behavior == &actMonster )
 											{
 												ox = entity->x;
 												oy = entity->y;
@@ -3092,7 +3092,7 @@ void gameLogic(void)
 											}
 
 											// move the bodyparts of these otherwise the limbs will get left behind in this adjustment.
-											if ( entityCrtr )
+											if ( entityCrtr->behavior == &actPlayer || entityCrtr->behavior == &actMonster )
 											{
 												for ( Entity *bodypart : entity->bodyparts )
 												{
@@ -3108,7 +3108,7 @@ void gameLogic(void)
 									if ( fabs(entity->vel_x) > 0.0001 || fabs(entity->vel_y) > 0.0001 )
 									{
 										double ox = 0, oy = 0, onewx = 0, onewy = 0;
-										if ( entityCrtr )
+										if ( entityCrtr->behavior == &actPlayer || entityCrtr->behavior == &actMonster )
 										{
 											ox = entity->x;
 											oy = entity->y;
@@ -3117,7 +3117,7 @@ void gameLogic(void)
 										}
 										real_t dist = clipMove(&entity->x, &entity->y, entity->vel_x, entity->vel_y, entity);
 										real_t new_dist = clipMove(&entity->new_x, &entity->new_y, entity->vel_x, entity->vel_y, entity);
-										if ( entityCrtr )
+										if ( entityCrtr->behavior == &actPlayer || entityCrtr->behavior == &actMonster )
 										{
 											for (Entity *bodypart : entity->bodyparts)
 											{

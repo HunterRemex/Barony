@@ -345,7 +345,7 @@ std::string EnemyBarSettings_t::getEnemyBarSpriteName(Entity* entity)
 {
 	if ( !entity ) { return "default"; }
 
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if ( entityCrtr && (entityCrtr->behavior == &actPlayer || entityCrtr->behavior == &actMonster) )
 	{
 		int type = entity->getMonsterTypeFromSprite();
@@ -14465,7 +14465,7 @@ real_t getDisplayedHPRegen(Entity* my, Stat& myStats, Uint32* outColor, char buf
 	if ( myStats.HP > 0 )
 	{
 		regen = (static_cast<real_t>(Creature::getHealthRegenInterval(my,
-            myStats, true)) / TICKS_PER_SECOND);
+			myStats, true)) / TICKS_PER_SECOND);
 		if ( myStats.type == SKELETON )
 		{
 			if ( !(svFlags & SV_FLAG_HUNGER) )
@@ -26924,7 +26924,7 @@ SDL_Surface* EnemyHPDamageBarHandler::EnemyHPDetails::blitEnemyBar(const int pla
 SDL_Surface* EnemyHPDamageBarHandler::EnemyHPDetails::blitEnemyBarStatusEffects(const int player)
 {
 	Entity* entity = uidToEntity(enemy_uid);
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	if ( entity && (!entityCrtr || (entityCrtr->behavior != &actPlayer && entityCrtr->behavior != &actMonster)) )
 	{
 		return nullptr;

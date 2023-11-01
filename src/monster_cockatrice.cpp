@@ -322,7 +322,7 @@ void cockatriceMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* leftbody = nullptr;
 	Entity* leftarm = nullptr;
 	Entity* rightarm = nullptr;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	int bodypart = 0;
 	int limbSpeedMultiplier = 1;
 

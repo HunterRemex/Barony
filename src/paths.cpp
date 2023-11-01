@@ -12,6 +12,7 @@
 #include "main.hpp"
 #include "game.hpp"
 #include "stat.hpp"
+#include "entity.hpp"
 #include "creature.h"
 #include "monster.hpp"
 #include "collision.hpp"
@@ -19,7 +20,6 @@
 #include "items.hpp"
 #include "net.hpp"
 #include "magic/magic.hpp"
-#include "entity.hpp"
 
 class Creature;
 
@@ -398,8 +398,8 @@ static ConsoleVariable<bool> cvar_pathing_debug("/pathing_debug", false);
 int lastGeneratePathTries = 0;
 list_t* generatePath(int x1, int y1, int x2, int y2, Entity* my, Entity* target, GeneratePathTypes pathingType, bool lavaIsPassable)
 {
-    Creature* myCrtr = (Creature*)my;
-    Creature* targetCrtr = (Creature*)target;
+	Creature* myCrtr = (Creature*)my;
+	Creature* targetCrtr = (Creature*)target;
 	if ( *cvar_pathing_debug )
 	{
 		pathtime = std::chrono::high_resolution_clock::now();
@@ -444,10 +444,10 @@ list_t* generatePath(int x1, int y1, int x2, int y2, Entity* my, Entity* target,
 	}
 
 	// for boulders falling and checking if a player can reach the ladder.
-	bool playerCheckPathToExit = (myCrtr && myCrtr->behavior == &actPlayer
-		&& target && (target->behavior == &actLadder || target->behavior == &actPortal));
-	bool playerCheckAchievement = (myCrtr && myCrtr->behavior == &actPlayer
-		&& target && (target->behavior == &actBomb || target->behavior == &actPlayerLimb || target->behavior == &actItem || target->behavior == &actSwitch));
+	bool playerCheckPathToExit = ( myCrtr->behavior == &actPlayer
+		&& target && (target->behavior == &actLadder || target->behavior == &actPortal) );
+	bool playerCheckAchievement = ( myCrtr->behavior == &actPlayer
+		&& target && (target->behavior == &actBomb || target->behavior == &actPlayerLimb || target->behavior == &actItem || target->behavior == &actSwitch) );
 
 	int* pathMap = (int*) calloc(map.width * map.height, sizeof(int));
 	int pathMapType = GateGraph::GATE_GRAPH_GROUNDED;
@@ -477,7 +477,7 @@ list_t* generatePath(int x1, int y1, int x2, int y2, Entity* my, Entity* target,
 				DebugStats.gui2 = DebugStats.gui2 + ms;
 			}
 			lastGeneratePathTries = 0;
-			if ( myCrtr && myCrtr->behavior == &actMonster
+			if ( myCrtr->behavior == &actMonster
 				&& (pathingType == GENERATE_PATH_ALLY_FOLLOW
 					|| pathingType == GENERATE_PATH_ALLY_FOLLOW2) )
 			{
@@ -485,7 +485,7 @@ list_t* generatePath(int x1, int y1, int x2, int y2, Entity* my, Entity* target,
 			}
 			return NULL;
 		}
-		if ( myCrtr && myCrtr->behavior == &actMonster )
+		if ( myCrtr->behavior == &actMonster )
 		{
 			if ( gateGraph[pathMapType].bIsInit )
 			{
@@ -501,7 +501,7 @@ list_t* generatePath(int x1, int y1, int x2, int y2, Entity* my, Entity* target,
 						DebugStats.gui2 = DebugStats.gui2 + ms;
 					}
 					lastGeneratePathTries = 0;
-					if ( myCrtr && myCrtr->behavior == &actMonster
+					if ( myCrtr->behavior == &actMonster
 						&& (pathingType == GENERATE_PATH_ALLY_FOLLOW
 							|| pathingType == GENERATE_PATH_ALLY_FOLLOW2) )
 					{
@@ -533,11 +533,11 @@ list_t* generatePath(int x1, int y1, int x2, int y2, Entity* my, Entity* target,
 	for ( auto entityNode = map.entities->first; entityNode != nullptr; entityNode = entityNode->next )
 	{
 		Entity* entity = (Entity*)entityNode->element;
-        Creature* entityCrtr = (Creature*)entity;
+		Creature* entityCrtr = (Creature*)entity;
 		if ( entity->flags[PASSABLE] )
 		{
 			if ( entity->behavior == &actSpearTrap 
-				&& (my->getRace() == HUMAN || (myCrtr && myCrtr->monsterAllyGetPlayerLeader()) ) )
+				&& (my->getRace() == HUMAN || (myCrtr->monsterAllyGetPlayerLeader())) )
 			{
 				// humans/followers know better than that!
 
@@ -588,11 +588,11 @@ list_t* generatePath(int x1, int y1, int x2, int y2, Entity* my, Entity* target,
 		{
 			continue;
 		}
-		if ( entityCrtr && entityCrtr->behavior == &actMonster && ( !myCrtr || !myCrtr->checkEnemy(entity)) )
+		if ( entityCrtr && entityCrtr->behavior == &actMonster && (!myCrtr->checkEnemy(entity)) )
 		{
 			continue;
 		}
-		if ( entityCrtr && entityCrtr->behavior == &actPlayer && myCrtr && myCrtr->monsterAllyIndex >= 0
+		if ( entityCrtr && entityCrtr->behavior == &actPlayer && myCrtr->monsterAllyIndex >= 0
 			&& (myCrtr->monsterTarget == 0 || myCrtr->monsterAllyState == ALLY_STATE_MOVETO) )
 		{
 			continue;
@@ -606,7 +606,7 @@ list_t* generatePath(int x1, int y1, int x2, int y2, Entity* my, Entity* target,
 			//Fix to make ladders generate in hell.
 			continue;
 		}
-		if (playerCheckAchievement && (entityCrtr))
+		if (playerCheckAchievement && (entityCrtr->behavior == &actMonster || entityCrtr->behavior == &actPlayer))
 		{
 			continue;
 		}

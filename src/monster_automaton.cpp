@@ -555,7 +555,7 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = NULL, *entity2 = NULL;
 	Entity* rightbody = NULL;
 	Entity* weaponarm = NULL;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	int bodypart;
 	bool wearingring = false;
 
@@ -849,7 +849,7 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 							my->monsterAttack = 0;
 							if ( multiplayer != CLIENT && myCrtr )
 							{
-								spawnMagicEffectParticles(my->x, my->y, my->z / 2, 174);
+								spawnMagicEffectParticles(myCrtr->x, myCrtr->y, myCrtr->z / 2, 174);
 								myCrtr->monsterSpecialState = AUTOMATON_RECYCLE_ANIMATION_COMPLETE;
 							}
 						}
@@ -1148,10 +1148,10 @@ void automatonMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						entity->flags[INVISIBLE] = true;
 					}
 				}
-                if ( myCrtr )
-                {
-                    myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
-                }
+				if ( myCrtr )
+				{
+					myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
+				}
 				break;
 			// cloak
 			case LIMB_HUMANOID_CLOAK:

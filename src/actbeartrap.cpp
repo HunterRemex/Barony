@@ -303,8 +303,8 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 		return;
 	}
 	Entity* parent = uidToEntity(my->parent);
-    Creature* parentCrtr = (Creature*)parent;
-    Creature* triggeredCrtr = (Creature*)triggered;
+	Creature* parentCrtr = (Creature*)parent;
+	Creature* triggeredCrtr = (Creature*)triggered;
 	Stat* stat = triggered->getStats();
 	Stat* parentStats = nullptr;
 	if ( parent )
@@ -362,7 +362,7 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 			messagePlayerMonsterEvent(parent->skill[2], color, *triggered->getStats(), Language::get(3613), Language::get(3614), MSG_TOOL_BOMB, my);
 		}
 	}
-	if ( triggeredCrtr && triggeredCrtr->behavior == &actPlayer )
+	if ( triggeredCrtr->behavior == &actPlayer )
 	{
 		int player = triggered->skill[2];
 		Uint32 color = makeColorRGB(255, 0, 0);
@@ -414,17 +414,17 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 			}
 		}
 
-		if ( !parentgoodspots.empty() && triggeredCrtr )
+		if ( !parentgoodspots.empty() )
 		{
 			Entity* targetLocation = parentgoodspots[local_rng.rand() % parentgoodspots.size()];
 			teleported = triggeredCrtr->teleportAroundEntity(targetLocation, 2);
 		}
-		else if ( !goodspots.empty() && triggeredCrtr )
+		else if ( !goodspots.empty() )
 		{
 			Entity* targetLocation = goodspots[local_rng.rand() % goodspots.size()];
 			teleported = triggeredCrtr->teleportAroundEntity(targetLocation, 2);
 		}
-		else if ( triggeredCrtr )
+		else
 		{
 			teleported = triggeredCrtr->teleportRandom(); // woosh!
 		}
@@ -442,14 +442,14 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 					messagePlayerMonsterEvent(parent->skill[2], color, *triggered->getStats(), Language::get(3601), Language::get(3602), MSG_COMBAT);
 				}
 			}
-			if ( triggeredCrtr && triggeredCrtr->behavior == &actPlayer )
+			if ( triggeredCrtr->behavior == &actPlayer )
 			{
 				Uint32 color = makeColorRGB(255, 255, 255);
 				messagePlayerColor(triggered->skill[2], MESSAGE_STATUS, color, Language::get(3611));
 				achievementObserver.playerAchievements[triggered->skill[2]].checkPathBetweenObjects(triggered, my, AchievementObserver::BARONY_ACH_WONDERFUL_TOYS);
 			}
 
-			if ( triggeredCrtr && triggeredCrtr->behavior == &actMonster )
+			if ( triggeredCrtr->behavior == &actMonster )
 			{
 				triggeredCrtr->monsterReleaseAttackTarget();
 			}
@@ -550,7 +550,7 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 		}
 	}
 
-	if ( triggeredCrtr && triggeredCrtr->behavior == &actPlayer )
+	if ( triggeredCrtr->behavior == &actPlayer )
 	{
 		int player = triggered->skill[2];
 		
@@ -588,7 +588,7 @@ void bombDoEffect(Entity* my, Entity* triggered, real_t entityDistance, bool spa
 					messagePlayer(player, MESSAGE_HINT, Language::get(3495));
 				}
 			}
-			if ( triggeredCrtr && triggeredCrtr->behavior == &actMonster )
+			if ( triggeredCrtr->behavior == &actMonster )
 			{
 				if ( oldHP > 0 && stat->HP == 0 ) // got a kill
 				{
@@ -880,7 +880,7 @@ void actBomb(Entity* my)
 		for ( node = currentList->first; node != nullptr && !triggered; node = node->next )
 		{
 			Entity* entity = (Entity*)node->element;
-            Creature* entityCrtr = (Creature*)entity;
+			Creature* entityCrtr = (Creature*)entity;
 			if ( !entity )
 			{
 				continue;
@@ -895,7 +895,7 @@ void actBomb(Entity* my)
 				if ( stat )
 				{
 					Entity* parent = uidToEntity(my->parent);
-                    Creature* parentCrtr = (Creature*)parent;
+					Creature* parentCrtr = (Creature*)parent;
 					if ( parentCrtr && parentCrtr->checkFriend(entity) && !(BOMB_TRIGGER_TYPE == Item::ItemBombTriggerType::BOMB_TRIGGER_ALL) )
 					{
 						continue;
@@ -906,7 +906,7 @@ void actBomb(Entity* my)
 					}
 					if ( !parent && BOMB_PLAYER_OWNER >= 0 && !(BOMB_TRIGGER_TYPE == Item::ItemBombTriggerType::BOMB_TRIGGER_ALL) )
 					{
-						if ( entityCrtr && entityCrtr->behavior == &actPlayer )
+						if ( entityCrtr->behavior == &actPlayer )
 						{
 							continue; // players won't trigger if owner dead.
 						}
@@ -1138,7 +1138,7 @@ void actDecoyBox(Entity* my)
 	if ( my->ticks % TICKS_PER_SECOND == 0 )
 	{
 		Entity* parent = uidToEntity(my->parent);
-        Creature* parentCrtr = (Creature*)parent;
+		Creature* parentCrtr = (Creature*)parent;
 		std::vector<list_t*> entLists = TileEntityList.getEntitiesWithinRadiusAroundEntity(my, decoyBoxRange * 2 + 1);
 		std::vector<Entity*> listOfOtherDecoys;
 		// find other decoys (so monsters don't wiggle back and forth.)
@@ -1167,7 +1167,7 @@ void actDecoyBox(Entity* my)
 			for ( node = currentList->first; node != nullptr; node = node->next )
 			{
 				Entity* entity = (Entity*)node->element;
-                Creature* entityCrtr = (Creature*)entity;
+				Creature* entityCrtr = (Creature*)entity;
 				if ( parent && entityCrtr && entityCrtr->behavior == &actMonster
 					&& parent->checkEnemy(entityCrtr) && entityCrtr->isMobile() )
 				{
@@ -1202,7 +1202,7 @@ void actDecoyBox(Entity* my)
 							if ( (Uint32)(entityCrtr->monsterLastDistractedByNoisemaker) == my->getUID() )
 							{
 								// ignore pathing to this noisemaker as we're already distracted by it.
-								if ( entityDist(entity, my) < TOUCHRANGE 
+								if ( entityDist(entity, my) < TOUCHRANGE
 									&& !myStats->EFFECTS[EFF_DISORIENTED]
 									&& !myStats->EFFECTS[EFF_DISTRACTED_COOLDOWN] )
 								{
@@ -1236,7 +1236,7 @@ void actDecoyBox(Entity* my)
 							{
 								break;
 							}
-							if ( !myStats->EFFECTS[EFF_DISTRACTED_COOLDOWN] 
+							if ( !myStats->EFFECTS[EFF_DISTRACTED_COOLDOWN]
 								&& entityCrtr->monsterSetPathToLocation(my->x / 16, my->y / 16, 2,
 									GeneratePathTypes::GENERATE_PATH_DEFAULT) && entity->children.first )
 							{
@@ -1247,7 +1247,7 @@ void actDecoyBox(Entity* my)
 								serverUpdateEntitySkill(entity, 0);
 								detected = true;
 
-								if ( entityDist(entity, my) < TOUCHRANGE 
+								if ( entityDist(entity, my) < TOUCHRANGE
 									&& !myStats->EFFECTS[EFF_DISORIENTED]
 									&& !myStats->EFFECTS[EFF_DISTRACTED_COOLDOWN] )
 								{
@@ -1321,7 +1321,7 @@ void actDecoyBox(Entity* my)
 		// stop working.
 		bool decoyBreak = (local_rng.rand() % 5 == 0);
 		Entity* parent = uidToEntity(my->parent);
-        Creature* parentCrtr = (Creature*)parent;
+		Creature* parentCrtr = (Creature*)parent;
 		playSoundEntity(my, 485 + local_rng.rand() % 3, 192);
 		if ( !decoyBreak )
 		{

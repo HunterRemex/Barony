@@ -721,7 +721,7 @@ void insectoidMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
 	Entity* torso = nullptr;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	int bodypart;
 	bool wearingring = false;
 
@@ -1265,10 +1265,10 @@ void insectoidMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						entity->flags[INVISIBLE] = true;
 					}
 				}
-                if ( myCrtr )
-                {
-                    myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
-                }
+				if ( myCrtr )
+				{
+					myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
+				}
 				break;
 			// cloak
 			case LIMB_HUMANOID_CLOAK:
@@ -1606,7 +1606,7 @@ bool Creature::insectoidCanWieldItem(const Item& item) const
 
 void Creature::insectoidChooseWeapon(const Entity* target, double dist)
 {
-    const Creature* targetCrtr = (const Creature*)target;
+	const Creature* targetCrtr = (const Creature*)target;
 	if ( monsterSpecialState != 0 )
 	{
 		//Holding a weapon assigned from the special attack. Don't switch weapons.

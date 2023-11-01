@@ -2131,7 +2131,7 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 			for ( node = tempMap->entities->first; node != nullptr; node = node->next )
 			{
 				entity = (Entity*)node->element;
-                Creature* entityCrtr = dynamic_cast<Creature*>(entity);
+				Creature* entityCrtr = dynamic_cast<Creature*>(entity);
 				if ( entityCrtr )
 				{
 					childEntity = newCreature(entity->sprite, 1, map.entities, map.creatures);
@@ -2154,7 +2154,7 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 				childEntity->mapGenerationRoomY = y;
 				//printlog("1 Generated entity. Sprite: %d Uid: %d X: %.2f Y: %.2f\n",childEntity->sprite,childEntity->getUID(),childEntity->x,childEntity->y);
 
-				if ( entityCrtr )
+				if ( entityCrtr->behavior == &actMonster || entityCrtr->behavior == &actPlayer )
 				{
 					entityCrtr->addToCreatureList(map.creatures);
 				}
@@ -2187,9 +2187,9 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 					childEntity->y = entity->y + subRoom_tileStarty * 16;
 					childEntity->mapGenerationRoomX = subRoom_tileStartx;
 					childEntity->mapGenerationRoomY = subRoom_tileStarty;
-					if ( entityCrtr )
+					if ( entityCrtr->behavior == &actMonster || entityCrtr->behavior == &actPlayer )
 					{
-						entity->addToCreatureList(map.creatures);
+						entityCrtr->addToCreatureList(map.creatures);
 					}
 
 					//messagePlayer(0, "1 Generated entity. Sprite: %d X: %.2f Y: %.2f", childEntity->sprite, childEntity->x / 16, childEntity->y / 16);
@@ -3427,11 +3427,11 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 		else if ( c == 1 && secretlevel && currentlevel == 7 && !strncmp(map.name, "Underworld", 10) )
 		{
 			entity = newEntity(89, 1, map.entities, nullptr);
-            Creature* entityCrtr = (Creature*)entity;
-            if ( entityCrtr )
-            {
-                entityCrtr->monsterStoreType = 1;
-            }
+			Creature* entityCrtr = (Creature*)entity; //TODO: BIRD Recheck this
+			if ( entityCrtr )
+			{
+				entityCrtr->monsterStoreType = 1;
+			}
 			entity->skill[5] = nummonsters;
 			++nummonsters;
 			//entity = newEntity(68, 1, map.entities, nullptr); // magic (artifact) bow
@@ -3667,7 +3667,8 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 							doNPC = true;
 						}
 
-						if (Creature* crtrEntity = (Creature*)entity; crtrEntity && doNPC )
+						if ( Creature* crtrEntity = (Creature*)entity;
+							crtrEntity && doNPC )
 						{
 							if ( currentlevel > 15 && map_rng.rand() % 4 > 0 )
 							{
@@ -3866,7 +3867,7 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 										entity = newCreature(93, 1, map.entities, map.creatures);  // automaton
 										if ( currentlevel < 25 )
 										{
-                                            ((Creature*)entity)->monsterStoreType = 1; // weaker version
+											((Creature*)entity)->monsterStoreType = 1; // weaker version
 										}
 									}
 									else
@@ -3874,7 +3875,7 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 										entity = newCreature(27, 1, map.entities, map.creatures);  // human
 										if ( multiplayer != CLIENT && currentlevel > 5 )
 										{
-                                            ((Creature*)entity)->monsterStoreType = (currentlevel / 5) * 3 + (local_rng.rand() % 4); // scale humans with depth. 3 LVL each 5 floors, + 0-3.
+											((Creature*)entity)->monsterStoreType = (currentlevel / 5) * 3 + (local_rng.rand() % 4); // scale humans with depth. 3 LVL each 5 floors, + 0-3.
 										}
 									}
 								}
@@ -4160,7 +4161,7 @@ void assignActions(map_t* map)
 							}
 						}
 					}
-                    entityCrtr->behavior = &actPlayer;
+					entityCrtr->behavior = &actPlayer;
 					entityCrtr->addToCreatureList(map->creatures);
 					entityCrtr->x += 8;
 					entityCrtr->y += 8;
@@ -4170,9 +4171,9 @@ void assignActions(map_t* map)
 					entityCrtr->focalz = limbs[HUMAN][0][2]; // -1.5
 					entityCrtr->sprite = 113; // head model
 					entityCrtr->sizex = 4;
-                    entityCrtr->sizey = 4;
-                    entityCrtr->flags[GENIUS] = true;
-                    if ( numplayers == clientnum && multiplayer == CLIENT )
+					entityCrtr->sizey = 4;
+					entityCrtr->flags[GENIUS] = true;
+					if ( numplayers == clientnum && multiplayer == CLIENT )
 					{
 						entityCrtr->flags[UPDATENEEDED] = false;
 					}
@@ -4183,7 +4184,7 @@ void assignActions(map_t* map)
 					entityCrtr->flags[BLOCKSIGHT] = true;
 					entityCrtr->skill[2] = numplayers; // skill[2] == PLAYER_NUM
 					players[numplayers]->entity = entityCrtr;
-					if ( ((Creature*)entity)->playerStartDir == -1 )
+					if ( entityCrtr->playerStartDir == -1 )
 					{
 						entityCrtr->yaw = (map_rng.rand() % 8) * 45 * (PI / 180.f);
 					}

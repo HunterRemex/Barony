@@ -356,8 +356,8 @@ bool entityInsideTile(Entity* entity, int x, int y, int z, bool checkSafeTiles)
 						{
 							return true;
 						}
-                        if (Creature* crtrEntity = (Creature*)entity;
-                                crtrEntity && crtrEntity->behavior == &actMonster) {
+						Creature* crtrEntity = (Creature*)entity;
+                        if ( crtrEntity && crtrEntity->behavior == &actMonster) {
                             if (swimmingtiles[map.tiles[z + y * MAPLAYERS + x * MAPLAYERS * map.height]] ||
                                 lavatiles[map.tiles[z + y * MAPLAYERS + x * MAPLAYERS * map.height]])
                             {
@@ -417,7 +417,7 @@ bool entityInsideSomething(Entity* entity)
 	const int x = entity->x / 16;
 	const int y = entity->y / 16;
 	#endif
-    
+
 	// test against the map
 	for (int z = 0; z < MAPLAYERS; ++z) {
 		if (entityInsideTile(entity, x, y, z)) {
@@ -450,17 +450,17 @@ bool entityInsideSomething(Entity* entity)
 static ConsoleVariable<float> cvar_linetrace_smallcollision("/linetrace_smallcollision", 4.0);
 bool useSmallCollision(Entity& my, Stat& myStats, Entity& your, Stat& yourStats)
 {
-    Creature* myCrtr = (Creature*)&my;
-    Creature* yourCrtr = (Creature*)&my;
-	if ((myCrtr->behavior == &actMonster || myCrtr->behavior == &actPlayer) &&
-        (yourCrtr->behavior == &actMonster || yourCrtr->behavior == &actPlayer) )
+	Creature* myCrtr = (Creature*)&my;
+	Creature* yourCrtr = (Creature*)&my;
+	if ( (myCrtr->behavior == &actMonster || myCrtr->behavior == &actPlayer) &&
+		(yourCrtr->behavior == &actMonster || yourCrtr->behavior == &actPlayer) )
 	{
 		if (myCrtr->getUID() == yourStats.leader_uid
-            || yourCrtr->getUID() == myStats.leader_uid
-            || (myStats.leader_uid != 0 && myStats.leader_uid == yourStats.leader_uid)
-            || (myCrtr->behavior == &actPlayer && yourCrtr->behavior == &actPlayer)
-            || (myCrtr->behavior == &actPlayer && yourCrtr->monsterAllyGetPlayerLeader())
-            || (yourCrtr->behavior == &actPlayer && myCrtr->monsterAllyGetPlayerLeader()) )
+			|| yourCrtr->getUID() == myStats.leader_uid
+			|| (myStats.leader_uid != 0 && myStats.leader_uid == yourStats.leader_uid)
+			|| (myCrtr->behavior == &actPlayer && yourCrtr->behavior == &actPlayer)
+			|| (myCrtr->behavior == &actPlayer && yourCrtr->monsterAllyGetPlayerLeader())
+			|| (yourCrtr->behavior == &actPlayer && myCrtr->monsterAllyGetPlayerLeader()) )
 		{
 			return true;
 		}
@@ -487,8 +487,8 @@ int barony_clear(real_t tx, real_t ty, Entity* my)
 	real_t tx2, ty2;
 	node_t* node;
 	Entity* entity;
-    Creature* myCrtr = (Creature*)my;
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* myCrtr = (Creature*)my;
+	Creature* entityCrtr = (Creature*)entity;
 	bool levitating = false;
 // Reworked that function to break the loop in two part. 
 // A first fast one using integer only x/y
@@ -504,7 +504,7 @@ int barony_clear(real_t tx, real_t ty, Entity* my)
 	bool isMonster = false;
 	if ( my )
 	{
-		if ( myCrtr && myCrtr->behavior == &actMonster )
+		if ( myCrtr->behavior == &actMonster )
 		{
 			isMonster = true;
 		}
@@ -523,7 +523,7 @@ int barony_clear(real_t tx, real_t ty, Entity* my)
 	Stat* parentStats = nullptr;
 	if ( my )
 	{
-		if ( !myCrtr )
+		if ( !myCrtr || (myCrtr->behavior != &actPlayer && myCrtr->behavior != &actMonster) )
 		{
 			levitating = true;
 		}
@@ -631,17 +631,17 @@ int barony_clear(real_t tx, real_t ty, Entity* my)
 				continue;
 			}
 			if ( entity->isDamageableCollider() && entity->colliderHasCollision == 2
-				&& myCrtr && myCrtr->behavior == &actMonster && ((Creature*)my)->getMonsterTypeFromSprite() == MINOTAUR )
+				&& myCrtr->behavior == &actMonster && ((Creature*)my)->getMonsterTypeFromSprite() == MINOTAUR )
 			{
 				continue;
 			}
-			if ( ((myCrtr && myCrtr->behavior == &actMonster) || my->behavior == &actBoulder) && entity->behavior == &actDoorFrame )
+			if ( (myCrtr->behavior == &actMonster || my->behavior == &actBoulder) && entity->behavior == &actDoorFrame )
 			{
 				continue;    // monsters don't have hard collision with door frames
 			}
 			Stat* myStats = stats; //my->getStats();	//SEB <<<
 			Stat* yourStats = entity->getStats();
-			if (myCrtr && entityCrtr && myCrtr->behavior == &actPlayer && entityCrtr->behavior == &actPlayer )
+			if ( entityCrtr && myCrtr->behavior == &actPlayer && entityCrtr->behavior == &actPlayer )
 			{
 				continue;
 			}
@@ -655,21 +655,21 @@ int barony_clear(real_t tx, real_t ty, Entity* my)
 				{
 					continue;
 				}
-				if (entityCrtr && entityCrtr->behavior == &actMonster && yourStats->type == NOTHING && multiplayer == CLIENT )
+				if ( entityCrtr && entityCrtr->behavior == &actMonster && yourStats->type == NOTHING && multiplayer == CLIENT )
 				{
 					// client doesn't know about the type of the monster.
 					yourStats->type = static_cast<Monster>(entityCrtr->getMonsterTypeFromSprite());
 				}
 				if ( monsterally[myStats->type][yourStats->type] )
 				{
-					if ( myCrtr && myCrtr->behavior == &actPlayer && myStats->type != HUMAN )
+					if ( myCrtr->behavior == &actPlayer && myStats->type != HUMAN )
 					{
 						if ( myCrtr->checkFriend(entity) )
 						{
 							continue;
 						}
 					}
-					else if ( myCrtr && entityCrtr && myCrtr->behavior == &actMonster && entityCrtr->behavior == &actPlayer )
+					else if ( entityCrtr && myCrtr->behavior == &actMonster && entityCrtr->behavior == &actPlayer )
 					{
 						if ( myCrtr->checkFriend(entity) )
 						{
@@ -678,7 +678,7 @@ int barony_clear(real_t tx, real_t ty, Entity* my)
 					}
 					else
 					{
-						if ( myCrtr && myCrtr->behavior == &actPlayer && yourStats->monsterForceAllegiance == Stat::MONSTER_FORCE_PLAYER_ENEMY
+						if ( myCrtr->behavior == &actPlayer && yourStats->monsterForceAllegiance == Stat::MONSTER_FORCE_PLAYER_ENEMY
                              || entityCrtr && entityCrtr->behavior == &actPlayer && myStats->monsterForceAllegiance == Stat::MONSTER_FORCE_PLAYER_ENEMY )
 						{
 							// forced enemies.
@@ -689,7 +689,7 @@ int barony_clear(real_t tx, real_t ty, Entity* my)
 						}
 					}
 				}
-				else if ( myCrtr && myCrtr->behavior == &actPlayer )
+				else if ( myCrtr->behavior == &actPlayer )
 				{
 					if ( myCrtr->checkFriend(entity) )
 					{
@@ -715,7 +715,7 @@ int barony_clear(real_t tx, real_t ty, Entity* my)
 				{
 					continue;
 				}
-				else if ( myCrtr && myCrtr->behavior == &actPlayer && entity->flags[USERFLAG2] )
+				else if ( myCrtr->behavior == &actPlayer && entity->flags[USERFLAG2] )
 				{
 					continue; // fix clients not being able to walk through friendly monsters
 				}
@@ -870,7 +870,7 @@ real_t clipMove(real_t* x, real_t* y, real_t vx, real_t vy, Entity* my)
 
 Entity* findEntityInLine( Entity* my, real_t x1, real_t y1, real_t angle, int entities, Entity* target )
 {
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	Entity* result = NULL;
 	node_t* node;
 	real_t lowestDist = 9999;
@@ -1002,10 +1002,10 @@ Entity* findEntityInLine( Entity* my, real_t x1, real_t y1, real_t angle, int en
 		for ( node = currentList->first; node != nullptr; node = node->next )
 		{
 			Entity* entity = (Entity*)node->element;
-            Creature* creature = (Creature*)entity;
+			Creature* creature = (Creature*)entity;
 			if ( (entity != target && target != nullptr)
-                || entity->flags[PASSABLE]
-                || entity == my
+				|| entity->flags[PASSABLE]
+				|| entity == my
 				|| ((entities == LINETRACE_IGNORE_ENTITIES) && 
 						( (!entity->flags[BLOCKSIGHT] && (!creature || creature->behavior != &actMonster))
 							|| ((creature && creature->behavior == &actMonster) && (entity->flags[INVISIBLE] && entity->sprite != 889) )
@@ -1033,8 +1033,8 @@ Entity* findEntityInLine( Entity* my, real_t x1, real_t y1, real_t angle, int en
 			real_t sizey = entity->sizey;
 			if ( entities == LINETRACE_ATK_CHECK_FRIENDLYFIRE && multiplayer != CLIENT )
 			{
-                auto* myCreature = (Creature*)my;
-                auto* entityCreature = (Creature*)entity;
+				auto* myCreature = (Creature*)my;
+				auto* entityCreature = (Creature*)entity;
 				if ( (myCreature->behavior == &actMonster || myCreature->behavior == &actPlayer)
 					&& (entityCreature->behavior == &actMonster || entityCreature->behavior == &actPlayer) )
 				{
@@ -1239,7 +1239,7 @@ Entity* findEntityInLine( Entity* my, real_t x1, real_t y1, real_t angle, int en
 
 real_t lineTrace( Entity* my, real_t x1, real_t y1, real_t angle, real_t range, int entities, bool ground )
 {
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	int posx, posy;
 	real_t fracx, fracy;
 	real_t rx, ry;
@@ -1314,7 +1314,7 @@ real_t lineTrace( Entity* my, real_t x1, real_t y1, real_t angle, real_t range, 
 	}
 
 	Entity* entity = findEntityInLine(my, x1, y1, angle, entities, NULL);
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 
 	Stat* yourStats = nullptr;
 	bool reduceCollisionSize = false;
@@ -1328,8 +1328,8 @@ real_t lineTrace( Entity* my, real_t x1, real_t y1, real_t angle, real_t range, 
 		yourStats = entity->getStats();
 		if ( entities == LINETRACE_ATK_CHECK_FRIENDLYFIRE )
 		{
-			if (my && stats && myCrtr &&
-                entity && entityCrtr && yourStats )
+			if ( my && stats && (myCrtr->behavior == &actMonster || myCrtr->behavior == &actPlayer) &&
+				entity && (entityCrtr->behavior == &actMonster || entityCrtr->behavior == &actPlayer) && yourStats )
 			{
 				reduceCollisionSize = useSmallCollision(*my, *stats, *entity, *yourStats);
 				if ( reduceCollisionSize )
@@ -1381,7 +1381,7 @@ real_t lineTrace( Entity* my, real_t x1, real_t y1, real_t angle, real_t range, 
 		{
 			bool isMonster = false;
 			if ( my )
-				if ( myCrtr && myCrtr->behavior == &actMonster )
+				if ( myCrtr->behavior == &actMonster )
 				{
 					isMonster = true;
 				}
@@ -1401,7 +1401,7 @@ real_t lineTrace( Entity* my, real_t x1, real_t y1, real_t angle, real_t range, 
 		if ( entity )
 		{
 			// debug particles.
-			if ( myCrtr && myCrtr->behavior == &actPlayer && entities == LINETRACE_ATK_CHECK_FRIENDLYFIRE )
+			if ( myCrtr->behavior == &actPlayer && entities == LINETRACE_ATK_CHECK_FRIENDLYFIRE )
 			{
 				static ConsoleVariable<bool> cvar_linetracedebug("/linetracedebug", false);
 				if ( *cvar_linetracedebug )
@@ -1463,8 +1463,8 @@ real_t lineTrace( Entity* my, real_t x1, real_t y1, real_t angle, real_t range, 
 
 real_t lineTraceTarget( Entity* my, real_t x1, real_t y1, real_t angle, real_t range, int entities, bool ground, Entity* target )
 {
-    Creature* myCrtr = (Creature*)my;
-    Creature* entityCrtr = (Creature*)target;
+	Creature* myCrtr = (Creature*)my;
+	Creature* entityCrtr = (Creature*)target;
 	int posx, posy;
 	real_t fracx, fracy;
 	real_t rx, ry;
@@ -1563,7 +1563,7 @@ real_t lineTraceTarget( Entity* my, real_t x1, real_t y1, real_t angle, real_t r
 		{
 			bool isMonster = false;
 			if ( my )
-				if ( myCrtr && myCrtr->behavior == &actMonster )
+				if ( myCrtr->behavior == &actMonster )
 				{
 					isMonster = true;
 				}
@@ -1583,7 +1583,7 @@ real_t lineTraceTarget( Entity* my, real_t x1, real_t y1, real_t angle, real_t r
 		if ( entity )
 		{
 			// debug particles.
-			if ( myCrtr && myCrtr->behavior == &actMonster && entities == 0 )
+			if ( myCrtr->behavior == &actMonster && entities == 0 )
 			{
 				static ConsoleVariable<bool> cvar_linetracetargetdebug("/linetracetargetdebug", false);
 				if ( *cvar_linetracetargetdebug )
@@ -1654,8 +1654,8 @@ real_t lineTraceTarget( Entity* my, real_t x1, real_t y1, real_t angle, real_t r
 
 int checkObstacle(long x, long y, Entity* my, Entity* target, bool useTileEntityList)
 {
-    Creature* myCrtr = (Creature*)my;
-    Creature* entityCrtr = (Creature*)target;
+	Creature* myCrtr = (Creature*)my;
+	Creature* entityCrtr = (Creature*)target;
 	node_t* node;
 	Entity* entity;
 	Stat* stats;
@@ -1668,7 +1668,7 @@ int checkObstacle(long x, long y, Entity* my, Entity* target, bool useTileEntity
 	}
 	if ( my )
 	{
-		if ( !myCrtr && my->behavior != &actLadder && my->behavior != &actPortal )
+		if ( (!myCrtr || (myCrtr->behavior != &actPlayer && myCrtr->behavior != &actMonster)) && my->behavior != &actLadder && my->behavior != &actPortal )
 		{
 			levitating = true;
 		}
@@ -1753,7 +1753,7 @@ int checkObstacle(long x, long y, Entity* my, Entity* target, bool useTileEntity
 						{
 							continue;
 						}
-						if ( isMonster && myCrtr && myCrtr->getMonsterTypeFromSprite() == MINOTAUR && entity->isDamageableCollider()
+						if ( isMonster && myCrtr->getMonsterTypeFromSprite() == MINOTAUR && entity->isDamageableCollider()
 							&& entity->colliderHasCollision == 2 )
 						{
 							continue;

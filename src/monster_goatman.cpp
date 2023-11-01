@@ -747,7 +747,7 @@ void goatmanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr, *entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	int bodypart;
 	bool wearingring = false;
 
@@ -1187,10 +1187,10 @@ void goatmanMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						entity->flags[INVISIBLE] = true;
 					}
 				}
-                if ( myCrtr )
-                {
-                    myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
-                }
+				if ( myCrtr )
+				{
+					myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
+				}
 				break;
 			// cloak
 			case LIMB_HUMANOID_CLOAK:

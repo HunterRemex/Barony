@@ -199,7 +199,7 @@ int boulderCheckAgainstEntity(Entity* my, Entity* entity, bool ignoreInsideEntit
 	{
 		return 0;
 	}
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 
 	if ( entityCrtr )
 	{

@@ -386,7 +386,7 @@ void shadowMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = NULL, *entity2 = NULL;
 	Entity* rightbody = NULL;
 	Entity* weaponarm = NULL;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	int bodypart;
 	bool wearingring = false;
 
@@ -1387,7 +1387,7 @@ void Creature::shadowSpecialAbility(bool initialMimic)
 	}
 
 	Entity *target = uidToEntity(monsterTarget);
-    Creature* targetCrtr = (Creature*)target;
+	Creature* targetCrtr = (Creature*)target;
 	if ( !target )
 	{
 		//messagePlayer(clientnum, "Shadow's target deaded!");
@@ -1688,7 +1688,7 @@ void Creature::shadowChooseWeapon(const Entity* target, double dist)
 
 		/* THIS NEEDS TO BE ELSEWHERE, TO BE CALLED CONSTANTLY TO ALLOW SHADOW TO TELEPORT IF NO PATH/ DISTANCE IS TOO GREAT */
 
-        const Creature* targetCrtr = (const Creature*)target;
+		const Creature* targetCrtr = (const Creature*)target;
 		// occurs less often against fellow monsters.
 		specialRoll = local_rng.rand() % (20 + 50 * (targetCrtr && targetCrtr->behavior == &actMonster));
 

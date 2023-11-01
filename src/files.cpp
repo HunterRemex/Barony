@@ -2152,10 +2152,7 @@ int loadMap(const char* filename2, map_t* destmap, list_t* entlist, list_t* crea
 						{
 							list_RemoveNode(entity->mynode);
 							entity = newCreature(sprite, 0, entlist, nullptr);
-                            if (Creature* creature = (Creature*)entity; creature)
-                            {
-                                fp->read(&creature->playerStartDir, sizeof(Sint32), 1);
-                            }
+							fp->read(&((Creature*)(entity))->playerStartDir, sizeof(Sint32), 1);
 						}
 						break;
 					case 24:
@@ -2195,7 +2192,7 @@ int loadMap(const char* filename2, map_t* destmap, list_t* entlist, list_t* crea
 			default:
 				break;
 		}
-		if ( dynamic_cast<Creature*>(entity) )
+		if ( ((Creature*)entity)->behavior == actMonster || ((Creature*)entity)->behavior == actPlayer )
 		{
 			entity->addToCreatureList(creatureList);
 		}
@@ -2587,11 +2584,11 @@ int saveMap(const char* filename2)
 					fp->write(&entity->gateDisableOpening, sizeof(Sint32), 1);
 					break;
 				case 23:
-                    if ( Creature *creature = (Creature*)entity; creature )
-                    {
-                        fp->write(&creature->playerStartDir, sizeof(Sint32), 1);
-                    }
-                    break;
+					if ( Creature *creature = (Creature*)entity; creature )
+					{
+						fp->write(&creature->playerStartDir, sizeof(Sint32), 1);
+					}
+					break;
 				case 24:
 					fp->write(&entity->statueDir, sizeof(Sint32), 1);
 					fp->write(&entity->statueId, sizeof(Sint32), 1);

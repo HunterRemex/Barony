@@ -17,6 +17,5 @@ Entity_Base::Entity_Base(Sint32 &interactedByMonster, real_t &highlightForUi, re
 
 Entity_Base::~Entity_Base()
 {
-	printlog("EBase DECON: %i", uid);
-	printlog("----------");
+	// TODO Auto-generated destructor stub
 };

@@ -1817,12 +1817,11 @@ void setSpriteAttributes(Entity* entityNew, Entity* entityToCopy, Entity* entity
 	}
 	else if ( spriteType == 23 ) // player spawns
 	{
-		if (Creature* creatureToCopy = (Creature*)entityToCopy;
-            entityToCopy != nullptr
-            && creatureToCopy != nullptr)
+		if ( Creature* creatureToCopy = (Creature*)entityToCopy;
+			entityToCopy != nullptr)
 		{
 			// copy old entity attributes to newly created.
-            ((Creature*)entityNew)->playerStartDir = creatureToCopy->playerStartDir;
+			((Creature*)entityNew)->playerStartDir = creatureToCopy->playerStartDir;
 		}
 	}
 	else if ( spriteType == 24 ) // statue

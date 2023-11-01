@@ -257,7 +257,7 @@ void crystalgolemMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr;
 	Entity* leftbody = nullptr;
 	Entity* leftarm = nullptr;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	int bodypart;
 
 	// set invisibility //TODO: isInvisible()?

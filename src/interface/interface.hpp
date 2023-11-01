@@ -139,7 +139,7 @@ public:
 		{
 			if ( Creature* entity = uidToCreature(uid); entity == nullptr )
 			{
-                barType = BAR_TYPE_FURNITURE;
+				barType = BAR_TYPE_FURNITURE;
 			}
 			enemy_uid = uid;
 			enemy_hp = HP;

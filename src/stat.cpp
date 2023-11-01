@@ -1272,7 +1272,7 @@ int Stat::getPassiveShieldBonus(bool checkShield) const
 	}
 }
 
-bool Stat::statusEffectRemovedByCureAilment(const int effect, Creature *my)
+bool Stat::statusEffectRemovedByCureAilment(const int effect, Creature* my)
 {
 	switch ( effect )
 	{

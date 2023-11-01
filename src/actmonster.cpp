@@ -165,11 +165,11 @@ std::string getMonsterLocalizedName(Monster creature)
 {
 	if ( creature < KOBOLD )
 	{
-	    if (creature == SPIDER && arachnophobia_filter) {
-		    return Language::get(102);
-	    } else {
-		    return Language::get(90 + creature);
-	    }
+		if (creature == SPIDER && arachnophobia_filter) {
+			return Language::get(102);
+		} else {
+			return Language::get(90 + creature);
+		}
 	}
 	else
 	{
@@ -182,11 +182,11 @@ std::string getMonsterLocalizedPlural(Monster creature)
 {
 	if ( creature < KOBOLD )
 	{
-	    if (creature == SPIDER && arachnophobia_filter) {
-		    return Language::get(123);
-	    } else {
-		    return Language::get(111 + creature);
-	    }
+		if (creature == SPIDER && arachnophobia_filter) {
+			return Language::get(123);
+		} else {
+			return Language::get(111 + creature);
+		}
 	}
 	else
 	{
@@ -198,11 +198,11 @@ std::string getMonsterLocalizedInjury(Monster creature)
 {
 	if ( creature < KOBOLD )
 	{
-	    if (creature == SPIDER && arachnophobia_filter) {
-		    return Language::get(144);
-	    } else {
-		    return Language::get(132 + creature);
-	    }
+		if (creature == SPIDER && arachnophobia_filter) {
+			return Language::get(144);
+		} else {
+			return Language::get(132 + creature);
+		}
 	}
 	else
 	{
@@ -424,7 +424,7 @@ void ShopkeeperPlayerHostility_t::setWantedLevel(ShopkeeperPlayerHostility_t::Pl
 	}
 }
 
-void ShopkeeperPlayerHostility_t::onShopkeeperDeath(Creature* my, Stat* myStats, Creature * attacker)
+void ShopkeeperPlayerHostility_t::onShopkeeperDeath(Creature* my, Stat* myStats, Creature* attacker)
 {
 	if ( shopIsMysteriousShopkeeper(my) ) { return; }
 	if ( my && myStats && attacker && myStats->type == SHOPKEEPER )
@@ -450,8 +450,8 @@ void ShopkeeperPlayerHostility_t::onShopkeeperHit(Creature* my, Stat* myStats, E
 {
 	if ( shopIsMysteriousShopkeeper(my) ) { return; }
 	if ( my && myStats && attacker && myStats->type == SHOPKEEPER )
-    {
-        Creature* attackerCrtr = (Creature*)attacker;
+	{
+		Creature* attackerCrtr = (Creature*)attacker;
 		if ( attackerCrtr && attackerCrtr->behavior == &actPlayer )
 		{
 			if ( auto h = getPlayerHostility(attacker->skill[2]) )
@@ -529,7 +529,7 @@ void Entity::updateEntityOnHit(Entity* attacker, bool alertTarget)
 	if ( !attacker ) return;
 	if ( attacker == this ) { return; }
 
-    Creature* attackerCrtr = (Creature*)attacker;
+	Creature* attackerCrtr = (Creature*)attacker;
 	if ( Stat* myStats = getStats() )
 	{
 		if ( myStats->type == SHOPKEEPER )
@@ -979,24 +979,24 @@ void summonMonsterClient(Monster creature, long x, long y, Uint32 uid)
 
 Creature* summonMonster(Monster creature, long x, long y, bool forceLocation)
 {
-    auto entity = summonMonsterNoSmoke(creature, x, y, forceLocation);
+	auto entity = summonMonsterNoSmoke(creature, x, y, forceLocation);
 
-    // make a puff
-    if (entity) {
-        if (creature == MINOTAUR) {
-            // extra big poof
-            auto poof = spawnPoof(entity->x, entity->y, -8, 2.0);
-        }
-        else if (creature == GYROBOT) {
-            // small poof
-            auto poof = spawnPoof(entity->x, entity->y, 4, 0.5);
-        }
-        else {
-            (void)spawnPoof(entity->x, entity->y, 0, 1.0);
-        }
-    }
+	// make a puff
+	if (entity) {
+		if (creature == MINOTAUR) {
+			// extra big poof
+			auto poof = spawnPoof(entity->x, entity->y, -8, 2.0);
+		}
+		else if (creature == GYROBOT) {
+			// small poof
+			auto poof = spawnPoof(entity->x, entity->y, 4, 0.5);
+		}
+		else {
+			(void)spawnPoof(entity->x, entity->y, 0, 1.0);
+		}
+	}
 
-    return entity;
+	return entity;
 }
 
 Creature* summonMonsterNoSmoke(Monster creature, long x, long y, bool forceLocation)
@@ -1226,8 +1226,8 @@ bool monsterMoveAside(Entity* my, Entity* entity, bool ignoreMonsterState)
 	}
 
 	// move away
-	if ( Creature* myCrtr = (Creature*)my; myCrtr
-		 && (x != 0 || y != 0) )
+	Creature* myCrtr = (Creature*)my;
+	if ( myCrtr && (x != 0 || y != 0) )
 	{
 		myCrtr->monsterState = MONSTER_STATE_PATH;
 		myCrtr->monsterReleaseAttackTarget();
@@ -1661,10 +1661,10 @@ bool makeFollower(int monsterclicked, bool ringconflict, char namesays[64],
 	Uint32* myuid = (Uint32*) (malloc(sizeof(Uint32)));
 	newNode->element = myuid;
 	*myuid = my->getUID();
-    
-    if (monsterclicked >= 0 && monsterclicked < MAXPLAYERS && (myStats->type == HUMAN || myStats->name[0]))
-    {
-        // give us a random name (if necessary)
+
+	if (monsterclicked >= 0 && monsterclicked < MAXPLAYERS && (myStats->type == HUMAN || myStats->name[0]))
+	{
+		// give us a random name (if necessary)
 		if ( myStats->type == HUMAN 
 			&& !myStats->name[0] 
 			&& !monsterNameIsGeneric(*myStats)) {
@@ -1675,8 +1675,8 @@ bool makeFollower(int monsterclicked, bool ringconflict, char namesays[64],
 			size_t len = names[choice].size();
 			stringCopy(myStats->name, name, sizeof(Stat::name), len);
 		}
-        
-        // ... and a nametag
+
+		// ... and a nametag
 		if (!monsterNameIsGeneric(*myStats)) {
 			if (monsterclicked == clientnum || splitscreen) {
 				Entity* nametag = newEntity(-1, 1, map.entities, nullptr);
@@ -1699,8 +1699,8 @@ bool makeFollower(int monsterclicked, bool ringconflict, char namesays[64],
 				nametag->skill[1] = playerColor(monsterclicked, colorblind_lobby, true);
 			}
 		}
-    }
-    
+	}
+
 	if ( my->getINT() > -2 && race == HUMAN )
 	{
 		//messagePlayer(monsterclicked, MESSAGE_INTERACTION | MESSAGE_WORLD, Language::get(525 + local_rng.rand() % 4), namesays, stats[monsterclicked]->name);
@@ -1733,7 +1733,7 @@ bool makeFollower(int monsterclicked, bool ringconflict, char namesays[64],
 			name = myStats->getAttribute("special_npc");
 			name.insert(0, "$");
 		}
-        SDLNet_Write32(myStats->type, &net_packet->data[8]);
+		SDLNet_Write32(myStats->type, &net_packet->data[8]);
 		strcpy((char*)(&net_packet->data[12]), name.c_str());
 		net_packet->data[12 + strlen(name.c_str())] = 0;
 		net_packet->address.host = net_clients[monsterclicked - 1].host;
@@ -2062,7 +2062,7 @@ void actMonster(Creature* my)
 
 	if (movie || MainMenu::isCutsceneActive())
 	{
-	    return;
+		return;
 	}
 
 	int x, y, c, i;
@@ -2073,7 +2073,7 @@ void actMonster(Creature* my)
 	double tangent;
 	Stat* myStats;
 	Entity* entity;
-    Creature* entityCrtr;
+	Creature* entityCrtr;
 	Stat* hitstats = NULL;
 	bool hasrangedweapon = false;
 	bool myReflex;
@@ -2144,7 +2144,7 @@ void actMonster(Creature* my)
 		}
 		else if (MONSTER_INIT)
 		{
-		    const auto dist = sqrt(MONSTER_VELX * MONSTER_VELX + MONSTER_VELY * MONSTER_VELY);
+			const auto dist = sqrt(MONSTER_VELX * MONSTER_VELX + MONSTER_VELY * MONSTER_VELY);
 			switch (my->getMonsterTypeFromSprite()) {
 			case HUMAN: humanMoveBodyparts(my, nullptr, dist); break;
 			case RAT: ratAnimate(my, dist); break;
@@ -2484,7 +2484,7 @@ void actMonster(Creature* my)
 			}
 			else
 			{
-				numMonsterTypeAliveOnMap(LICH_ICE, (Entity*&)lichAlly);
+				numMonsterTypeAliveOnMap(LICH_ICE, (Entity*&)(lichAlly));
 				if ( lichAlly == nullptr )
 				{
 					//messagePlayer(0, "DEAD");
@@ -2880,8 +2880,8 @@ void actMonster(Creature* my)
 				for ( node = map.creatures->first; node != nullptr; node = node->next ) //Only creatures need to be targeted.
 				{
 					Creature* tempCreature = (Creature*)node->element;
-					if (tempCreature->behavior == &actPlayer
-                        && (sqrt(pow(my->x - tempCreature->x, 2) + pow(my->y - tempCreature->y, 2)) < lichDist)
+					if ( tempCreature->behavior == &actPlayer
+						&& (sqrt(pow(my->x - tempCreature->x, 2) + pow(my->y - tempCreature->y, 2)) < lichDist)
 						)
 					{
 						lichDist = sqrt(pow(my->x - tempCreature->x, 2) + pow(my->y - tempCreature->y, 2));
@@ -2908,8 +2908,8 @@ void actMonster(Creature* my)
 				for ( node = map.creatures->first; node != nullptr; node = node->next ) //Only creatures need to be targeted.
 				{
 					Creature* tempCreature = (Creature*)node->element;
-					if (tempCreature && tempCreature->behavior == &actPlayer
-                        && (sqrt(pow(my->x - tempCreature->x, 2) + pow(my->y - tempCreature->y, 2)) < lichDist)
+					if ( tempCreature && tempCreature->behavior == &actPlayer
+						&& (sqrt(pow(my->x - tempCreature->x, 2) + pow(my->y - tempCreature->y, 2)) < lichDist)
 						)
 					{
 						lichDist = sqrt(pow(my->x - tempCreature->x, 2) + pow(my->y - tempCreature->y, 2));
@@ -3950,9 +3950,9 @@ void actMonster(Creature* my)
 					my->z = -.25;
 				}
 				if (my->ticks % 2 == 0) {
-				    const int x = my->x + local_rng.uniform(-3, 3);
-				    const int y = my->y + local_rng.uniform(-3, 3);
-				    auto poof = spawnPoof(x, y, 6, 0.33, true);
+					const int x = my->x + local_rng.uniform(-3, 3);
+					const int y = my->y + local_rng.uniform(-3, 3);
+					auto poof = spawnPoof(x, y, 6, 0.33, true);
 				}
 				ghoulMoveBodyparts(my, myStats, 0);
 				return;
@@ -3967,7 +3967,7 @@ void actMonster(Creature* my)
 			for ( node2 = currentList->first; node2 != nullptr; node2 = node2->next ) //Can't convert to map.creatures because of doorframes.
 			{
 				entity = (Entity*)node2->element;
-                entityCrtr = (Creature*)entity;
+				entityCrtr = (Creature*)entity;
 				if ( entity == my )
 				{
 					continue;
@@ -4235,7 +4235,7 @@ void actMonster(Creature* my)
 							}
 							if ( targetdist > TOUCHRANGE && targetdist > light )
 							{
-                                Creature* entityCrtr = (Creature*)entity;
+								Creature* entityCrtr = (Creature*)entity;
 
 								if ( !(myStats->leader_uid == entity->getUID()) 
 									&& !(hitstats->leader_uid == my->getUID())
@@ -4334,7 +4334,7 @@ void actMonster(Creature* my)
 
 									if ( entity != nullptr )
 									{
-                                        auto crtrBhvr = ((void(*)(Creature *))entity->behavior);
+										auto crtrBhvr = ((void(*)(Creature *))entity->behavior); //TODO: BIRD This is dumb
 										if ( crtrBhvr && crtrBhvr == &actPlayer && myStats->type != DUMMYBOT )
 										{
 											assailant[entity->skill[2]] = true;  // as long as this is active, combat music doesn't turn off
@@ -4346,7 +4346,7 @@ void actMonster(Creature* my)
 									for ( node = map.creatures->first; node != nullptr; node = node->next )
 									{
 										entity = (Entity*)node->element;
-                                        Creature* crtrEntity = (Creature*)entity;
+										Creature* crtrEntity = (Creature*)entity;
 										if ( crtrEntity && crtrEntity->behavior == &actMonster && crtrEntity != my )
 										{
 											Stat* buddystats = entity->getStats();
@@ -4825,7 +4825,7 @@ void actMonster(Creature* my)
 			}
 			if ( entity != nullptr )
 			{
-                auto crtrBhvr = ((void(*)(Creature *))entity->behavior);
+				auto crtrBhvr = ((void(*)(Creature *))entity->behavior); //TODO: BIRD This is dumb
 				if ( crtrBhvr && crtrBhvr == &actPlayer && myStats->type != DUMMYBOT )
 				{
 					assailant[entity->skill[2]] = true;  // as long as this is active, combat music doesn't turn off
@@ -4894,7 +4894,7 @@ void actMonster(Creature* my)
 				{
 					if ( targetdist > TOUCHRANGE && targetdist > light && myReflex )
 					{
-                        auto crtrBhvr = ((void(*)(Creature *))entity->behavior);
+						auto crtrBhvr = ((void(*)(Creature *))entity->behavior); //TODO: BIRD This is dumb
 
 						if ( !(myStats->leader_uid == entity->getUID())
 							&& !(hitstats->leader_uid == my->getUID())
@@ -5595,7 +5595,7 @@ timeToGoAgain:
 			}
 
 			entity = uidToEntity(my->monsterTarget);
-            entityCrtr = (Creature*)entity;
+			entityCrtr = (Creature*)entity;
 			if ( entity != nullptr )
 			{
 				if ( entityCrtr && entityCrtr->behavior == &actPlayer )
@@ -5638,7 +5638,7 @@ timeToGoAgain:
 			if ( myStats->type == SHADOW && my->monsterSpecialTimer == 0 && my->monsterTarget )
 			{
 				Entity* target = uidToEntity(my->monsterTarget);
-                Creature* targetCrtr = (Creature*)entity;
+				Creature* targetCrtr = (Creature*)entity;
 				if ( !target )
 				{
 					my->monsterReleaseAttackTarget(true);
@@ -5901,7 +5901,7 @@ timeToGoAgain:
 			{
 				bool shouldHuntPlayer = false;
 				Entity* playerOrNot = uidToEntity(my->monsterTarget);
-                Creature* playerOrNotCrtr = (Creature*)playerOrNot;
+				Creature* playerOrNotCrtr = (Creature*)playerOrNot;
 				if (playerOrNot)
 				{
 					if (ticks % 180 == 0 && playerOrNotCrtr && playerOrNotCrtr->behavior == &actPlayer)
@@ -6133,8 +6133,8 @@ timeToGoAgain:
 			}
 
 			entity = uidToEntity(my->monsterTarget);
-            entityCrtr = (Creature*)entity;
-            if ( entity != NULL )
+			entityCrtr = (Creature*)entity;
+			if ( entity != NULL )
 			{
 				if ( entityCrtr && entityCrtr->behavior == &actPlayer && myStats->type != DUMMYBOT )
 				{
@@ -6205,7 +6205,7 @@ timeToGoAgain:
 							}
 							dist2 = clipMove(&my->x, &my->y, MONSTER_VELX, MONSTER_VELY, my);
 							my->handleKnockbackDamage(*myStats, hit.entity);
-                            Creature* hitEntityCrtr = (Creature*)hit.entity;
+							Creature* hitEntityCrtr = (Creature*)hit.entity;
 							if ( hit.entity != NULL )
 							{
 								if ( hit.entity->behavior == &actDoor )
@@ -6754,7 +6754,7 @@ timeToGoAgain:
 
 			// turn towards target
 			Entity* target = uidToEntity(my->monsterTarget);
-            Creature* targetCrtr = (Creature*)target;
+			Creature* targetCrtr = (Creature*)target;
 			if ( target != NULL )
 			{
 				dir = my->yaw - atan2( target->y - my->y, target->x - my->x );
@@ -8079,7 +8079,7 @@ timeToGoAgain:
 	myStats = my->getStats();
 	if ( myStats != NULL )
 	{
-	    const auto dist = sqrt(MONSTER_VELX * MONSTER_VELX + MONSTER_VELY * MONSTER_VELY);
+		const auto dist = sqrt(MONSTER_VELX * MONSTER_VELX + MONSTER_VELY * MONSTER_VELY);
 		switch (my->getMonsterTypeFromSprite()) {
 		case HUMAN: humanMoveBodyparts(my, myStats, dist); break;
 		case RAT: ratAnimate(my, dist); break;
@@ -8312,7 +8312,7 @@ void Creature::handleMonsterAttack(Stat* myStats, Entity* target, double dist)
 			{
 				// found the target in range
 				hitstats = hit.entity->getStats();
-                Creature* hitEntityCrtr = (Creature*)hit.entity;
+				Creature* hitEntityCrtr = (Creature*)hit.entity;
 				if ( hitEntityCrtr && hitEntityCrtr->behavior == &actMonster && !hasrangedweapon )
 				{
 					// alert the monster!
@@ -8834,16 +8834,16 @@ bool forceFollower(Creature& leader, Creature& follower)
 		Creature* creature = nullptr;
 		if ( c )
 		{
-            creature = uidToCreature(*c);
+			creature = uidToCreature(*c);
 		}
-		if (creature && creature->monsterTarget == *myuid )
+		if ( creature && creature->monsterTarget == *myuid )
 		{
 			creature->monsterReleaseAttackTarget(); // followers stop punching the new target.
 		}
 	}
 
 	int player = leader.isEntityPlayer();
-    
+
     if (player >= 0 && player < MAXPLAYERS && (followerStats->type == HUMAN || followerStats->name[0]))
     {
 		// give us a random name (if necessary)
@@ -8857,7 +8857,7 @@ bool forceFollower(Creature& leader, Creature& follower)
 			size_t len = names[choice].size();
 			stringCopy(followerStats->name, name, sizeof(Stat::name), len);
 		}
-        
+
         // ... and a nametag
 		if (!monsterNameIsGeneric(*followerStats)) {
 			if (player == clientnum || splitscreen) {
@@ -8882,7 +8882,7 @@ bool forceFollower(Creature& leader, Creature& follower)
 			}
 		}
     }
-    
+
 	if ( player > 0 && multiplayer == SERVER && !players[player]->isLocalPlayer() )
 	{
 		//Tell the client he suckered somebody into his cult.
@@ -10756,7 +10756,7 @@ bool Creature::monsterConsumeFoodEntity(Entity* food, Stat* myStats)
 
 Creature* Entity::monsterAllyGetPlayerLeader()
 {
-	if ( ((Creature*)this)->behavior != &actMonster )
+	if ( ((Creature*)this)->behavior != &actMonster ) //TODO: BIRD This is dumb
 	{
 		return nullptr;
 	}
@@ -10971,8 +10971,8 @@ bool Creature::monsterAllyEquipmentInClass(const Item& item) const
 bool Entity::monsterIsTinkeringCreation()
 {
 	int race = this->getMonsterTypeFromSprite();
-    if ( ((Creature*)this)->behavior != &actMonster )
-    {
+	if ( ((Creature*)this)->behavior != &actMonster ) //TODO: BIRD This is dumb
+	{
 		return false;
 	}
 	if ( race == GYROBOT || race == DUMMYBOT || race == SENTRYBOT || race == SPELLBOT )

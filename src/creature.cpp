@@ -34,62 +34,62 @@
 
 
 Creature::Creature(Sint32 in_sprite, Uint32 pos, list_t *entlist, list_t *creaturelist) :
-        Entity(in_sprite, pos, entlist, creaturelist),
-        monsterState(skill[0]),
-        monsterTarget(skill[1]),
-        monsterTargetX(fskill[2]),
-        monsterTargetY(fskill[3]),
-        monsterSpecialTimer(skill[29]),
-        monsterSpecialState(skill[33]),
-        monsterFootstepType(skill[32]),
-        monsterLookTime(skill[4]),
-        monsterMoveTime(skill[6]),
-        monsterLookDir(fskill[4]),
-        playerLevelEntrySpeech(skill[18]),
-        playerAliveTime(skill[12]),
-        playerVampireCurse(skill[51]),
-        playerAutomatonDeathCounter(skill[15]),
-        playerCreatedDeathCam(skill[16]),
-        monsterShadowInitialMimic(skill[34]),
-        monsterShadowDontChangeName(skill[35]),
-        monsterLichFireMeleeSeq(skill[34]),
-        monsterLichFireMeleePrev(skill[35]),
-        monsterLichIceCastSeq(skill[34]),
-        monsterLichIceCastPrev(skill[35]),
-        monsterLichMagicCastCount(skill[37]),
-        monsterLichMeleeSwingCount(skill[38]),
-        monsterLichBattleState(skill[27]),
-        monsterLichTeleportTimer(skill[40]),
-        monsterLichAllyStatus(skill[18]),
-        monsterLichAllyUID(skill[17]),
-        monsterPathBoundaryXStart(skill[14]),
-        monsterPathBoundaryYStart(skill[15]),
-        monsterPathBoundaryXEnd(skill[16]),
-        monsterPathBoundaryYEnd(skill[17]),
-        monsterStoreType(skill[18]),
-        monsterStrafeDirection(skill[39]),
-        monsterPathCount(skill[38]),
-        monsterAllyState(skill[43]),
-        monsterAllyPickupItems(skill[44]),
-        monsterAllyInteractTarget(skill[45]),
-        monsterAllyClass(skill[46]),
-        monsterDefend(skill[47]),
-        monsterAllySpecial(skill[48]),
-        monsterAllySpecialCooldown(skill[49]),
-        monsterAllySummonRank(skill[50]),
-        monsterKnockbackVelocity(fskill[9]),
-        monsterKnockbackUID(skill[51]),
-        monsterFearfulOfUid(skill[53]),
-        monsterIllusionTauntingThisUid(skill[55]),
-        monsterLastDistractedByNoisemaker(skill[55]), // shares with above as above only applies to inner demons.
-	    monsterExtraReflexTick(skill[56]),
-        monsterSentrybotLookDir(fskill[10]),
-        monsterKnockbackTangentDir(fskill[11]),
-        playerStrafeVelocity(fskill[12]),
-        playerStrafeDir(fskill[13]),
-        monsterSpecialAttackUnequipSafeguard(fskill[14]),
-        monsterHitTime(skill[7]),
-        playerStartDir(skill[1])
+		Entity(in_sprite, pos, entlist, creaturelist),
+		monsterState(skill[0]),
+		monsterTarget(skill[1]),
+		monsterTargetX(fskill[2]),
+		monsterTargetY(fskill[3]),
+		monsterSpecialTimer(skill[29]),
+		monsterSpecialState(skill[33]),
+		monsterFootstepType(skill[32]),
+		monsterLookTime(skill[4]),
+		monsterMoveTime(skill[6]),
+		monsterLookDir(fskill[4]),
+		playerLevelEntrySpeech(skill[18]),
+		playerAliveTime(skill[12]),
+		playerVampireCurse(skill[51]),
+		playerAutomatonDeathCounter(skill[15]),
+		playerCreatedDeathCam(skill[16]),
+		monsterShadowInitialMimic(skill[34]),
+		monsterShadowDontChangeName(skill[35]),
+		monsterLichFireMeleeSeq(skill[34]),
+		monsterLichFireMeleePrev(skill[35]),
+		monsterLichIceCastSeq(skill[34]),
+		monsterLichIceCastPrev(skill[35]),
+		monsterLichMagicCastCount(skill[37]),
+		monsterLichMeleeSwingCount(skill[38]),
+		monsterLichBattleState(skill[27]),
+		monsterLichTeleportTimer(skill[40]),
+		monsterLichAllyStatus(skill[18]),
+		monsterLichAllyUID(skill[17]),
+		monsterPathBoundaryXStart(skill[14]),
+		monsterPathBoundaryYStart(skill[15]),
+		monsterPathBoundaryXEnd(skill[16]),
+		monsterPathBoundaryYEnd(skill[17]),
+		monsterStoreType(skill[18]),
+		monsterStrafeDirection(skill[39]),
+		monsterPathCount(skill[38]),
+		monsterAllyState(skill[43]),
+		monsterAllyPickupItems(skill[44]),
+		monsterAllyInteractTarget(skill[45]),
+		monsterAllyClass(skill[46]),
+		monsterDefend(skill[47]),
+		monsterAllySpecial(skill[48]),
+		monsterAllySpecialCooldown(skill[49]),
+		monsterAllySummonRank(skill[50]),
+		monsterKnockbackVelocity(fskill[9]),
+		monsterKnockbackUID(skill[51]),
+		monsterFearfulOfUid(skill[53]),
+		monsterIllusionTauntingThisUid(skill[55]),
+		monsterLastDistractedByNoisemaker(skill[55]), // shares with above as above only applies to inner demons.
+		monsterExtraReflexTick(skill[56]),
+		monsterSentrybotLookDir(fskill[10]),
+		monsterKnockbackTangentDir(fskill[11]),
+		playerStrafeVelocity(fskill[12]),
+		playerStrafeDir(fskill[13]),
+		monsterSpecialAttackUnequipSafeguard(fskill[14]),
+		monsterHitTime(skill[7]),
+		playerStartDir(skill[1])
 {
 	mynode->deconstructor = &creatureDeconstructor;
 	mynode->size = sizeof(Creature);
@@ -1422,14 +1422,14 @@ void Creature::attack(int pose, int charge, Entity* target)
 				// this branch executes for most monsters
 				monsterAttack = pose;
 				if (myStats->type != SCARAB) {
-				    monsterAttackTime = 0;
+					monsterAttackTime = 0;
 				}
 				if ( multiplayer == SERVER )
 				{
 					// be sure to update the clients with the new wind-up pose.
 					serverUpdateEntitySkill(this, 8);
 					if (myStats->type != SLIME && myStats->type != RAT && myStats->type != SCARAB) {
-					    serverUpdateEntitySkill(this, 9);
+						serverUpdateEntitySkill(this, 9);
 					}
 				}
 				return; // don't execute the attack, let the monster animation call the attack() function again.
@@ -1484,7 +1484,7 @@ void Creature::attack(int pose, int charge, Entity* target)
 				for ( node = aoeTargets->first; node != NULL; node = node->next )
 				{
 					Entity* tmpEntity = (Entity*)node->element;
-                    Creature* tmpEntityCrtr = (Creature*)(*&tmpEntity);
+					Creature* tmpEntityCrtr = (Creature*)(*&tmpEntity);
 					if ( tmpEntity != nullptr )
 					{
 						spawnExplosion(tmpEntity->x, tmpEntity->y, tmpEntity->z);
@@ -1540,7 +1540,7 @@ void Creature::attack(int pose, int charge, Entity* target)
 			{
 				serverUpdateEntitySkill(this, 8);
 				if (myStats->type != SLIME && myStats->type != RAT && myStats->type != SCARAB) {
-				    serverUpdateEntitySkill(this, 9);
+					serverUpdateEntitySkill(this, 9);
 				}
 			}
 		}
@@ -1558,7 +1558,7 @@ void Creature::attack(int pose, int charge, Entity* target)
 		if ( behavior == &actMonster && monsterAllyIndex != -1 )
 		{
 			Entity* myTarget = uidToEntity(monsterTarget);
-            Creature* myTargetCrtr = (Creature*)(&myTarget);
+			Creature* myTargetCrtr = (Creature*)(&myTarget);
 			if ( myTarget )
 			{
 				if ( myTarget->monsterAllyIndex != -1 || (myTargetCrtr && myTargetCrtr->behavior == &actPlayer ))
@@ -2982,7 +2982,7 @@ void Creature::attack(int pose, int charge, Entity* target)
 							gugnirProc = true;
 						}
 					}
-                    Creature* hitCrtr = (Creature *)(&hit.entity);
+					Creature* hitCrtr = (Creature *)(&hit.entity);
 					double targetACEffectiveness = Creature::getACEffectiveness(hit.entity, hitstats, (hitCrtr && hitCrtr->behavior == &actPlayer), this, myStats);
 					int attackAfterReductions = static_cast<int>(std::max(0.0, ((myAttack * targetACEffectiveness - enemyAC))) + (1.0 - targetACEffectiveness) * myAttack);
 					if ( weaponskill == PRO_UNARMED )
@@ -3040,7 +3040,7 @@ void Creature::attack(int pose, int charge, Entity* target)
 								// unaware monster, get backstab damage.
 								backstab = true;
 								damage += (stats[player]->PROFICIENCIES[PRO_STEALTH] / 20 + 2) * (2 * stealthCapstoneBonus);
-                                Creature* hitCrtr = (Creature *)(&hit.entity);
+								Creature* hitCrtr = (Creature *)(&hit.entity);
 								if ( local_rng.rand() % 4 > 0 && (!hitCrtr || hitCrtr->behavior != &actPlayer ))
 								{
 									this->increaseSkill(PRO_STEALTH);
@@ -3052,7 +3052,7 @@ void Creature::attack(int pose, int charge, Entity* target)
 								// 1 in 2 chance to flank defenses.
 								flanking = true;
 								damage += (stats[player]->PROFICIENCIES[PRO_STEALTH] / 20 + 1) * (stealthCapstoneBonus);
-                                Creature* hitCrtr = (Creature *)(&hit.entity);
+								Creature* hitCrtr = (Creature *)(&hit.entity);
 								if ( local_rng.rand() % 20 == 0 && (!hitCrtr || hitCrtr->behavior != &actPlayer ))
 								{
 									this->increaseSkill(PRO_STEALTH);
@@ -4153,9 +4153,9 @@ void Creature::attack(int pose, int charge, Entity* target)
 										hitstats->EFFECTS[EFF_POISONED] = true;
 										hitstats->EFFECTS_TIMERS[EFF_POISONED] = std::max(200, 300 - hit.entity->getCON() * 20);
 										if (arachnophobia_filter) {
-										    messagePlayer(playerhit, MESSAGE_COMBAT, Language::get(4089));
+											messagePlayer(playerhit, MESSAGE_COMBAT, Language::get(4089));
 										} else {
-										    messagePlayer(playerhit, MESSAGE_COMBAT, Language::get(686));
+											messagePlayer(playerhit, MESSAGE_COMBAT, Language::get(686));
 										}
 										messagePlayer(playerhit, MESSAGE_COMBAT, Language::get(687));
 										serverUpdateEffects(playerhit);
@@ -4804,7 +4804,7 @@ void Creature::attack(int pose, int charge, Entity* target)
 					{
 						// conjuration deals damage back to attacker.
 						Entity* illusionParent = uidToEntity(hit.entity->parent);
-                        Creature* illusionParentCrtr = (Creature*)(*&illusionParent);
+						Creature* illusionParentCrtr = (Creature*)(*&illusionParent);
 						this->modHP(-(std::max(2, damage / 2)) );
 						playSoundEntity(this, 173, 64);
 						if ( illusionParent )
@@ -6206,7 +6206,7 @@ bool Creature::teleport(int tele_x, int tele_y)
 
 	// play sound effect
 	playSoundEntity(this, 77, 64);
-    spawnPoof(x, y, 0, 1.0, true);
+	spawnPoof(x, y, 0, 1.0, true);
 
 	// relocate entity
 	double oldx = x;
@@ -6256,24 +6256,24 @@ bool Creature::teleport(int tele_x, int tele_y)
 
 	// play second sound effect
 	playSoundEntity(this, 77, 64);
-    const float poofx = x + cosf(yaw) * 4.f;
-    const float poofy = y + sinf(yaw) * 4.f;
-    spawnPoof(poofx, poofy, 0, 1.0, true);
-    bNeedsRenderPositionInit = true;
-    for (auto part : bodyparts) {
-        part->bNeedsRenderPositionInit = true;
-    }
-    for (auto node = map.entities->first; node != nullptr; node = node->next) {
-        auto entity = (Entity*)node->element;
-        if (entity && entity->behavior == &actSpriteNametag) {
-            if (entity->parent == uid) {
-                entity->bNeedsRenderPositionInit = true;
-            }
-        }
-    }
-    if (player == clientnum || (splitscreen && player >= 0)) {
-        temporarilyDisableDithering();
-    }
+	const float poofx = x + cosf(yaw) * 4.f;
+	const float poofy = y + sinf(yaw) * 4.f;
+	spawnPoof(poofx, poofy, 0, 1.0, true);
+	bNeedsRenderPositionInit = true;
+	for (auto part : bodyparts) {
+		part->bNeedsRenderPositionInit = true;
+	}
+	for (auto node = map.entities->first; node != nullptr; node = node->next) {
+		auto entity = (Entity*)node->element;
+		if (entity && entity->behavior == &actSpriteNametag) {
+			if (entity->parent == uid) {
+				entity->bNeedsRenderPositionInit = true;
+			}
+		}
+	}
+	if (player == clientnum || (splitscreen && player >= 0)) {
+		temporarilyDisableDithering();
+	}
 
 	if ( behavior == &actMonster )
 	{
@@ -6347,7 +6347,7 @@ bool Creature::teleportRandom()
 
 bool Creature::teleportAroundEntity(Entity* target, int dist, int effectType)
 {
-    Creature* targetCrtr = (Creature*)(*&target);
+	Creature* targetCrtr = (Creature*)(*&target);
 	int numlocations = 0;
 	int pickedlocation;
 	int player = -1;
@@ -6651,7 +6651,7 @@ bool Creature::checkFriend(Entity* your)
 {
 	bool result = false;
 
-    Creature* yourCrtr = (Creature*)(*&your);
+	Creature* yourCrtr = (Creature*)(*&your);
 	if ( !your )
 	{
 		return false;    //Equivalent to if (!myStats || !yourStats)
@@ -7302,7 +7302,7 @@ int Creature::getAttackPose() const
 	// fists
 	else
 	{
-	    const auto type = myStats->type;
+		const auto type = myStats->type;
 		if (type == KOBOLD || type == AUTOMATON ||
 			type == GOATMAN || type == INSECTOID ||
 			type == INCUBUS || type == VAMPIRE ||
@@ -8270,7 +8270,7 @@ void Creature::handleEffects(Stat* myStats)
 
 	// "random" vomiting
 	if ( !this->char_gonnavomit && !myStats->EFFECTS[EFF_VOMITING]
-	     && myStats->type != SKELETON && effectShapeshift == NOTHING && myStats->type != AUTOMATON )
+		 && myStats->type != SKELETON && effectShapeshift == NOTHING && myStats->type != AUTOMATON )
 	{
 		if ( myStats->HUNGER > 1500 && local_rng.rand() % 1000 == 0 )
 		{
@@ -8346,7 +8346,7 @@ void Creature::handleEffects(Stat* myStats)
 			if ( (svFlags & SV_FLAG_HUNGER) )
 			{
 				if ( myStats->type != INSECTOID && myStats->type != AUTOMATON
-				     && myStats->type != SKELETON && effectShapeshift == NOTHING )
+					 && myStats->type != SKELETON && effectShapeshift == NOTHING )
 				{
 					myStats->HUNGER -= 40;
 					if ( myStats->HUNGER <= 50 )
@@ -8569,9 +8569,9 @@ void Creature::handleEffects(Stat* myStats)
 		if ( ticks % 70 == 0 || ticks % 130 == 0 )
 		{
 			if ( myStats->weapon != NULL
-			     && (myStats->weapon->beatitude == 0
-			         || !shouldInvertEquipmentBeatitude(myStats) && myStats->weapon->beatitude > 0
-			         || shouldInvertEquipmentBeatitude(myStats) && myStats->weapon->beatitude < 0)
+				 && (myStats->weapon->beatitude == 0
+					 || !shouldInvertEquipmentBeatitude(myStats) && myStats->weapon->beatitude > 0
+					 || shouldInvertEquipmentBeatitude(myStats) && myStats->weapon->beatitude < 0)
 					)
 			{
 				messagePlayer(player, MESSAGE_EQUIPMENT, Language::get(636));
@@ -8705,9 +8705,9 @@ void Creature::handleEffects(Stat* myStats)
 			this->char_poison = 0;
 			int poisonhurt = std::max(3, (myStats->MAXHP / 20));
 			if ( myStats->type == LICH_ICE
-			     || myStats->type == LICH_FIRE
-			     || myStats->type == LICH
-			     || myStats->type == DEVIL )
+				 || myStats->type == LICH_FIRE
+				 || myStats->type == LICH
+				 || myStats->type == DEVIL )
 			{
 				poisonhurt = std::min(poisonhurt, 15); // prevent doing 50+ dmg
 			}
@@ -8743,12 +8743,12 @@ void Creature::handleEffects(Stat* myStats)
 				if ( !strcmp(myStats->name, "") )
 				{
 					updateEnemyBar(killer, this, getMonsterLocalizedName(myStats->type).c_str(), myStats->HP, myStats->MAXHP, lowPriority,
-					               DamageGib::DMG_POISON);
+								   DamageGib::DMG_POISON);
 				}
 				else
 				{
 					updateEnemyBar(killer, this, myStats->name, myStats->HP, myStats->MAXHP, lowPriority,
-					               DamageGib::DMG_POISON);
+								   DamageGib::DMG_POISON);
 				}
 			}
 			myStats->killer = KilledBy::POISON;
@@ -8813,9 +8813,9 @@ void Creature::handleEffects(Stat* myStats)
 					bleedhurt -= (getCON() / 5);
 				}
 				if ( myStats->type == LICH_ICE
-				     || myStats->type == LICH_FIRE
-				     || myStats->type == LICH
-				     || myStats->type == DEVIL )
+					 || myStats->type == LICH_FIRE
+					 || myStats->type == LICH
+					 || myStats->type == DEVIL )
 				{
 					bleedhurt = std::min(bleedhurt, 15); // prevent doing 50+ dmg
 				}
@@ -8878,12 +8878,12 @@ void Creature::handleEffects(Stat* myStats)
 					if ( !strcmp(myStats->name, "") )
 					{
 						updateEnemyBar(killer, this, getMonsterLocalizedName(myStats->type).c_str(), myStats->HP, myStats->MAXHP, lowPriority,
-						               DamageGib::DMG_BLEED);
+									   DamageGib::DMG_BLEED);
 					}
 					else
 					{
 						updateEnemyBar(killer, this, myStats->name, myStats->HP, myStats->MAXHP, lowPriority,
-						               DamageGib::DMG_BLEED);
+									   DamageGib::DMG_BLEED);
 					}
 				}
 			}
@@ -9066,12 +9066,12 @@ void Creature::handleEffects(Stat* myStats)
 						if ( !strcmp(myStats->name, "") )
 						{
 							updateEnemyBar(killer, this, getMonsterLocalizedName(myStats->type).c_str(), myStats->HP, myStats->MAXHP, lowPriority,
-							               DamageGib::DMG_FIRE);
+										   DamageGib::DMG_FIRE);
 						}
 						else
 						{
 							updateEnemyBar(killer, this, myStats->name, myStats->HP, myStats->MAXHP, lowPriority,
-							               DamageGib::DMG_FIRE);
+										   DamageGib::DMG_FIRE);
 						}
 					}
 				}
@@ -9250,7 +9250,7 @@ void Creature::handleEffects(Stat* myStats)
 				for ( c = 0; c < NUMEFFECTS; c++ )
 				{
 					if ( !(c == EFF_VAMPIRICAURA && myStats->EFFECTS_TIMERS[c] == -2)
-					     && c != EFF_WITHDRAWAL && c != EFF_SHAPESHIFT )
+						 && c != EFF_WITHDRAWAL && c != EFF_SHAPESHIFT )
 					{
 						myStats->EFFECTS[c] = false;
 						myStats->EFFECTS_TIMERS[c] = 0;
@@ -9434,7 +9434,7 @@ void Creature::handleEffects(Stat* myStats)
 					for ( c = 0; c < NUMEFFECTS; c++ )
 					{
 						if ( !(c == EFF_VAMPIRICAURA && myStats->EFFECTS_TIMERS[c] == -2)
-						     && c != EFF_WITHDRAWAL && c != EFF_SHAPESHIFT )
+							 && c != EFF_WITHDRAWAL && c != EFF_SHAPESHIFT )
 						{
 							myStats->EFFECTS[c] = false;
 							myStats->EFFECTS_TIMERS[c] = 0;
@@ -9488,18 +9488,18 @@ void Creature::handleEffects(Stat* myStats)
 	}
 
 	if ( player >= 0
-	     && myStats->mask != nullptr
-	     && myStats->mask->type == TOOL_BLINDFOLD_TELEPATHY
-	     && (ticks % 45 == 0 || !myStats->EFFECTS[EFF_TELEPATH]) )
+		 && myStats->mask != nullptr
+		 && myStats->mask->type == TOOL_BLINDFOLD_TELEPATHY
+		 && (ticks % 45 == 0 || !myStats->EFFECTS[EFF_TELEPATH]) )
 	{
 		setEffect(EFF_TELEPATH, true, 60, true);
 	}
 
 	bool freeAction = false;
 	if ( player >= 0
-	     && myStats->mask != nullptr
-	     && (myStats->mask->type == TOOL_BLINDFOLD || myStats->mask->type == TOOL_BLINDFOLD_FOCUS || myStats->mask->type == TOOL_BLINDFOLD_TELEPATHY )
-	     && (ticks % 45 == 0 || !myStats->EFFECTS[EFF_BLIND]) )
+		 && myStats->mask != nullptr
+		 && (myStats->mask->type == TOOL_BLINDFOLD || myStats->mask->type == TOOL_BLINDFOLD_FOCUS || myStats->mask->type == TOOL_BLINDFOLD_TELEPATHY )
+		 && (ticks % 45 == 0 || !myStats->EFFECTS[EFF_BLIND]) )
 	{
 		setEffect(EFF_BLIND, true, 60, true);
 		if ( myStats->mask->type == TOOL_BLINDFOLD_FOCUS )
@@ -9544,7 +9544,7 @@ void Creature::handleEffects(Stat* myStats)
 
 	// unparalyze certain boss characters
 	if ( myStats->EFFECTS[EFF_PARALYZED] && ((myStats->type >= LICH && myStats->type < KOBOLD)
-	                                         || myStats->type == COCKATRICE || myStats->type == LICH_FIRE || myStats->type == LICH_ICE) )
+											 || myStats->type == COCKATRICE || myStats->type == LICH_FIRE || myStats->type == LICH_ICE) )
 	{
 		myStats->EFFECTS[EFF_PARALYZED] = false;
 		myStats->EFFECTS_TIMERS[EFF_PARALYZED] = 0;
@@ -9552,7 +9552,7 @@ void Creature::handleEffects(Stat* myStats)
 
 	// wake up
 	if ( myStats->EFFECTS[EFF_ASLEEP] && (myStats->OLDHP > myStats->HP || (myStats->type >= LICH && myStats->type < KOBOLD)
-	                                      || myStats->type == COCKATRICE || myStats->type == LICH_FIRE || myStats->type == LICH_ICE) )
+										  || myStats->type == COCKATRICE || myStats->type == LICH_FIRE || myStats->type == LICH_ICE) )
 	{
 		messagePlayer(player, MESSAGE_STATUS, Language::get(658));
 		if ( monsterAllyGetPlayerLeader() && monsterAllySpecial == ALLY_SPECIAL_CMD_REST )
@@ -9651,7 +9651,7 @@ void Creature::handleEffectsClient()
 void Creature::monsterAcquireAttackTarget(const Entity& target, int32_t state, bool monsterWasHit)
 {
 	Stat* myStats = getStats();
-    const Creature& targetCrtr = static_cast<const Creature &>(target);
+	const Creature& targetCrtr = static_cast<const Creature &>(target);
 	if ( !myStats )
 	{
 		return;
@@ -11323,35 +11323,35 @@ void Creature::handleHumanoidShieldLimb(Entity* shieldLimb, Entity* shieldArmLim
 
 			if ( shieldLimb->sprite == items[TOOL_LANTERN].index )
 			{
-			    shieldLimb->z += 2;
+				shieldLimb->z += 2;
 			}
-	        if ( flickerLights || ticks % TICKS_PER_SECOND == 1 )
-	        {
-			    if ( shieldLimb->sprite == items[TOOL_TORCH].index )
-			    {
+			if ( flickerLights || ticks % TICKS_PER_SECOND == 1 )
+			{
+				if ( shieldLimb->sprite == items[TOOL_TORCH].index )
+				{
 					if ( flameEntity = spawnFlame(shieldLimb, SPRITE_FLAME) )
 					{
 						flameEntity->x += 2 * cos(shieldArmLimb->yaw);
 						flameEntity->y += 2 * sin(shieldArmLimb->yaw);
 						flameEntity->z -= 2;
 					}
-			    }
-			    else if ( shieldLimb->sprite == items[TOOL_CRYSTALSHARD].index )
-			    {
-				    /*flameEntity = spawnFlame(shieldLimb, SPRITE_CRYSTALFLAME);
-				    flameEntity->x += 2 * cos(shieldArmLimb->yaw);
-				    flameEntity->y += 2 * sin(shieldArmLimb->yaw);
-				    flameEntity->z -= 2;*/
-			    }
-			    else if ( shieldLimb->sprite == items[TOOL_LANTERN].index )
-			    {
+				}
+				else if ( shieldLimb->sprite == items[TOOL_CRYSTALSHARD].index )
+				{
+					/*flameEntity = spawnFlame(shieldLimb, SPRITE_CRYSTALFLAME);
+					flameEntity->x += 2 * cos(shieldArmLimb->yaw);
+					flameEntity->y += 2 * sin(shieldArmLimb->yaw);
+					flameEntity->z -= 2;*/
+				}
+				else if ( shieldLimb->sprite == items[TOOL_LANTERN].index )
+				{
 					if ( flameEntity = spawnFlame(shieldLimb, SPRITE_FLAME) )
 					{
 						flameEntity->x += 2 * cos(shieldArmLimb->yaw);
 						flameEntity->y += 2 * sin(shieldArmLimb->yaw);
 						flameEntity->z += 1;
 					}
-			    }
+				}
 			}
 			if ( itemSpriteIsQuiverThirdPersonModel(shieldLimb->sprite) )
 			{
@@ -11442,37 +11442,37 @@ void Creature::handleHumanoidShieldLimb(Entity* shieldLimb, Entity* shieldArmLim
 				}
 			}
 
-            if ( shieldLimb->sprite == items[TOOL_LANTERN].index )
+			if ( shieldLimb->sprite == items[TOOL_LANTERN].index )
 			{
 				shieldLimb->z += 2;
 			}
-	        if ( flickerLights || ticks % TICKS_PER_SECOND == 1 )
-	        {
-			    if ( shieldLimb->sprite == items[TOOL_TORCH].index )
-			    {
+			if ( flickerLights || ticks % TICKS_PER_SECOND == 1 )
+			{
+				if ( shieldLimb->sprite == items[TOOL_TORCH].index )
+				{
 					if ( flameEntity = spawnFlame(shieldLimb, SPRITE_FLAME) )
 					{
 						flameEntity->x += 2.5 * cos(shieldLimb->yaw + PI / 16);
 						flameEntity->y += 2.5 * sin(shieldLimb->yaw + PI / 16);
 						flameEntity->z -= 2;
 					}
-			    }
-			    else if ( shieldLimb->sprite == items[TOOL_CRYSTALSHARD].index )
-			    {
-				    /*flameEntity = spawnFlame(shieldLimb, SPRITE_CRYSTALFLAME);
-				    flameEntity->x += 2.5 * cos(shieldLimb->yaw + PI / 16);
-				    flameEntity->y += 2.5 * sin(shieldLimb->yaw + PI / 16);
-				    flameEntity->z -= 2;*/
-			    }
-			    else if ( shieldLimb->sprite == items[TOOL_LANTERN].index )
-			    {
+				}
+				else if ( shieldLimb->sprite == items[TOOL_CRYSTALSHARD].index )
+				{
+					/*flameEntity = spawnFlame(shieldLimb, SPRITE_CRYSTALFLAME);
+					flameEntity->x += 2.5 * cos(shieldLimb->yaw + PI / 16);
+					flameEntity->y += 2.5 * sin(shieldLimb->yaw + PI / 16);
+					flameEntity->z -= 2;*/
+				}
+				else if ( shieldLimb->sprite == items[TOOL_LANTERN].index )
+				{
 					if ( flameEntity = spawnFlame(shieldLimb, SPRITE_FLAME) )
 					{
 						flameEntity->x += 2.5 * cos(shieldLimb->yaw);
 						flameEntity->y += 2.5 * sin(shieldLimb->yaw);
 						flameEntity->z += 1;
 					}
-			    }
+				}
 			}
 			if ( shieldLimb->sprite >= items[SPELLBOOK_LIGHT].index
 				&& shieldLimb->sprite < (items[SPELLBOOK_LIGHT].index + items[SPELLBOOK_LIGHT].variations) )
@@ -11570,37 +11570,37 @@ void Creature::handleHumanoidShieldLimb(Entity* shieldLimb, Entity* shieldArmLim
 				shieldLimb->focalz = limbs[race][7][2];
 			}*/
 
-            if ( shieldLimb->sprite == items[TOOL_LANTERN].index )
+			if ( shieldLimb->sprite == items[TOOL_LANTERN].index )
 			{
-			    shieldLimb->z += 2;
+				shieldLimb->z += 2;
 			}
-	        if ( flickerLights || ticks % TICKS_PER_SECOND == 1 )
-	        {
-		        if ( shieldLimb->sprite == items[TOOL_TORCH].index )
-			    {
+			if ( flickerLights || ticks % TICKS_PER_SECOND == 1 )
+			{
+				if ( shieldLimb->sprite == items[TOOL_TORCH].index )
+				{
 					if ( flameEntity = spawnFlame(shieldLimb, SPRITE_FLAME) )
 					{
 						flameEntity->x += 2 * cos(shieldLimb->yaw);
 						flameEntity->y += 2 * sin(shieldLimb->yaw);
 						flameEntity->z -= 2;
 					}
-			    }
-			    else if ( shieldLimb->sprite == items[TOOL_CRYSTALSHARD].index )
-			    {
-				    /*flameEntity = spawnFlame(shieldLimb, SPRITE_CRYSTALFLAME);
-				    flameEntity->x += 2 * cos(shieldLimb->yaw);
-				    flameEntity->y += 2 * sin(shieldLimb->yaw);
-				    flameEntity->z -= 2;*/
-			    }
-			    else if ( shieldLimb->sprite == items[TOOL_LANTERN].index )
-			    {
+				}
+				else if ( shieldLimb->sprite == items[TOOL_CRYSTALSHARD].index )
+				{
+					/*flameEntity = spawnFlame(shieldLimb, SPRITE_CRYSTALFLAME);
+					flameEntity->x += 2 * cos(shieldLimb->yaw);
+					flameEntity->y += 2 * sin(shieldLimb->yaw);
+					flameEntity->z -= 2;*/
+				}
+				else if ( shieldLimb->sprite == items[TOOL_LANTERN].index )
+				{
 					if ( flameEntity = spawnFlame(shieldLimb, SPRITE_FLAME) )
 					{
 						flameEntity->x += 2 * cos(shieldLimb->yaw);
 						flameEntity->y += 2 * sin(shieldLimb->yaw);
 						flameEntity->z += 1;
 					}
-			    }
+				}
 			}
 			if ( shieldLimb->sprite >= items[SPELLBOOK_LIGHT].index
 				&& shieldLimb->sprite < (items[SPELLBOOK_LIGHT].index + items[SPELLBOOK_LIGHT].variations) )
@@ -11749,7 +11749,7 @@ void Creature::handleKnockbackDamage(Stat& myStats, Entity* knockedInto)
 			playSoundEntity(this, 28, 64);
 			this->modHP(-damageOnHit);
 			Entity* whoKnockedMe = uidToEntity(this->monsterKnockbackUID);
-            Creature* whoKnockedMeCrtr = (Creature*)(*&whoKnockedMe);
+			Creature* whoKnockedMeCrtr = (Creature*)(*&whoKnockedMe);
 			if ( myStats.HP <= 0 )
 			{
 				if ( whoKnockedMe )
@@ -11908,23 +11908,23 @@ void Creature::alertAlliesOnBeingHit(Creature *attacker, std::unordered_set<Enti
 
 void Creature::increaseSkill(int skill, bool notify)
 {
-    Stat* myStats = this->getStats();
-    int player = -1;
+	Stat* myStats = this->getStats();
+	int player = -1;
 
-    if ( myStats == NULL )
-    {
-        return;
-    }
-    if ( this->behavior == &actPlayer )
-    {
-        player = this->skill[2];
-    }
-    Entity::increaseSkill(skill, notify);
+	if ( myStats == NULL )
+	{
+		return;
+	}
+	if ( this->behavior == &actPlayer )
+	{
+		player = this->skill[2];
+	}
+	Entity::increaseSkill(skill, notify);
 }
 
 int Creature::getHealthRegenInterval(Entity* my, Stat& myStats, bool isPlayer)
 {
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	if ( !(svFlags & SV_FLAG_HUNGER) )
 	{
 		if ( isPlayer )

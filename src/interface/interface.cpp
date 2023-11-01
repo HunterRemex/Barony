@@ -2010,7 +2010,7 @@ std::vector<Creature*> getAllOtherFollowersForSendAllCommand(const int gui_playe
 	{
 		// only send commands if we're trying to attack
 		Entity* target = uidToEntity(followerToCommand->monsterAllyInteractTarget);
-        Creature* targetCrtr = (Creature*)target;
+		Creature* targetCrtr = (Creature*)target;
 		if ( target )
 		{
 			if ( !targetCrtr || (targetCrtr->behavior != &actMonster && targetCrtr->behavior != &actPlayer) )
@@ -4106,7 +4106,7 @@ bool FollowerRadialMenu::isTinkeringFollower(int type)
 
 bool FollowerRadialMenu::allowedInteractEntity(Entity& selectedEntity, bool updateInteractText)
 {
-    Creature& selectedEntityCrtr = (Creature&)selectedEntity;
+	Creature& selectedEntityCrtr = (Creature&)selectedEntity;
 	if ( optionSelected != ALLY_CMD_ATTACK_SELECT )
 	{
 		return false;
@@ -10986,7 +10986,7 @@ void EnemyHPDamageBarHandler::addEnemyToList(Sint32 HP, Sint32 maxHP, Sint32 old
 	details->animator.damageTaken = std::max(-details->enemy_maxhp, oldHP - HP); // IDK if this needs a lower limit for healing
 
 	Entity* entity = uidToEntity(uid);
-    Creature* entityCrtr = (Creature*)entity;
+	Creature* entityCrtr = (Creature*)entity;
 	spawnDamageGib(entity, details->animator.damageTaken, gibDmgType);
 	lastEnemyUid = uid;
 

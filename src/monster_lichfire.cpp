@@ -1016,7 +1016,7 @@ void lichFireAnimate(Creature* my, Stat* myStats, double dist)
 				Entity* playertotrack = NULL;
 				double disttoplayer = 0.0;
 				Entity* target = uidToEntity(my->monsterTarget);
-                Creature* entityCrtr = (Creature*)entity;
+				Creature* entityCrtr = (Creature*)entity;
 				if ( entityCrtr && target && my->monsterAttack == 0 )
 				{
 					entityCrtr->lookAtEntity(*target);

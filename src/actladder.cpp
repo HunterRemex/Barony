@@ -216,12 +216,12 @@ void actPortal(Entity* my)
 	{
 		node_t* node = nullptr;
 		Entity* entity = nullptr;
-        Creature* creature = nullptr;
+		Creature* creature = nullptr;
 		bool bossAlive = false;
 		for ( node = map.entities->first; node != nullptr; )
 		{
 			entity = (Entity*)node->element;
-            creature = (Creature*)entity;
+			creature = (Creature*)entity;
 			node = node->next;
 			if ( creature && creature->behavior == &actMonster
 				&& entity->getMonsterTypeFromSprite() == COCKATRICE
@@ -249,12 +249,12 @@ void actPortal(Entity* my)
 	{
 		node_t* node = nullptr;
 		Entity* entity = nullptr;
-        Creature* creature = nullptr;
+		Creature* creature = nullptr;
 		bool bossAlive = false;
 		for ( node = map.entities->first; node != nullptr; )
 		{
 			entity = (Entity*)node->element;
-            creature = (Creature*)entity;
+			creature = (Creature*)entity;
 			node = node->next;
 			if ( creature && creature->behavior == &actMonster
 				&& creature->getMonsterTypeFromSprite() == VAMPIRE

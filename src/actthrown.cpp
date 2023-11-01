@@ -680,7 +680,7 @@ void actThrown(Entity* my)
 			tryHitEntity = false;
 		}
 
-        Creature* hitEntityCrtr = (Creature*)hit.entity;
+		Creature* hitEntityCrtr = (Creature*)hit.entity;
 		if ( hit.entity != nullptr && tryHitEntity )
 		{
 			Creature* parent = uidToCreature(my->parent);
@@ -923,7 +923,7 @@ void actThrown(Entity* my)
 													serverUpdateEntitySkill(hit.entity, 42); // update monsterAllyIndex for clients.
 												}
 
-												if ( hitEntityCrtr && hitEntityCrtr->monsterTarget == parent->getUID() )
+												if ( hitEntityCrtr->monsterTarget == parent->getUID() )
 												{
 													hitEntityCrtr->monsterReleaseAttackTarget();
 												}
@@ -1063,7 +1063,7 @@ void actThrown(Entity* my)
 								{
 									messagePlayerMonsterEvent(parent->skill[2], color, *hitstats, Language::get(3875), Language::get(3876), MSG_COMBAT);
 								}
-								if ( hitEntityCrtr && hitEntityCrtr->behavior == &actMonster )
+								if ( hitEntityCrtr->behavior == &actMonster )
 								{
 									if ( hit.entity->setEffect(EFF_BLIND, true, 250, false) )
 									{
@@ -1074,7 +1074,7 @@ void actThrown(Entity* my)
 									}
 									disableAlertBlindStatus = true; // don't aggro target.
 								}
-								else if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+								else if ( hitEntityCrtr->behavior == &actPlayer )
 								{
 									hit.entity->setEffect(EFF_MESSY, true, 250, false);
 									serverUpdateEffects(hit.entity->skill[2]);
@@ -1093,7 +1093,7 @@ void actThrown(Entity* my)
 							case POTION_POLYMORPH:
 							{
 								Uint32 color = makeColorRGB(0, 255, 0);
-								if ( hitEntityCrtr && hitEntityCrtr->behavior == &actMonster )
+								if ( hitEntityCrtr->behavior == &actMonster )
 								{
 									if ( parent && parent->behavior == &actPlayer )
 									{
@@ -1107,7 +1107,7 @@ void actThrown(Entity* my)
 										}
 									}
 								}
-								else if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+								else if ( hitEntityCrtr->behavior == &actPlayer )
 								{
 									Uint32 color = makeColorRGB(255, 0, 0);
 									messagePlayerColor(hit.entity->skill[2], MESSAGE_COMBAT, color, Language::get(588), itemname); // hit by a flying
@@ -1155,7 +1155,7 @@ void actThrown(Entity* my)
 					}
 					if ( wasBoomerang )
 					{
-						if ( parent && parent->behavior == &actPlayer && hitEntityCrtr && hitEntityCrtr->behavior == &actMonster )
+						if ( parent && parent->behavior == &actPlayer && hitEntityCrtr->behavior == &actMonster )
 						{
 							achievementObserver.addEntityAchievementTimer(parent, AchievementObserver::BARONY_ACH_IF_YOU_LOVE_SOMETHING, 6 * TICKS_PER_SECOND, true, 0);
 						}
@@ -1219,7 +1219,7 @@ void actThrown(Entity* my)
 					Entity* gib = spawnGib(hit.entity);
 					serverSpawnGibForClient(gib);
 					playSoundEntity(hit.entity, 28, 64);
-					if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+					if ( hitEntityCrtr->behavior == &actPlayer )
 					{
 						if ( players[hit.entity->skill[2]]->isLocalPlayer() )
 						{
@@ -1250,7 +1250,7 @@ void actThrown(Entity* my)
 							doSkillIncrease = false; // no skill for killing/hurting other turrets.
 						}
 					}
-					if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer && parent && parent->behavior == &actPlayer )
+					if ( hitEntityCrtr->behavior == &actPlayer && parent && parent->behavior == &actPlayer )
 					{
 						doSkillIncrease = false; // no skill for killing/hurting players
 					}
@@ -1270,7 +1270,7 @@ void actThrown(Entity* my)
 					{
 						playSoundEntity(hit.entity, 66, 64); //*tink*
 					}
-					if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+					if ( hitEntityCrtr->behavior == &actPlayer )
 					{
 						if ( players[hit.entity->skill[2]]->isLocalPlayer() )
 						{
@@ -1290,7 +1290,7 @@ void actThrown(Entity* my)
 					}
 				}
 
-				if ( hitstats->HP <= 0 && parent && hitEntityCrtr )
+				if ( hitstats->HP <= 0 && parent )
 				{
 					parent->awardXP(hit.entity, true, true);
 					spawnBloodVialOnMonsterDeath(hitEntityCrtr, hitstats);
@@ -1298,7 +1298,7 @@ void actThrown(Entity* my)
 
 				bool doAlert = true;
 				// fix for confuse potion aggro'ing monsters on impact.
-				if ( !wasConfused && hitstats && hitstats->EFFECTS[EFF_CONFUSED] && hitEntityCrtr && hitEntityCrtr->behavior == &actMonster && parent )
+				if ( !wasConfused && hitstats && hitstats->EFFECTS[EFF_CONFUSED] && hitEntityCrtr->behavior == &actMonster && parent )
 				{
 					doAlert = false;
 					if ( hitEntityCrtr->monsterTarget == parent->getUID() )
@@ -1308,7 +1308,7 @@ void actThrown(Entity* my)
 				}
 
 				// alert the monster
-				if ( hitEntityCrtr && hitEntityCrtr->behavior == &actMonster && hitstats && parent != nullptr && doAlert )
+				if ( hitEntityCrtr->behavior == &actMonster && hitstats && parent != nullptr && doAlert )
 				{
 					bool alertTarget = true;
 					bool targetHealed = false;
@@ -1330,7 +1330,7 @@ void actThrown(Entity* my)
 						}
 					}
 
-					if ( alertTarget && (hitEntityCrtr && hitEntityCrtr->monsterState != MONSTER_STATE_ATTACK) && (hitstats->type < LICH || hitstats->type >= SHOPKEEPER) )//TODO: BIRD -- Double-check
+					if ( alertTarget && hitEntityCrtr->monsterState != MONSTER_STATE_ATTACK && (hitstats->type < LICH || hitstats->type >= SHOPKEEPER) )//TODO: BIRD -- Double-check
 					{
 						if ( polymorphedTarget && hitstats->leader_uid == parent->getUID() )
 						{
@@ -1351,7 +1351,7 @@ void actThrown(Entity* my)
 					bool alertAllies = true;
 					if ( parent->behavior == &actPlayer || parent->monsterAllyIndex != -1 )
 					{
-						if ( (hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer) || (hitEntityCrtr && hitEntityCrtr->behavior == &actMonster && hit.entity->monsterAllyIndex != -1) )
+						if ( hitEntityCrtr->behavior == &actPlayer || ( hitEntityCrtr->behavior == &actMonster && hit.entity->monsterAllyIndex != -1) )
 						{
 							// if a player ally + hit another ally or player, don't alert other allies.
 							alertAllies = false;
@@ -1359,7 +1359,7 @@ void actThrown(Entity* my)
 					}
 
 					// alert other monsters too
-					if ( alertAllies && !targetHealed && hitEntityCrtr )
+					if ( alertAllies && !targetHealed )
 					{
 						std::unordered_set<Entity*> entitiesToSkip = { polymorphedTarget };
 						hitEntityCrtr->alertAlliesOnBeingHit(parent, &entitiesToSkip);
@@ -1415,7 +1415,7 @@ void actThrown(Entity* my)
 						}
 					}
 				}
-				if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer && !skipMessage )
+				if ( hitEntityCrtr->behavior == &actPlayer && !skipMessage )
 				{
 					Uint32 color = makeColorRGB(255, 0, 0);
 					messagePlayerColor(hit.entity->skill[2], MESSAGE_COMBAT, color, Language::get(588), itemname); // hit by a flying

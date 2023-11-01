@@ -94,25 +94,23 @@ protected:
 public:
 	Entity(Sint32 in_sprite, Uint32 pos, list_t* entlist, list_t* creaturelist);
 	~Entity();
-    bool ditheringDisabled = false;
 
-	struct Dither {
+    bool ditheringDisabled = false;
+    struct Dither {
         int value = 0;
         Uint32 lastUpdateTick = 0;
         static constexpr int MAX = 10;
     };
-	std::unordered_map<view_t*, Dither> dithering;
+    std::unordered_map<view_t*, Dither> dithering;
 	vec4_t lightBonus;
-    int mapGenerationRoomX = 0; // captures the x/y of the 'room' this spawned in on generate dungeon
-
-
+	int mapGenerationRoomX = 0; // captures the x/y of the 'room' this spawned in on generate dungeon
 	int mapGenerationRoomY = 0; // captures the x/y of the 'room' this spawned in on generate dungeon
+
 	//--PUBLIC CHEST SKILLS--
 
 	//skill[4]
 	//0 = unlocked. 1 = locked.
 	Sint32& chestLocked;
-
 	/*
 	 * skill[10]
 	 * 1 = chest already has been unlocked, or spawned in unlocked (prevent spell exploit)
@@ -472,11 +470,9 @@ public:
 	void modHP(int amount); //Adds amount to HP.
 	int getHP();
 
-	//Adds amount to MP.
 	int getMP();
 
 	void drainMP(int amount, bool notifyOverexpend = true); //Removes this much from MP. Anything over the entity's MP is subtracted from their health. Can be very dangerous.
-	//A function for the magic code. Attempts to remove mana without overdrawing the player. Returns true if success, returns false if didn't have enough mana.
 
 	static Sint32 getAttack(Entity* my, Stat* myStats, bool isPlayer = false);
 	static real_t getACEffectiveness(Entity* my, Stat* myStats, bool isPlayer, Entity* attacker, Stat* attackerStats);
@@ -487,7 +483,6 @@ public:
 
 	bool isInvisible() const;
 
-    // teleport entity to fixed position with appropriate sounds, for actTeleporter.
 	bool teleporterMove(int x, int y, int type);
 
     /*
@@ -528,7 +523,7 @@ public:
 
 	bool checkEnemy(Entity* your);
 
-    //Act functions.
+	//Act functions.
 	void actChest();
 	void actPowerCrystal();
 	void actGate();
@@ -580,8 +575,8 @@ public:
 	 */
 	int isEntityPlayer() const;
 
-    //--monster type from sprite
-    Monster getMonsterTypeFromSprite() const;
+	//--monster type from sprite
+	Monster getMonsterTypeFromSprite() const;
 	//--monster limb offsets
 	void setHelmetLimbOffset(Entity* helm);
 	void setHumanoidLimbOffset(Entity* limb, Monster race, int limbType);
@@ -593,19 +588,19 @@ public:
 
 	// reflection is set 1, 2 or 3 depending on the item slot. reflection of 3 does not degrade.
 	int getReflection() const;
-    // if monster holding ranged weapon.
+	// if monster holding ranged weapon.
 	bool hasRangedWeapon() const;
-    // monster footsteps, needs to be client friendly
+	// monster footsteps, needs to be client friendly
 	Uint32 getMonsterFootstepSound(int footstepType, int bootSprite);
 
 	// server only function to set boot sprites on monsters.
 	bool setBootSprite(Entity* leg, int spriteOffset);
 
-    bool devilSummonMonster(Entity* summonOnEntity, Monster creature, int radiusFromCenter, int playerToTarget = -1);
+	bool devilSummonMonster(Entity* summonOnEntity, Monster creature, int radiusFromCenter, int playerToTarget = -1);
 	int devilGetNumMonstersInArena(Monster creature);
 	bool devilBoulderSummonIfPlayerIsHiding(int player);
 
-    // calc time required for a mana regen tick, uses equipped gear as modifiers.
+	// calc time required for a mana regen tick, uses equipped gear as modifiers.
 	static int getManaringFromEquipment(Entity* my, Stat& myStats, bool isPlayer);
 	static int getManaringFromEffects(Entity* my, Stat& myStats);
 	static int getManaRegenInterval(Entity* my, Stat& myStats, bool isPlayer);
@@ -613,7 +608,7 @@ public:
 	static int getHealringFromEquipment(Entity* my, Stat& myStats, bool isPlayer);
 	static int getHealringFromEffects(Creature *my, Stat& myStats);
 
-    // calc damage/effects for ranged weapons.
+	// calc damage/effects for ranged weapons.
 	void setRangedProjectileAttack(Creature& marksman, Stat& myStats, int optionalOverrideForArrowType = 0);
 	bool setArrowProjectileProperties(int weaponType);
 	real_t yawDifferenceFromPlayer(int player); // calc targets yaw compared to a player, returns 0 - 2 * PI, where > PI is facing towards player.
@@ -635,7 +630,7 @@ public:
 	 */
 	bool setEffect(int effect, bool value, int duration, bool updateClients, bool guarantee = true);
 
-    void skeletonSummonSetEquipment(Stat* myStats, int rank);
+	void skeletonSummonSetEquipment(Stat* myStats, int rank);
 	static void tinkerBotSetStats(Stat* myStats, int rank);
 	bool monsterInMeleeRange(const Entity* target, double dist) const
 	{
@@ -646,7 +641,7 @@ public:
 
 	//void returnWeaponarmToNeutral(Entity* weaponarm, Entity* rightbody); //TODO: Need a proper refactor?
 
-    //TODO: These two won't work with multiplayer because clients are stubborn little tater tots that refuse to surrender their inventories on demand.
+	//TODO: These two won't work with multiplayer because clients are stubborn little tater tots that refuse to surrender their inventories on demand.
 	//Here's the TODO: Fix it.
 	Item* getBestMeleeWeaponIHave() const;
 	Item* getBestShieldIHave() const;
@@ -655,12 +650,12 @@ public:
 
 	bool monsterHasSpellbook(int spellbookType);
 
-    /* entity.cpp
-     * Attempts to set the Entity on fire. Entities that are not Burnable or are already on fire will return before any processing
-     * Entities that do not have Stats (such as furniture) will return after setting the fire time and chance to stop at max
-     * Entities with Stats will have their fire time (char_fire) and chance to stop being on fire (chanceToPutOutFire) reduced by their CON
-     * Calculations for reductions is outlined in this function
-     */
+	/* entity.cpp
+	 * Attempts to set the Entity on fire. Entities that are not Burnable or are already on fire will return before any processing
+	 * Entities that do not have Stats (such as furniture) will return after setting the fire time and chance to stop at max
+	 * Entities with Stats will have their fire time (char_fire) and chance to stop being on fire (chanceToPutOutFire) reduced by their CON
+	 * Calculations for reductions is outlined in this function
+	 */
 	void SetEntityOnFire(Entity* sourceOfFire = nullptr);
 
 	void addToCreatureList(list_t* list);
@@ -673,27 +668,16 @@ public:
 	Entity* castStationaryOrbitingMagicMissile(Entity* parent, int spellID, real_t centerx, real_t centery,
 		real_t distFromCenter, real_t angleFromCenterDirection, int duration);
 
-    // monster tries to move backwards in a cross shaped area if stuck against an entity.
-    // return true if monsterstats->leader_uid is not 0.
-    // update the behavior of allied NPCs.
-    // set interact flags for allied NPCs.
 	bool isInteractWithMonster(); // is a monster interacting with me? check interact flags for allied NPCs.
 	void clearMonsterInteract(); // tidy up flags after interaction.
-    // monster create path to destination, search adjacent tiles if specified target is inaccessible.
-    // gyrobot create path to destination to land safely.
 	static int getMagicResistance(Stat* myStats); // returns the value of magic resistance of a monster.
-    // handle secondary voice lines for post-herx content
-    // determines if model of entity is a human head.
-    void setDefaultPlayerModel(int playernum, Monster playerRace, int limbType); // sets correct base color/model of limbs for player characters.
-    // convert playerRace into the relevant monster type
+	void setDefaultPlayerModel(int playernum, Monster playerRace, int limbType); // sets correct base color/model of limbs for player characters.
 	void setHardcoreStats(Stat& stats); // set monster stats for hardcore mode.
-    // monster text for interactions.
 	void playerStatIncrease(int playerClass, int chosenStats[3]);
 	bool isBossMonster(); // return true if boss map (hell boss, boss etc or shopkeeper/shadow/other boss
-    // handle knockback damage from getting hit into other things.
-    bool entityCheckIfTriggeredBomb(bool triggerBomb);
+	bool entityCheckIfTriggeredBomb(bool triggerBomb);
 
-    static real_t getDamageTableMultiplier(Entity* my, Stat& myStats, DamageTableType damageType);
+	static real_t getDamageTableMultiplier(Entity* my, Stat& myStats, DamageTableType damageType);
 	bool isBoulderSprite();
 	void createWorldUITooltip();
 	bool bEntityTooltipRequiresButtonHeld() const;
@@ -803,7 +787,7 @@ int getBaseManaRegen(Entity* my, Stat& myStats);
 //--- Entity act* functions ---
 void actMonster(Creature* my);
 int playerHeadSprite(Monster race, sex_t sex, int appearance, int frame = 0);
-void actPlayer(Creature *my);
+void actPlayer(Creature* my);
 void playerAnimateRat(Entity* my);
 void playerAnimateSpider(Entity* my);
 

@@ -552,7 +552,7 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 	Entity* entity = nullptr, *entity2 = nullptr;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	int bodypart;
 	bool wearingring = false;
 
@@ -995,7 +995,7 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( weaponNode )
 				{
 					Entity* weapon = (Entity*)weaponNode->element;
-					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && ( !myCrtr || myCrtr->monsterState != MONSTER_STATE_ATTACK)) )
+					if ( MONSTER_ARMBENDED || (weapon->flags[INVISIBLE] && (!myCrtr || myCrtr->monsterState != MONSTER_STATE_ATTACK)) )
 					{
 						// if weapon invisible and I'm not attacking, relax arm.
 						entity->focalx = limbs[INCUBUS][4][0] - 0.25; // 0
@@ -1028,7 +1028,7 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( shieldNode )
 				{
 					Entity* shield = (Entity*)shieldNode->element;
-					if ( shield->flags[INVISIBLE] && ( !myCrtr || myCrtr->monsterState != MONSTER_STATE_ATTACK) )
+					if ( shield->flags[INVISIBLE] && (!myCrtr || myCrtr->monsterState != MONSTER_STATE_ATTACK) )
 					{
 						// if weapon invisible and I'm not attacking, relax arm.
 						entity->focalx = limbs[INCUBUS][5][0] - 0.25; // 0
@@ -1167,10 +1167,10 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 						entity->flags[INVISIBLE] = true;
 					}
 				}
-                if ( myCrtr )
-                {
-                    myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
-                }
+				if ( myCrtr )
+				{
+					myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
+				}
 				break;
 				// cloak
 			case LIMB_HUMANOID_CLOAK:
@@ -1386,7 +1386,7 @@ void incubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 
 void Creature::incubusChooseWeapon(const Entity* target, double dist)
 {
-    const Creature* targetCrtr = (const Creature*)target;
+	const Creature* targetCrtr = (const Creature*)target;
 	if ( monsterSpecialState != 0 )
 	{
 		//Holding a weapon assigned from the special attack. Don't switch weapons.

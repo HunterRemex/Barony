@@ -46,283 +46,283 @@ Construct an Entity
 -------------------------------------------------------------------------------*/
 
 Entity::Entity(Sint32 in_sprite, Uint32 pos, list_t* entlist, list_t* creaturelist) :
-        Entity_Base(skill[47],fskill[29],fskill[28],fskill[27]),
-        lightBonus(0.f),
-        char_gonnavomit(skill[26]),
-        char_heal(skill[22]),
-        char_energize(skill[23]),
-        char_torchtime(skill[25]),
-        char_poison(skill[21]),
-        char_fire(skill[36]),
-        chanceToPutOutFire(skill[37]),
-        circuit_status(skill[28]),
-        switch_power(skill[0]),
-        chestInit(skill[0]),
-        chestStatus(skill[1]),
-        chestHealth(skill[3]),
-        chestLocked(skill[4]),
-        chestOpener(skill[5]),
-        chestLidClicked(skill[6]),
-        chestAmbience(skill[7]),
-        chestMaxHealth(skill[8]),
-        chestType(skill[9]),
-        chestPreventLockpickCapstoneExploit(skill[10]),
-        chestHasVampireBook(skill[11]),
-        chestLockpickHealth(skill[12]),
-        chestOldHealth(skill[15]),
-        crystalInitialised(skill[1]),
-        crystalTurning(skill[3]),
-        crystalTurnStartDir(skill[4]),
-        crystalGeneratedElectricityNodes(skill[5]),
-        crystalNumElectricityNodes(skill[6]),
-        crystalHoverDirection(skill[7]),
-        crystalHoverWaitTimer(skill[8]),
-        crystalTurnReverse(skill[9]),
-        crystalSpellToActivate(skill[10]),
-        crystalStartZ(fskill[0]),
-        crystalMaxZVelocity(fskill[1]),
-        crystalMinZVelocity(fskill[2]),
-        crystalTurnVelocity(fskill[3]),
-        creatureWebbedSlowCount(skill[52]),
-        particleDuration(skill[0]),
-        particleShrink(skill[1]),
-        itemNotMoving(skill[18]),
-        itemNotMovingClient(skill[19]),
-        itemSokobanReward(skill[20]),
-        itemOriginalOwner(skill[21]),
-        itemStolen(skill[22]),
-        itemShowOnMap(skill[23]),
-        itemDelayMonsterPickingUp(skill[24]),
-        itemReceivedDetailsFromServer(skill[25]),
-        itemAutoSalvageByPlayer(skill[26]),
-        itemSplooshed(skill[27]),
-        itemWaterBob(fskill[2]),
-        gateInit(skill[1]),
-        gateStatus(skill[3]),
-        gateRattle(skill[4]),
-        gateStartHeight(fskill[0]),
-        gateVelZ(vel_z),
-        gateInverted(skill[5]),
-        gateDisableOpening(skill[6]),
-        leverStatus(skill[1]),
-        leverTimerTicks(skill[3]),
-        boulderTrapRefireAmount(skill[1]),
-        boulderTrapRefireDelay(skill[3]),
-        boulderTrapAmbience(skill[6]),
-        boulderTrapFired(skill[0]),
-        boulderTrapRefireCounter(skill[4]),
-        boulderTrapPreDelay(skill[5]),
-        boulderTrapRocksToSpawn(skill[7]),
-        doorDir(skill[0]),
-        doorInit(skill[1]),
-        doorStatus(skill[3]),
-        doorHealth(skill[4]),
-        doorLocked(skill[5]),
-        doorSmacked(skill[6]),
-        doorTimer(skill[7]),
-        doorOldStatus(skill[8]),
-        doorMaxHealth(skill[9]),
-        doorStartAng(fskill[0]),
-        doorPreventLockpickExploit(skill[10]),
-        doorForceLockedUnlocked(skill[11]),
-        doorDisableLockpicks(skill[12]),
-        doorDisableOpening(skill[13]),
-        doorLockpickHealth(skill[14]),
-        doorOldHealth(skill[15]),
-        particleTimerDuration(skill[0]),
-        particleTimerEndAction(skill[1]),
-        particleTimerEndSprite(skill[3]),
-        particleTimerCountdownAction(skill[4]),
-        particleTimerCountdownSprite(skill[5]),
-        particleTimerTarget(skill[6]),
-        particleTimerPreDelay(skill[7]),
-        particleTimerVariable1(skill[8]),
-        particleTimerVariable2(skill[9]),
-        pedestalHasOrb(skill[0]),
-        pedestalOrbType(skill[1]),
-        pedestalInvertedPower(skill[3]),
-        pedestalInGround(skill[4]),
-        pedestalInit(skill[5]),
-        pedestalAmbience(skill[6]),
-        pedestalLockOrb(skill[7]),
-        pedestalPowerStatus(skill[8]),
-        orbInitialised(skill[1]),
-        orbHoverDirection(skill[7]),
-        orbHoverWaitTimer(skill[8]),
-        orbStartZ(fskill[0]),
-        orbMaxZVelocity(fskill[1]),
-        orbMinZVelocity(fskill[2]),
-        orbTurnVelocity(fskill[3]),
-        portalAmbience(skill[0]),
-        portalInit(skill[1]),
-        portalNotSecret(skill[3]),
-        portalVictoryType(skill[4]),
-        portalFireAnimation(skill[5]),
-        portalCustomLevelsToJump(skill[6]),
-        portalCustomRequiresPower(skill[7]),
-        portalCustomSprite(skill[8]),
-        portalCustomSpriteAnimationFrames(skill[9]),
-        portalCustomZOffset(skill[10]),
-        portalCustomLevelText1(skill[11]),
-        portalCustomLevelText2(skill[12]),
-        portalCustomLevelText3(skill[13]),
-        portalCustomLevelText4(skill[14]),
-        portalCustomLevelText5(skill[15]),
-        portalCustomLevelText6(skill[16]),
-        portalCustomLevelText7(skill[17]),
-        portalCustomLevelText8(skill[18]),
-        teleporterX(skill[0]),
-        teleporterY(skill[1]),
-        teleporterType(skill[3]),
-        teleporterAmbience(skill[4]),
-        spellTrapType(skill[0]),
-        spellTrapRefire(skill[1]),
-        spellTrapLatchPower(skill[3]),
-        spellTrapFloorTile(skill[4]),
-        spellTrapRefireRate(skill[5]),
-        spellTrapAmbience(skill[6]),
-        spellTrapInit(skill[7]),
-        spellTrapCounter(skill[8]),
-        spellTrapReset(skill[9]),
-        shrineSpellEffect(skill[0]),
-        shrineRefire1(skill[1]),
-        shrineRefire2(skill[3]),
-        shrineDir(skill[4]),
-        shrineAmbience(skill[5]),
-        shrineInit(skill[6]),
-        shrineActivateDelay(skill[7]),
-        shrineZ(skill[8]),
-        shrineDestXOffset(skill[9]),
-        shrineDestYOffset(skill[10]),
-        ceilingTileModel(skill[0]),
-        ceilingTileDir(skill[1]),
-        ceilingTileAllowTrap(skill[3]),
-        ceilingTileBreakable(skill[4]),
-        floorDecorationModel(skill[0]),
-        floorDecorationRotation(skill[1]),
-        floorDecorationHeightOffset(skill[3]),
-        floorDecorationXOffset(skill[4]),
-        floorDecorationYOffset(skill[5]),
-        floorDecorationInteractText1(skill[8]),
-        floorDecorationInteractText2(skill[9]),
-        floorDecorationInteractText3(skill[10]),
-        floorDecorationInteractText4(skill[11]),
-        floorDecorationInteractText5(skill[12]),
-        floorDecorationInteractText6(skill[13]),
-        floorDecorationInteractText7(skill[14]),
-        floorDecorationInteractText8(skill[15]),
-        colliderDecorationModel(skill[0]),
-        colliderDecorationRotation(skill[1]),
-        colliderDecorationHeightOffset(skill[3]),
-        colliderDecorationXOffset(skill[4]),
-        colliderDecorationYOffset(skill[5]),
-        colliderHasCollision(skill[6]),
-        colliderSizeX(skill[7]),
-        colliderSizeY(skill[8]),
-        colliderMaxHP(skill[9]),
-        colliderDiggable(skill[10]),
-        colliderDamageTypes(skill[11]),
-        colliderCurrentHP(skill[12]),
-        colliderOldHP(skill[13]),
-        colliderInit(skill[14]),
-        furnitureType(skill[0]),
-        furnitureInit(skill[1]),
-        furnitureDir(skill[3]),
-        furnitureHealth(skill[4]),
-        furnitureMaxHealth(skill[9]),
-        furnitureTableRandomItemChance(skill[10]),
-        furnitureTableSpawnChairs(skill[11]),
-        furnitureOldHealth(skill[15]),
-        pistonCamDir(skill[0]),
-        pistonCamTimer(skill[1]),
-        pistonCamRotateSpeed(fskill[0]),
-        arrowPower(skill[3]),
-        arrowPoisonTime(skill[4]),
-        arrowArmorPierce(skill[5]),
-        arrowSpeed(fskill[4]),
-        arrowFallSpeed(fskill[5]),
-        arrowBoltDropOffRange(skill[6]),
-        arrowShotByWeapon(skill[7]),
-        arrowQuiverType(skill[8]),
-        arrowShotByParent(skill[9]),
-        actmagicIsVertical(skill[6]),
-        actmagicIsOrbiting(skill[7]),
-        actmagicOrbitDist(skill[8]),
-        actmagicOrbitVerticalDirection(skill[9]),
-        actmagicOrbitLifetime(skill[10]),
-        actmagicMirrorReflected(skill[24]),
-        actmagicMirrorReflectedCaster(skill[12]),
-        actmagicCastByMagicstaff(skill[13]),
-        actmagicOrbitVerticalSpeed(fskill[2]),
-        actmagicOrbitStartZ(fskill[3]),
-        actmagicOrbitStationaryX(fskill[4]),
-        actmagicOrbitStationaryY(fskill[5]),
-        actmagicOrbitStationaryCurrentDist(fskill[6]),
-        actmagicOrbitStationaryHitTarget(skill[14]),
-        actmagicOrbitHitTargetUID1(skill[15]),
-        actmagicOrbitHitTargetUID2(skill[16]),
-        actmagicOrbitHitTargetUID3(skill[17]),
-        actmagicOrbitHitTargetUID4(skill[18]),
-        actmagicProjectileArc(skill[19]),
-        actmagicOrbitCastFromSpell(skill[20]),
-        actmagicSpellbookBonus(skill[21]),
-        actmagicCastByTinkerTrap(skill[22]),
-        actmagicTinkerTrapFriendlyFire(skill[23]),
-        actmagicReflectionCount(skill[25]),
-        goldAmount(skill[0]),
-        goldAmbience(skill[1]),
-        goldSokoban(skill[2]),
-        soundSourceFired(skill[0]),
-        soundSourceToPlay(skill[1]),
-        soundSourceVolume(skill[2]),
-        soundSourceLatchOn(skill[3]),
-        soundSourceDelay(skill[4]),
-        soundSourceDelayCounter(skill[5]),
-        soundSourceOrigin(skill[6]),
-        lightSourceBrightness(skill[0]),
-        lightSourceAlwaysOn(skill[1]),
-        lightSourceInvertPower(skill[2]),
-        lightSourceLatchOn(skill[3]),
-        lightSourceRadius(skill[4]),
-        lightSourceFlicker(skill[5]),
-        lightSourceDelay(skill[6]),
-        lightSourceDelayCounter(skill[7]),
-        textSourceColorRGB(skill[0]),
-        textSourceVariables4W(skill[1]),
-        textSourceDelay(skill[2]),
-        textSourceIsScript(skill[3]),
-        textSourceBegin(skill[4]),
-        signalActivateDelay(skill[1]),
-        signalTimerInterval(skill[2]),
-        signalTimerRepeatCount(skill[3]),
-        signalTimerLatchInput(skill[4]),
-        signalInputDirection(skill[5]),
-        effectPolymorph(skill[50]),
-        effectShapeshift(skill[53]),
-        entityShowOnMap(skill[59]),
-        thrownProjectilePower(skill[19]),
-        thrownProjectileCharge(skill[20]),
-        worldTooltipAlpha(fskill[0]),
-        worldTooltipZ(fskill[1]),
-        worldTooltipActive(skill[0]),
-        worldTooltipPlayer(skill[1]),
-        worldTooltipInit(skill[3]),
-        worldTooltipFadeDelay(skill[4]),
-        worldTooltipIgnoreDrawing(skill[5]),
-        worldTooltipRequiresButtonHeld(skill[6]),
-        monsterAnimationLimbOvershoot(skill[30]),
-        monsterEntityRenderAsTelepath(skill[41]),
-        monsterSpellAnimation(skill[31]),
-        monsterAllyIndex(skill[42]),
-        monsterAttack(skill[8]),
-        monsterAttackTime(skill[9]),
-        monsterAnimationLimbDirection(skill[20]),
-        monsterArmbended(skill[10]),
-        monsterWeaponYaw(fskill[5]),
-        statueInit(skill[0]),
-        statueDir(skill[1]),
-        creatureShadowTaggedThisUid(skill[54]),
-        statueId(skill[3])
+	Entity_Base(skill[47],fskill[29],fskill[28],fskill[27]),
+	lightBonus(0.f),
+	char_gonnavomit(skill[26]),
+	char_heal(skill[22]),
+	char_energize(skill[23]),
+	char_torchtime(skill[25]),
+	char_poison(skill[21]),
+	char_fire(skill[36]),
+	chanceToPutOutFire(skill[37]),
+	circuit_status(skill[28]),
+	switch_power(skill[0]),
+	chestInit(skill[0]),
+	chestStatus(skill[1]),
+	chestHealth(skill[3]),
+	chestLocked(skill[4]),
+	chestOpener(skill[5]),
+	chestLidClicked(skill[6]),
+	chestAmbience(skill[7]),
+	chestMaxHealth(skill[8]),
+	chestType(skill[9]),
+	chestPreventLockpickCapstoneExploit(skill[10]),
+	chestHasVampireBook(skill[11]),
+	chestLockpickHealth(skill[12]),
+	chestOldHealth(skill[15]),
+	crystalInitialised(skill[1]),
+	crystalTurning(skill[3]),
+	crystalTurnStartDir(skill[4]),
+	crystalGeneratedElectricityNodes(skill[5]),
+	crystalNumElectricityNodes(skill[6]),
+	crystalHoverDirection(skill[7]),
+	crystalHoverWaitTimer(skill[8]),
+	crystalTurnReverse(skill[9]),
+	crystalSpellToActivate(skill[10]),
+	crystalStartZ(fskill[0]),
+	crystalMaxZVelocity(fskill[1]),
+	crystalMinZVelocity(fskill[2]),
+	crystalTurnVelocity(fskill[3]),
+	creatureWebbedSlowCount(skill[52]),
+	particleDuration(skill[0]),
+	particleShrink(skill[1]),
+	itemNotMoving(skill[18]),
+	itemNotMovingClient(skill[19]),
+	itemSokobanReward(skill[20]),
+	itemOriginalOwner(skill[21]),
+	itemStolen(skill[22]),
+	itemShowOnMap(skill[23]),
+	itemDelayMonsterPickingUp(skill[24]),
+	itemReceivedDetailsFromServer(skill[25]),
+	itemAutoSalvageByPlayer(skill[26]),
+	itemSplooshed(skill[27]),
+	itemWaterBob(fskill[2]),
+	gateInit(skill[1]),
+	gateStatus(skill[3]),
+	gateRattle(skill[4]),
+	gateStartHeight(fskill[0]),
+	gateVelZ(vel_z),
+	gateInverted(skill[5]),
+	gateDisableOpening(skill[6]),
+	leverStatus(skill[1]),
+	leverTimerTicks(skill[3]),
+	boulderTrapRefireAmount(skill[1]),
+	boulderTrapRefireDelay(skill[3]),
+	boulderTrapAmbience(skill[6]),
+	boulderTrapFired(skill[0]),
+	boulderTrapRefireCounter(skill[4]),
+	boulderTrapPreDelay(skill[5]),
+	boulderTrapRocksToSpawn(skill[7]),
+	doorDir(skill[0]),
+	doorInit(skill[1]),
+	doorStatus(skill[3]),
+	doorHealth(skill[4]),
+	doorLocked(skill[5]),
+	doorSmacked(skill[6]),
+	doorTimer(skill[7]),
+	doorOldStatus(skill[8]),
+	doorMaxHealth(skill[9]),
+	doorStartAng(fskill[0]),
+	doorPreventLockpickExploit(skill[10]),
+	doorForceLockedUnlocked(skill[11]),
+	doorDisableLockpicks(skill[12]),
+	doorDisableOpening(skill[13]),
+	doorLockpickHealth(skill[14]),
+	doorOldHealth(skill[15]),
+	particleTimerDuration(skill[0]),
+	particleTimerEndAction(skill[1]),
+	particleTimerEndSprite(skill[3]),
+	particleTimerCountdownAction(skill[4]),
+	particleTimerCountdownSprite(skill[5]),
+	particleTimerTarget(skill[6]),
+	particleTimerPreDelay(skill[7]),
+	particleTimerVariable1(skill[8]),
+	particleTimerVariable2(skill[9]),
+	pedestalHasOrb(skill[0]),
+	pedestalOrbType(skill[1]),
+	pedestalInvertedPower(skill[3]),
+	pedestalInGround(skill[4]),
+	pedestalInit(skill[5]),
+	pedestalAmbience(skill[6]),
+	pedestalLockOrb(skill[7]),
+	pedestalPowerStatus(skill[8]),
+	orbInitialised(skill[1]),
+	orbHoverDirection(skill[7]),
+	orbHoverWaitTimer(skill[8]),
+	orbStartZ(fskill[0]),
+	orbMaxZVelocity(fskill[1]),
+	orbMinZVelocity(fskill[2]),
+	orbTurnVelocity(fskill[3]),
+	portalAmbience(skill[0]),
+	portalInit(skill[1]),
+	portalNotSecret(skill[3]),
+	portalVictoryType(skill[4]),
+	portalFireAnimation(skill[5]),
+	portalCustomLevelsToJump(skill[6]),
+	portalCustomRequiresPower(skill[7]),
+	portalCustomSprite(skill[8]),
+	portalCustomSpriteAnimationFrames(skill[9]),
+	portalCustomZOffset(skill[10]),
+	portalCustomLevelText1(skill[11]),
+	portalCustomLevelText2(skill[12]),
+	portalCustomLevelText3(skill[13]),
+	portalCustomLevelText4(skill[14]),
+	portalCustomLevelText5(skill[15]),
+	portalCustomLevelText6(skill[16]),
+	portalCustomLevelText7(skill[17]),
+	portalCustomLevelText8(skill[18]),
+	teleporterX(skill[0]),
+	teleporterY(skill[1]),
+	teleporterType(skill[3]),
+	teleporterAmbience(skill[4]),
+	spellTrapType(skill[0]),
+	spellTrapRefire(skill[1]),
+	spellTrapLatchPower(skill[3]),
+	spellTrapFloorTile(skill[4]),
+	spellTrapRefireRate(skill[5]),
+	spellTrapAmbience(skill[6]),
+	spellTrapInit(skill[7]),
+	spellTrapCounter(skill[8]),
+	spellTrapReset(skill[9]),
+	shrineSpellEffect(skill[0]),
+	shrineRefire1(skill[1]),
+	shrineRefire2(skill[3]),
+	shrineDir(skill[4]),
+	shrineAmbience(skill[5]),
+	shrineInit(skill[6]),
+	shrineActivateDelay(skill[7]),
+	shrineZ(skill[8]),
+	shrineDestXOffset(skill[9]),
+	shrineDestYOffset(skill[10]),
+	ceilingTileModel(skill[0]),
+	ceilingTileDir(skill[1]),
+	ceilingTileAllowTrap(skill[3]),
+	ceilingTileBreakable(skill[4]),
+	floorDecorationModel(skill[0]),
+	floorDecorationRotation(skill[1]),
+	floorDecorationHeightOffset(skill[3]),
+	floorDecorationXOffset(skill[4]),
+	floorDecorationYOffset(skill[5]),
+	floorDecorationInteractText1(skill[8]),
+	floorDecorationInteractText2(skill[9]),
+	floorDecorationInteractText3(skill[10]),
+	floorDecorationInteractText4(skill[11]),
+	floorDecorationInteractText5(skill[12]),
+	floorDecorationInteractText6(skill[13]),
+	floorDecorationInteractText7(skill[14]),
+	floorDecorationInteractText8(skill[15]),
+	colliderDecorationModel(skill[0]),
+	colliderDecorationRotation(skill[1]),
+	colliderDecorationHeightOffset(skill[3]),
+	colliderDecorationXOffset(skill[4]),
+	colliderDecorationYOffset(skill[5]),
+	colliderHasCollision(skill[6]),
+	colliderSizeX(skill[7]),
+	colliderSizeY(skill[8]),
+	colliderMaxHP(skill[9]),
+	colliderDiggable(skill[10]),
+	colliderDamageTypes(skill[11]),
+	colliderCurrentHP(skill[12]),
+	colliderOldHP(skill[13]),
+	colliderInit(skill[14]),
+	furnitureType(skill[0]),
+	furnitureInit(skill[1]),
+	furnitureDir(skill[3]),
+	furnitureHealth(skill[4]),
+	furnitureMaxHealth(skill[9]),
+	furnitureTableRandomItemChance(skill[10]),
+	furnitureTableSpawnChairs(skill[11]),
+	furnitureOldHealth(skill[15]),
+	pistonCamDir(skill[0]),
+	pistonCamTimer(skill[1]),
+	pistonCamRotateSpeed(fskill[0]),
+	arrowPower(skill[3]),
+	arrowPoisonTime(skill[4]),
+	arrowArmorPierce(skill[5]),
+	arrowSpeed(fskill[4]),
+	arrowFallSpeed(fskill[5]),
+	arrowBoltDropOffRange(skill[6]),
+	arrowShotByWeapon(skill[7]),
+	arrowQuiverType(skill[8]),
+	arrowShotByParent(skill[9]),
+	actmagicIsVertical(skill[6]),
+	actmagicIsOrbiting(skill[7]),
+	actmagicOrbitDist(skill[8]),
+	actmagicOrbitVerticalDirection(skill[9]),
+	actmagicOrbitLifetime(skill[10]),
+	actmagicMirrorReflected(skill[24]),
+	actmagicMirrorReflectedCaster(skill[12]),
+	actmagicCastByMagicstaff(skill[13]),
+	actmagicOrbitVerticalSpeed(fskill[2]),
+	actmagicOrbitStartZ(fskill[3]),
+	actmagicOrbitStationaryX(fskill[4]),
+	actmagicOrbitStationaryY(fskill[5]),
+	actmagicOrbitStationaryCurrentDist(fskill[6]),
+	actmagicOrbitStationaryHitTarget(skill[14]),
+	actmagicOrbitHitTargetUID1(skill[15]),
+	actmagicOrbitHitTargetUID2(skill[16]),
+	actmagicOrbitHitTargetUID3(skill[17]),
+	actmagicOrbitHitTargetUID4(skill[18]),
+	actmagicProjectileArc(skill[19]),
+	actmagicOrbitCastFromSpell(skill[20]),
+	actmagicSpellbookBonus(skill[21]),
+	actmagicCastByTinkerTrap(skill[22]),
+	actmagicTinkerTrapFriendlyFire(skill[23]),
+	actmagicReflectionCount(skill[25]),
+	goldAmount(skill[0]),
+	goldAmbience(skill[1]),
+	goldSokoban(skill[2]),
+	soundSourceFired(skill[0]),
+	soundSourceToPlay(skill[1]),
+	soundSourceVolume(skill[2]),
+	soundSourceLatchOn(skill[3]),
+	soundSourceDelay(skill[4]),
+	soundSourceDelayCounter(skill[5]),
+	soundSourceOrigin(skill[6]),
+	lightSourceBrightness(skill[0]),
+	lightSourceAlwaysOn(skill[1]),
+	lightSourceInvertPower(skill[2]),
+	lightSourceLatchOn(skill[3]),
+	lightSourceRadius(skill[4]),
+	lightSourceFlicker(skill[5]),
+	lightSourceDelay(skill[6]),
+	lightSourceDelayCounter(skill[7]),
+	textSourceColorRGB(skill[0]),
+	textSourceVariables4W(skill[1]),
+	textSourceDelay(skill[2]),
+	textSourceIsScript(skill[3]),
+	textSourceBegin(skill[4]),
+	signalActivateDelay(skill[1]),
+	signalTimerInterval(skill[2]),
+	signalTimerRepeatCount(skill[3]),
+	signalTimerLatchInput(skill[4]),
+	signalInputDirection(skill[5]),
+	effectPolymorph(skill[50]),
+	effectShapeshift(skill[53]),
+	entityShowOnMap(skill[59]),
+	thrownProjectilePower(skill[19]),
+	thrownProjectileCharge(skill[20]),
+	worldTooltipAlpha(fskill[0]),
+	worldTooltipZ(fskill[1]),
+	worldTooltipActive(skill[0]),
+	worldTooltipPlayer(skill[1]),
+	worldTooltipInit(skill[3]),
+	worldTooltipFadeDelay(skill[4]),
+	worldTooltipIgnoreDrawing(skill[5]),
+	worldTooltipRequiresButtonHeld(skill[6]),
+	monsterAnimationLimbOvershoot(skill[30]),
+	monsterEntityRenderAsTelepath(skill[41]),
+	monsterSpellAnimation(skill[31]),
+	monsterAllyIndex(skill[42]),
+	monsterAttack(skill[8]),
+	monsterAttackTime(skill[9]),
+	monsterAnimationLimbDirection(skill[20]),
+	monsterArmbended(skill[10]),
+	monsterWeaponYaw(fskill[5]),
+	statueInit(skill[0]),
+	statueDir(skill[1]),
+	creatureShadowTaggedThisUid(skill[54]),
+	statueId(skill[3])
 {
 	int c;
 	// add the entity to the entity list
@@ -548,9 +548,6 @@ Entity::~Entity()
 	{
 		delete clientStats;
 	}
-
-	printlog("ENTITY DECON: %i", uid);
-
 }
 
 /*-------------------------------------------------------------------------------
@@ -581,7 +578,7 @@ Sets the obituary to that of a mon
 
 void Entity::killedByMonsterObituary(Entity* victim)
 {
-    Creature* victimCrtr = (Creature*)victim;
+	Creature* victimCrtr = (Creature*)victim;
 	if ( !victim )
 	{
 		return;
@@ -800,7 +797,7 @@ int Entity::entityLightAfterReductions(Stat& myStats, Entity* observer)
 	if ( !invis )
 	{
 		bool sneaking = false;
-        auto crtrBhvr = ((void(*)(Creature *))behavior);
+        auto crtrBhvr = ((void(*)(Creature *))behavior); //TODO: BIRD This is dumb
 		if ( crtrBhvr && crtrBhvr == &actPlayer )
 		{
 			player = skill[2];
@@ -831,8 +828,8 @@ int Entity::entityLightAfterReductions(Stat& myStats, Entity* observer)
                 && crtrObserver->monsterLastDistractedByNoisemaker > 0
                 && uidToEntity(crtrObserver->monsterLastDistractedByNoisemaker) )
 			{
-				if (crtrObserver->monsterTarget == crtrObserver->monsterLastDistractedByNoisemaker
-                    || myStats.EFFECTS[EFF_DISORIENTED] )
+				if ( crtrObserver->monsterTarget == crtrObserver->monsterLastDistractedByNoisemaker
+					|| myStats.EFFECTS[EFF_DISORIENTED] )
 				{
 					// currently hunting noisemaker.
 					light = 16;
@@ -1315,7 +1312,7 @@ base number
 Sint32 Entity::getAttack(Entity* my, Stat* myStats, bool isPlayer)
 {
 	Sint32 attack = 0;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 
 	if ( !myStats )
 	{
@@ -1396,7 +1393,7 @@ Sint32 Entity::getRangedAttack()
 	{
 		attack += entitystats->weapon->weaponGetAttack(entitystats);
 		attack += getDEX();
-		if ( ((Creature*)this) && ((Creature*)this)->behavior == &actMonster )
+		if ( ((Creature*)this) && ((Creature*)this)->behavior == &actMonster ) //TODO: BIRD This is dumb
 		{
 			attack += getPER(); // monsters take PER into their ranged attacks to avoid having to increase their speed.
 			attack += entitystats->PROFICIENCIES[PRO_RANGED] / 20; // 0 to 5 bonus attack for monsters
@@ -1514,7 +1511,7 @@ Sint32 Entity::getSTR()
 Sint32 statGetSTR(Stat* entitystats, Entity* my)
 {
 	Sint32 STR;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	if ( !entitystats )
 	{
 		return 0;
@@ -1659,7 +1656,7 @@ Sint32 Entity::getDEX()
 Sint32 statGetDEX(Stat* entitystats, Entity* my)
 {
 	Sint32 DEX;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	if ( !entitystats )
 	{
 		return 0;
@@ -1891,7 +1888,7 @@ Sint32 Entity::getCON()
 Sint32 statGetCON(Stat* entitystats, Entity* my)
 {
 	Sint32 CON;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 
 	if ( !entitystats )
 	{
@@ -1984,7 +1981,7 @@ Sint32 Entity::getINT()
 Sint32 statGetINT(Stat* entitystats, Entity* my)
 {
 	Sint32 INT;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	if ( !entitystats )
 	{
 		return 0;
@@ -2101,7 +2098,7 @@ Sint32 statGetPER(Stat* entitystats, Entity* my)
 
 	bool cursedItemIsBuff = false;
 	bool shapeshifted = false;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	if ( myCrtr && myCrtr->behavior == &actPlayer )
 	{
 		cursedItemIsBuff = shouldInvertEquipmentBeatitude(entitystats);
@@ -2246,7 +2243,7 @@ Sint32 Entity::getCHR()
 Sint32 statGetCHR(Stat* entitystats, Entity* my)
 {
 	Sint32 CHR;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 
 	if ( !entitystats )
 	{
@@ -2321,7 +2318,7 @@ bool Entity::isBlind()
 	}
 
 	bool shapeshifted = false;
-	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer ) //TODO: BIRD This is dumb, function should be overridden in Creature
 	{
 		if ( effectShapeshift != NOTHING )
 		{
@@ -2407,7 +2404,7 @@ bool Entity::isInvisible() const
 		}
 	}
 
-	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer ) //TODO: BIRD This is dumb, function should be overridden in Creature
 	{
 		if ( this->skill[2] >= 0 && this->skill[2] < MAXPLAYERS )
 		{
@@ -2679,7 +2676,7 @@ bool Entity::teleporterMove(int tele_x, int tele_y, int type)
 {
 	int player = -1;
 
-	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer ) //TODO: BIRD This is dumb, function should be overridden in Creature
 	{
 		player = skill[2];
 	}
@@ -3193,7 +3190,7 @@ bool Entity::setBootSprite(Entity* leg, int spriteOffset)
 
 	Stat* myStats;
 
-	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer ) //TODO: BIRD This is dumb, function should be overridden in Creature
 	{
 		myStats = stats[this->skill[2]]; // skill[2] contains the player number.
 	}
@@ -4133,7 +4130,7 @@ void Entity::playerStatIncrease(int playerClass, int chosenStats[3])
 	//{
 	//	messagePlayer(0, "%2d, ", *i);
 	//}
-	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer && playerClass == CLASS_SHAMAN && stats[skill[2]] )
+	if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer && playerClass == CLASS_SHAMAN && stats[skill[2]] ) //TODO: BIRD This is dumb, function should be overridden in Creature
 	{
 		if ( stats[skill[2]]->type == RAT )
 		{
@@ -4249,7 +4246,7 @@ int Entity::getManaRegenInterval(Entity* my, Stat& myStats, bool isPlayer)
 {
 	int regenTime = getBaseManaRegen(my, myStats);
 	int manaring = 0;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	if ( isPlayer && myStats.type != HUMAN )
 	{
 		if ( myStats.type == SKELETON )
@@ -4617,7 +4614,7 @@ void Entity::SetEntityOnFire(Entity* sourceOfFire)
 	// Check if the Entity can be set on fire
 	if ( this->flags[BURNABLE] )
 	{
-		if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
+		if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer ) //TODO: BIRD This is dumb, function should be overridden in Creature
 		{
 			Stat* myStats = this->getStats();
 			if ( myStats )
@@ -4664,7 +4661,7 @@ void Entity::SetEntityOnFire(Entity* sourceOfFire)
 				return; // The Entity was set on fire, it does not have Stats, so it is on fire for maximum duration
 			}
 
-			if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer )
+			if ( ((Creature*)this) && ((Creature*)this)->behavior == &actPlayer ) //TODO: BIRD This is dumb, function should be overridden in Creature
 			{
 				messagePlayerColor(this->skill[2], MESSAGE_COMBAT, makeColorRGB(255, 0, 0), Language::get(4324));
 			}
@@ -4704,7 +4701,7 @@ void Entity::SetEntityOnFire(Entity* sourceOfFire)
 
 			if ( sourceOfFire && sourceOfFire->behavior == &actArrow )
 			{
-				if ( ((Creature*)this) && ((Creature*)this)->behavior == &actMonster )
+				if ( ((Creature*)this) && ((Creature*)this)->behavior == &actMonster ) //TODO: BIRD This is dumb, function should be overridden in Creature
 				{
 					// monsters shot with arrow burn less, harder for players.
 					this->char_fire = std::min(this->char_fire, TICKS_TO_PROCESS_FIRE * 6);
@@ -4735,7 +4732,7 @@ void messagePlayerMonsterEvent(int player, Uint32 color, Stat& monsterStats, con
 	// If true, pretend the monster doesn't have a name and use the generic message "You hit the lesser skeleton!"
 	bool namedMonsterAsGeneric = monsterNameIsGeneric(monsterStats);
 	int monsterType = monsterStats.type;
-    Creature* optionalEntityCrtr = (Creature*)optionalEntity;
+	Creature* optionalEntityCrtr = (Creature*)optionalEntity;
 	if ( optionalEntityCrtr != nullptr )
 	{
 		if ( optionalEntityCrtr->behavior == &actPlayer )
@@ -7576,8 +7573,8 @@ void Entity::setHelmetLimbOffset(Entity* helm)
 		helm->roll = PI / 2;
 	}
 	else if ( (helm->sprite >= items[HAT_HOOD].index && helm->sprite < items[HAT_HOOD].index + items[HAT_HOOD].variations)
-	          || helm->sprite == items[HAT_HOOD_RED].index || helm->sprite == items[HAT_HOOD_SILVER].index
-	          || helm->sprite == items[PUNISHER_HOOD].index )
+		|| helm->sprite == items[HAT_HOOD_RED].index || helm->sprite == items[HAT_HOOD_SILVER].index
+		|| helm->sprite == items[PUNISHER_HOOD].index )
 	{
 		switch ( monster )
 		{
@@ -8004,9 +8001,9 @@ void Entity::setHumanoidLimbOffset(Entity* limb, Monster race, int limbType)
 				limb->y -= .25 * sin(this->yaw);
 				limb->z += 2;
 				if ( limb->sprite == items[WIZARD_DOUBLET].index
-				     || limb->sprite == items[HEALER_DOUBLET].index
-				     || limb->sprite == items[TUNIC].index
-				     || limb->sprite == items[TUNIC].index + 1 )
+					|| limb->sprite == items[HEALER_DOUBLET].index
+					|| limb->sprite == items[TUNIC].index
+					|| limb->sprite == items[TUNIC].index + 1 )
 				{
 					limb->z += 0.15;
 					limb->scalez = 0.9;
@@ -8051,10 +8048,10 @@ void Entity::setHumanoidLimbOffset(Entity* limb, Monster race, int limbType)
 			else if ( limbType == LIMB_HUMANOID_RIGHTARM )
 			{
 				if ( limb->sprite != 689 && limb->sprite != 691
-				     && limb->sprite != 1046 && limb->sprite != 1048
-				     && limb->sprite != 233 && limb->sprite != 234
-				     && limb->sprite != 745 && limb->sprite != 747
-				     && limb->sprite != 471 && limb->sprite != 472 )
+				    && limb->sprite != 1046 && limb->sprite != 1048
+					&& limb->sprite != 233 && limb->sprite != 234
+					&& limb->sprite != 745 && limb->sprite != 747
+					&& limb->sprite != 471 && limb->sprite != 472 )
 				{
 					// wearing gloves (not default arms), position tighter to body.
 					limb->x += 1.75 * cos(this->yaw + PI / 2) - .20 * cos(this->yaw);
@@ -8074,10 +8071,10 @@ void Entity::setHumanoidLimbOffset(Entity* limb, Monster race, int limbType)
 			else if ( limbType == LIMB_HUMANOID_LEFTARM )
 			{
 				if ( limb->sprite != 688 && limb->sprite != 690
-				     && limb->sprite != 1045 && limb->sprite != 1047
-				     && limb->sprite != 231 && limb->sprite != 232
-				     && limb->sprite != 744 && limb->sprite != 746
-				     && limb->sprite != 469 && limb->sprite != 470 )
+				    && limb->sprite != 1045 && limb->sprite != 1047
+					&& limb->sprite != 231 && limb->sprite != 232
+					&& limb->sprite != 744 && limb->sprite != 746
+					&& limb->sprite != 469 && limb->sprite != 470 )
 				{
 					// wearing gloves (not default arms), position tighter to body.
 					limb->x -= 1.75 * cos(this->yaw + PI / 2) + .20 * cos(this->yaw);
@@ -8106,8 +8103,8 @@ void Entity::setHumanoidLimbOffset(Entity* limb, Monster race, int limbType)
 				if ( race == INSECTOID )
 				{
 					if ( limb->sprite != 727 && limb->sprite != 458
-					     && limb->sprite != 761
-					     && limb->sprite != 1060 )
+						&& limb->sprite != 761
+						&& limb->sprite != 1060 )
 					{
 						// wearing armor, offset by 1.
 						limb->z -= 1;
@@ -8182,9 +8179,9 @@ void Entity::setHumanoidLimbOffset(Entity* limb, Monster race, int limbType)
 				limb->z += 2.5;
 
 				if ( limb->sprite == items[WIZARD_DOUBLET].index
-				     || limb->sprite == items[HEALER_DOUBLET].index
-				     || limb->sprite == items[TUNIC].index
-				     || limb->sprite == items[TUNIC].index + 1 )
+					|| limb->sprite == items[HEALER_DOUBLET].index
+					|| limb->sprite == items[TUNIC].index
+					|| limb->sprite == items[TUNIC].index + 1 )
 				{
 					limb->z += 0.5;
 				}

@@ -228,7 +228,7 @@ void actMagiclightBall(Entity* my)
 			if ( spell->sustain )
 			{
 				//Attempt to sustain the magic light.
-				if (casterCrtr)
+				if ( casterCrtr )
 				{
 					//Deduct mana from caster. Cancel spell if not enough mana (simply leave sustained at false).
 					bool deducted = casterCrtr->safeConsumeMP(1); //Consume 1 mana every duration / mana seconds
@@ -242,7 +242,7 @@ void actMagiclightBall(Entity* my)
 						int player = -1;
 						for (i = 0; i < MAXPLAYERS; ++i)
 						{
-							if (players[i]->entity == casterCrtr)
+							if ( players[i]->entity == casterCrtr )
 							{
 								player = i;
 							}
@@ -568,7 +568,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 	double tangent;
 
 	Entity* parent = uidToEntity(my->parent);
-    Creature* parentCrtr = (Creature*)parent;
+	Creature* parentCrtr = (Creature*)parent;
 
 	if (magic_init)
 	{
@@ -752,8 +752,8 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 				if ( hit.entity )
 				{
 					hitstats = hit.entity->getStats();
-                    Creature* hitEntityCrtr = (Creature*)hit.entity;
-					if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
+					Creature* hitEntityCrtr = (Creature*)hit.entity;
+					if ( hitEntityCrtr->behavior == &actPlayer )
 					{
 						player = hit.entity->skill[2];
 					}
@@ -806,7 +806,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 
 				bool yourSpellHitsTheMonster = false;
 				bool youAreHitByASpell = false;
-                Creature* hitEntityCrtr = (Creature*)hit.entity;
+				Creature* hitEntityCrtr = (Creature*)hit.entity;
 				if ( hit.entity )
 				{
 					if ( hitEntityCrtr && hitEntityCrtr->behavior == &actPlayer )
@@ -1261,9 +1261,9 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 
 				if (!strcmp(element->element_internal_name, spellElement_force.element_internal_name))
 				{
-					if (hitEntityCrtr)
+					if ( hitEntityCrtr )
 					{
-						if (hitEntityCrtr->behavior == &actMonster || hitEntityCrtr->behavior == &actPlayer)
+						if ( hitEntityCrtr->behavior == &actMonster || hitEntityCrtr->behavior == &actPlayer )
 						{
 							Entity* parent = uidToEntity(my->parent);
 							playSoundEntity(hit.entity, 28, 128);
@@ -1312,7 +1312,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 							list_RemoveNode(my->mynode);
 							return;
 						}
-						else if ( hit.entity->isDamageableCollider() && hit.entity->isColliderDamageableByMagic() && hitEntityCrtr && parentCrtr)
+						else if ( hit.entity->isDamageableCollider() && hit.entity->isColliderDamageableByMagic() && hitEntityCrtr && parentCrtr )
 						{
 							int damage = element->damage;
 							damage += (spellbookDamageBonus * damage);
@@ -1383,8 +1383,8 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 					spawnExplosion(my->x, my->y, my->z);
 					if (hit.entity)
 					{
-                        Creature* hitEntityCrtr = (Creature*)hit.entity;
-						if (hitEntityCrtr)
+						Creature* hitEntityCrtr = (Creature*)hit.entity;
+						if ( hitEntityCrtr )
 						{
 							Entity* parent = uidToEntity(my->parent);
 							playSoundEntity(hit.entity, 28, 128);
@@ -1576,7 +1576,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 						// Attempt to set the Entity on fire
 						hit.entity->SetEntityOnFire();
 
-						if (hitEntityCrtr)
+						if ( hitEntityCrtr )
 						{
 							//playSoundEntity(my, 153, 64);
 							playSoundEntity(hit.entity, 28, 128);
@@ -1696,10 +1696,10 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 										steamAchievementClient(parent->skill[2], "BARONY_ACH_TIME_TO_PLAN");
 									}
 									parent->awardXP( hit.entity, true, true );
-                                    if (hitEntityCrtr)
-                                    {
-                                        spawnBloodVialOnMonsterDeath(hitEntityCrtr, hitstats);
-                                    }
+									if ( hitEntityCrtr )
+									{
+										spawnBloodVialOnMonsterDeath(hitEntityCrtr, hitstats);
+									}
 								}
 								else
 								{
@@ -1716,10 +1716,10 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 							damage += (spellbookDamageBonus * damage);
 							damage /= (1 + (int)resistance);
 
-							if (parentCrtr)
-                            {
-                                hit.entity->doorHandleDamageMagic(damage, *my, parentCrtr);
-                            }
+							if ( parentCrtr )
+							{
+								hit.entity->doorHandleDamageMagic(damage, *my, parentCrtr);
+							}
 							if ( my->actmagicProjectileArc > 0 )
 							{
 								Entity* caster = uidToEntity(spell->caster);
@@ -1742,10 +1742,10 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 							damage += (spellbookDamageBonus * damage);
 							damage /= (1 + (int)resistance);
 
-                            if (parentCrtr)
-                            {
-                                hit.entity->colliderHandleDamageMagic(damage, *my, parentCrtr);
-                            }
+							if ( parentCrtr )
+							{
+								hit.entity->colliderHandleDamageMagic(damage, *my, parentCrtr);
+							}
 							if ( my->actmagicProjectileArc > 0 )
 							{
 								Entity* caster = uidToEntity(spell->caster);
@@ -1849,7 +1849,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 				{
 					if (hit.entity)
 					{
-						if (hitEntityCrtr)
+						if ( hitEntityCrtr )
 						{
 							playSoundEntity(hit.entity, 174, 64);
 							int duration = (element->duration * (((element->mana) / static_cast<double>(element->base_mana)) * element->overload_multiplier));
@@ -1895,7 +1895,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 					playSoundEntity(my, 197, 128);
 					if (hit.entity)
 					{
-						if (hitEntityCrtr)
+						if ( hitEntityCrtr )
 						{
 							playSoundEntity(hit.entity, 28, 128);
 							hitstats->EFFECTS[EFF_SLOW] = true;
@@ -2003,10 +2003,10 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 									{
 										steamAchievementClient(parent->skill[2], "BARONY_ACH_TIME_TO_PLAN");
 									}
-                                    if ( hitEntityCrtr )
-                                    {
-                                        spawnBloodVialOnMonsterDeath(hitEntityCrtr, hitstats);
-                                    }
+									if ( hitEntityCrtr )
+									{
+										spawnBloodVialOnMonsterDeath(hitEntityCrtr, hitstats);
+									}
 								}
 								else
 								{
@@ -2023,7 +2023,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 				{
 					if (hit.entity)
 					{
-						if (hitEntityCrtr)
+						if ( hitEntityCrtr )
 						{
 							playSoundEntity(hit.entity, 396 + local_rng.rand() % 3, 64);
 							hitstats->EFFECTS[EFF_SLOW] = true;
@@ -2058,7 +2058,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 				{
 					if (hit.entity)
 					{
-						if (hitEntityCrtr)
+						if ( hitEntityCrtr )
 						{
 							playSoundEntity(hit.entity, 174, 64);
 							int effectDuration = 0;
@@ -2133,7 +2133,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 					playSoundEntity(my, 173, 128);
 					if (hit.entity)
 					{
-						if (hitEntityCrtr)
+						if ( hitEntityCrtr )
 						{
 							Entity* parent = uidToEntity(my->parent);
 							playSoundEntity(my, 173, 64);
@@ -2210,10 +2210,10 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 									}
 									steamStatisticUpdateClient(parent->skill[2], STEAM_STAT_BOMBARDIER, STEAM_STAT_INT, 1);
 								}
-                                if ( hitEntityCrtr )
-                                {
-                                    spawnBloodVialOnMonsterDeath(hitEntityCrtr, hitstats);
-                                }
+								if ( hitEntityCrtr )
+								{
+									spawnBloodVialOnMonsterDeath(hitEntityCrtr, hitstats);
+								}
 							}
 						}
 						else if ( hit.entity->behavior == &actDoor )
@@ -2223,10 +2223,10 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 							//damage += ((element->mana - element->base_mana) / static_cast<double>(element->overload_multiplier)) * element->damage;
 							damage /= (1 + (int)resistance);
 
-                            if ( parentCrtr )
-                            {
-                                hit.entity->doorHandleDamageMagic(damage, *my, parentCrtr);
-                            }
+							if ( parentCrtr )
+							{
+								hit.entity->doorHandleDamageMagic(damage, *my, parentCrtr);
+							}
 							if ( my->actmagicProjectileArc > 0 )
 							{
 								Entity* caster = uidToEntity(spell->caster);
@@ -2246,10 +2246,10 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 							//damage += ((element->mana - element->base_mana) / static_cast<double>(element->overload_multiplier)) * element->damage;
 							damage /= (1 + (int)resistance);
 
-                            if ( parentCrtr )
-                            {
-                                hit.entity->colliderHandleDamageMagic(damage, *my, parentCrtr);
-                            }
+							if ( parentCrtr )
+							{
+								hit.entity->colliderHandleDamageMagic(damage, *my, parentCrtr);
+							}
 							if ( my->actmagicProjectileArc > 0 )
 							{
 								Entity* caster = uidToEntity(spell->caster);
@@ -2776,7 +2776,7 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 						else
 						{
 							Entity* caster = uidToEntity(spell->caster);
-                            Creature* casterCrtr = (Creature*)caster;
+							Creature* casterCrtr = (Creature*)caster;
 							bool forceFurnitureDamage = false;
 							if ( casterCrtr && casterCrtr->behavior == &actMonster && caster->getMonsterTypeFromSprite() == SHOPKEEPER )
 							{
@@ -2792,10 +2792,10 @@ void actMagicMissile(Entity* my)   //TODO: Verify this function.
 									//damage += ((element->mana - element->base_mana) / static_cast<double>(element->overload_multiplier)) * element->damage;
 									damage /= (1 + (int)resistance);
 
-                                    if ( parentCrtr )
-                                    {
-                                        hit.entity->colliderHandleDamageMagic(damage, *my, parentCrtr);
-                                    }
+									if ( parentCrtr )
+									{
+										hit.entity->colliderHandleDamageMagic(damage, *my, parentCrtr);
+									}
 									if ( my->actmagicProjectileArc > 0 )
 									{
 										Entity* caster = uidToEntity(spell->caster);
@@ -4330,7 +4330,7 @@ void actParticleTimer(Entity* my)
 			{
 				// teleport to target spell.
 				Entity* parent = uidToEntity(my->parent);
-                Creature* parentCrtr = (Creature*)parent;
+				Creature* parentCrtr = (Creature*)parent;
 				if ( parentCrtr )
 				{
 					if ( parentCrtr->monsterSpecialState == SHADOW_TELEPORT_ONLY )
@@ -4419,7 +4419,7 @@ void actParticleTimer(Entity* my)
 					if ( target )
 					{
 						createParticleErupt(parent, my->particleTimerEndSprite);
-                        Creature* parentCrtr = (Creature*)parent;
+						Creature* parentCrtr = (Creature*)parent;
 						teleported = parentCrtr->teleport((target->x / 16) - 11 + local_rng.rand() % 23, (target->y / 16) - 11 + local_rng.rand() % 23);
 
 						if ( teleported )
@@ -4756,7 +4756,7 @@ void actParticleSapCenter(Entity* my)
 	}
 
 	Entity* parent = uidToEntity(my->parent);
-    Creature* parentCrtr = (Creature*)parent;
+	Creature* parentCrtr = (Creature*)parent;
 	if ( parent )
 	{
 		// if reached the caster, delete self and spawn some particles.
@@ -4817,7 +4817,7 @@ void actParticleSapCenter(Entity* my)
 				playSoundEntity(parent, 168, 128);
 				spawnMagicEffectParticles(parent->x, parent->y, parent->z, 169);
 			}
- 			else if ( my->skill[6] == SHADOW_SPELLCAST && parentCrtr)
+			else if ( my->skill[6] == SHADOW_SPELLCAST && parentCrtr)
 			{
 				parentCrtr->shadowSpecialAbility(parentCrtr->monsterShadowInitialMimic);
 				playSoundEntity(parent, 166, 128);
@@ -4928,7 +4928,7 @@ void actParticleSapCenter(Entity* my)
 			{
 				spawnMagicEffectParticles(my->skill[8], my->skill[9], 0, my->skill[5]);
 				Entity* caster = uidToEntity(my->skill[7]);
-                Creature* casterCrtr = (Creature*)caster;
+				Creature* casterCrtr = (Creature*)caster;
 				if ( casterCrtr && casterCrtr->behavior == &actPlayer && stats[caster->skill[2]] )
 				{
 					// kill old summons.
@@ -4964,7 +4964,7 @@ void actParticleSapCenter(Entity* my)
 							monster->monsterAllySummonRank = magicLevel;
 							monsterStats->setAttribute("special_npc", "skeleton knight");
 							strcpy(monsterStats->name, MonsterData_t::getSpecialNPCName(*monsterStats).c_str());
-							forceFollower(*(Creature*)caster, *monster);
+							forceFollower(*((Creature*)caster), *monster);
 
 							monster->setEffect(EFF_STUNNED, true, 20, false);
 							bool spawnSecondAlly = false;
@@ -5028,7 +5028,7 @@ void actParticleSapCenter(Entity* my)
 										}
 										monster->monsterAllySummonRank = magicLevel;
 
-										forceFollower(*(Creature*)caster, *monster);
+										forceFollower(*((Creature*)caster), *monster);
 										monster->setEffect(EFF_STUNNED, true, 20, false);
 
 										monster->monsterAllyIndex = caster->skill[2];
@@ -5175,7 +5175,7 @@ void createParticleExplosionCharge(Entity* parent, int sprite, int particleCount
 	{
 		return;
 	}
-    Creature* parentCrtr = (Creature*)parent;
+	Creature* parentCrtr = (Creature*)parent;
 
 	for ( int c = 0; c < particleCount; c++ )
 	{
@@ -5409,7 +5409,7 @@ bool Entity::magicOrbitingCollision()
 			if ( entityInsideEntity(this, entity) && !entity->flags[PASSABLE] && (entity->getUID() != this->parent) )
 			{
 				hit.entity = entity;
-                Creature* hitEntityCrtr = (Creature*)hit.entity;
+				Creature* hitEntityCrtr = (Creature*)hit.entity;
 				if ( hitEntityCrtr )
 				{
 					if ( actmagicIsOrbiting == 2 )
@@ -5420,7 +5420,7 @@ bool Entity::magicOrbitingCollision()
 								&& actmagicOrbitHitTargetUID2 == 0
 								&& actmagicOrbitHitTargetUID3 == 0
 								&& hitEntityCrtr
-                                && hitEntityCrtr->behavior == &actMonster)
+								&& hitEntityCrtr->behavior == &actMonster)
 							{
 								steamStatisticUpdateClient(caster->skill[2], STEAM_STAT_VOLATILE, STEAM_STAT_INT, 1);
 							}
@@ -6021,8 +6021,8 @@ void actParticleCharmMonster(Entity* my)
 void spawnMagicTower(Entity* parent, real_t x, real_t y, int spellID, Entity* autoHitTarget, bool castedSpell)
 {
 	bool autoHit = false;
-    Creature* autoHitTargetCrtr = (Creature*)autoHitTarget;
-    Creature* parentCrtr = (Creature*)parent;
+	Creature* autoHitTargetCrtr = (Creature*)autoHitTarget;
+	Creature* parentCrtr = (Creature*)parent;
 	if ( autoHitTargetCrtr )
 	{
 		autoHit = true;
@@ -6076,7 +6076,7 @@ void spawnMagicTower(Entity* parent, real_t x, real_t y, int spellID, Entity* au
 
 bool magicDig(Entity* parent, Entity* projectile, int numRocks, int randRocks)
 {
-    Creature* parentCrtr = (Creature*)parent;
+	Creature* parentCrtr = (Creature*)parent;
 	if ( !hit.entity )
 	{
 		if ( map.tiles[(int)(OBSTACLELAYER + hit.mapy * MAPLAYERS + hit.mapx * MAPLAYERS * map.height)] != 0 )
@@ -6144,7 +6144,7 @@ bool magicDig(Entity* parent, Entity* projectile, int numRocks, int randRocks)
 
 				if ( map.tiles[(int)(OBSTACLELAYER + hit.mapy * MAPLAYERS + hit.mapx * MAPLAYERS * map.height)] >= 41
 					&& map.tiles[(int)(OBSTACLELAYER + hit.mapy * MAPLAYERS + hit.mapx * MAPLAYERS * map.height)] <= 49
-                    && parentCrtr )
+					&& parentCrtr )
 				{
 					steamAchievementEntity(parentCrtr, "BARONY_ACH_BAD_REVIEW");
 				}

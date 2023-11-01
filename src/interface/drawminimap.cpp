@@ -144,7 +144,7 @@ void drawMinimap(const int player, SDL_Rect rect, bool drawingSharedMap)
 	for ( node_t* node = map.entities->first; node != NULL; node = node->next )
 	{
 		Entity* entity = (Entity*)node->element;
-        Creature* entityCrtr = (Creature*)entity;
+		Creature* entityCrtr = (Creature*)entity;
 		if ( entity->sprite == 161 || (entity->sprite >= 254 && entity->sprite < 258)
 			|| entity->behavior == &actCustomPortal )   // ladder or portal models
 		{
@@ -374,7 +374,7 @@ void drawMinimap(const int player, SDL_Rect rect, bool drawingSharedMap)
 	// draw special points of interest (exits, items, revealed monsters, etc)
 	for ( auto entity : entityPointsOfInterest )
 	{
-        Creature* entityCrtr = (Creature*)entity;
+		Creature* entityCrtr = (Creature*)entity;
 		if ( entity->sprite == 161 || (entity->sprite >= 254 && entity->sprite < 258)
 			|| entity->behavior == &actCustomPortal )   // ladder or portal models
 		{

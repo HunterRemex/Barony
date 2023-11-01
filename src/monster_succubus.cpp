@@ -365,7 +365,7 @@ void succubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 {
 	node_t* node;
 	Entity* entity = nullptr, *entity2 = nullptr;
-    Creature* myCrtr = (Creature*)my;
+	Creature* myCrtr = (Creature*)my;
 	Entity* rightbody = nullptr;
 	Entity* weaponarm = nullptr;
 	int bodypart;
@@ -485,7 +485,7 @@ void succubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 				if ( myCrtr && myCrtr->monsterAttack > 0 )
 				{
 					my->handleWeaponArmAttack(weaponarm);
-					if ( myCrtr && myCrtr->monsterAttack != MONSTER_POSE_MELEE_WINDUP2 && myCrtr->monsterAttack != 2 )
+					if ( myCrtr->monsterAttack != MONSTER_POSE_MELEE_WINDUP2 && myCrtr->monsterAttack != 2 )
 					{
 						// flare out the weapon arm to match neutral arm position. 
 						// breaks the horizontal chop attack animation so we skip it.
@@ -742,9 +742,9 @@ void succubusMoveBodyparts(Entity* my, Stat* myStats, double dist)
 					}
 				}
 				if ( myCrtr )
-                {
-                    myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
-                }
+				{
+					myCrtr->handleHumanoidShieldLimb(entity, shieldarm);
+				}
 				break;
 			// cloak
 			case LIMB_HUMANOID_CLOAK:
